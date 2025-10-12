@@ -1,3 +1,5 @@
+import { getProductImage, getProductGallery, getHeroImage } from '../utils/imageUtils.js';
+
 // Mock data để thay thế cho hardcode - sẽ thay bằng API calls sau
 export const FEATURED_PRODUCTS = [
   {
@@ -7,7 +9,7 @@ export const FEATURED_PRODUCTS = [
     description: 'Tổng ưu đãi đến 7 Triệu',
     price: '30.99 Triệu',
     installment: 'Trả góp 0% đến 12 Tháng',
-    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=400&fit=crop',
+    image: getHeroImage(1), // ✅ SỬ DỤNG ID SPECIFIC
     category: 'smartphone'
   },
   {
@@ -17,7 +19,7 @@ export const FEATURED_PRODUCTS = [
     description: 'Ưu đãi đặc biệt cho sinh viên',
     price: '45.99 Triệu',
     installment: 'Trả góp 0% đến 24 Tháng',
-    image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800&h=400&fit=crop',
+    image: getHeroImage(2), // ✅ SỬ DỤNG ID SPECIFIC
     category: 'laptop'
   },
   {
@@ -27,7 +29,7 @@ export const FEATURED_PRODUCTS = [
     description: 'Combo PC + Monitor + Gear',
     price: '89.99 Triệu',
     installment: 'Trả góp 0% đến 36 Tháng',
-    image: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=400&fit=crop',
+    image: getHeroImage(3), // ✅ SỬ DỤNG ID SPECIFIC
     category: 'pc'
   },
   {
@@ -37,7 +39,7 @@ export const FEATURED_PRODUCTS = [
     description: 'Hoàn hảo cho designer & artist',
     price: '28.99 Triệu',
     installment: 'Trả góp 0% đến 18 Tháng',
-    image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&h=400&fit=crop',
+    image: getHeroImage(4, 'smartphone'), // ✅ TABLET DỘT SMARTPHONE IMAGES
     category: 'tablet'
   },
   {
@@ -47,7 +49,7 @@ export const FEATURED_PRODUCTS = [
     description: 'Chụp ảnh professional',
     price: '32.99 Triệu',
     installment: 'Trả góp 0% đến 20 Tháng',
-    image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&h=400&fit=crop',
+    image: getHeroImage(5, 'smartphone'), // ✅ SỬ DỤNG HERO IMAGE
     category: 'smartphone'
   },
   {
@@ -57,7 +59,7 @@ export const FEATURED_PRODUCTS = [
     description: 'RTX 5080 + Ryzen 9000',
     price: '65.99 Triệu',
     installment: 'Trả góp 0% đến 30 Tháng',
-    image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800&h=400&fit=crop',
+    image: getHeroImage(6, 'laptop'), // ✅ SỬ DỤNG HERO IMAGE
     category: 'laptop'
   },
   {
@@ -67,7 +69,7 @@ export const FEATURED_PRODUCTS = [
     description: 'Pin 3 ngày + GPS chính xác',
     price: '18.99 Triệu',
     installment: 'Trả góp 0% đến 15 Tháng',
-    image: 'https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=800&h=400&fit=crop',
+    image: getHeroImage(7, 'accessories'), // ✅ WATCH DỘT ACCESSORIES
     category: 'wearable'
   },
   {
@@ -77,7 +79,7 @@ export const FEATURED_PRODUCTS = [
     description: 'Audio chất lượng studio',
     price: '9.99 Triệu',
     installment: 'Trả góp 0% đến 10 Tháng',
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=400&fit=crop',
+    image: getHeroImage(8, 'audio'), // ✅ SỬ DỤNG HERO IMAGE
     category: 'audio'
   },
   {
@@ -87,7 +89,7 @@ export const FEATURED_PRODUCTS = [
     description: 'Core i9 + RTX 5090 Mobile',
     price: '125.99 Triệu',
     installment: 'Trả góp 0% đến 48 Tháng',
-    image: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&h=400&fit=crop',
+    image: getHeroImage(9, 'laptop'), // ✅ SỬ DỤNG HERO IMAGE
     category: 'laptop'
   },
   {
@@ -97,14 +99,14 @@ export const FEATURED_PRODUCTS = [
     description: 'Magic Eraser + Night Sight',
     price: '24.99 Triệu',
     installment: 'Trả góp 0% đến 16 Tháng',
-    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=400&fit=crop',
+    image: getHeroImage(10, 'smartphone'), // ✅ SỬ DỤNG HERO IMAGE
     category: 'smartphone'
   }
 ];
 
 export const CATEGORIES = [
-  { name: 'Điện thoại, Tablet', icon: '📱', key: 'smartphones' }, // ✅ key: 'smartphones'
-  { name: 'Laptop', icon: '💻', key: 'laptops' }, // ✅ key: 'laptops'
+  { name: 'Điện thoại, Tablet', icon: '📱', key: 'smartphones' },
+  { name: 'Laptop', icon: '💻', key: 'laptops' },
   { name: 'Âm thanh, Mic thu âm', icon: '🎧', key: 'audio' },
   { name: 'Đồng hồ, Camera', icon: '📷', key: 'camera' },
   { name: 'Đồ gia dụng', icon: '🏠', key: 'home' },
@@ -120,7 +122,7 @@ export const PRODUCT_LISTS = {
       name: 'MacBook Air M2',
       price: '28.990.000',
       originalPrice: '32.990.000',
-      image: '💻',
+      image: getProductImage(101), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Giảm 12%',
       category: 'laptop'
     },
@@ -129,7 +131,7 @@ export const PRODUCT_LISTS = {
       name: 'iPhone 15 Pro Max',
       price: '29.990.000',
       originalPrice: '34.990.000',
-      image: '📱',
+      image: getProductImage(102), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Mới nhất',
       category: 'smartphone'
     },
@@ -138,7 +140,7 @@ export const PRODUCT_LISTS = {
       name: 'ASUS ROG RTX 4080',
       price: '24.990.000',
       originalPrice: '28.990.000',
-      image: '🎮',
+      image: getProductImage(103, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Gaming',
       category: 'pc'
     },
@@ -147,43 +149,16 @@ export const PRODUCT_LISTS = {
       name: 'Sony WH-1000XM5',
       price: '6.990.000',
       originalPrice: '8.990.000',
-      image: '🎧',
+      image: getProductImage(104, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Bestseller',
       category: 'audio'
     },
     {
       id: 105,
-      name: 'iPad Pro M4',
-      price: '25.990.000',
-      originalPrice: '29.990.000',
-      image: '📱',
-      badge: 'Hot',
-      category: 'tablet'
-    },
-    {
-      id: 106,
-      name: 'Dell XPS 13 Plus',
-      price: '35.990.000',
-      originalPrice: '39.990.000',
-      image: '💻',
-      badge: 'Premium',
-      category: 'laptop'
-    },
-    {
-      id: 107,
-      name: 'Samsung Galaxy Watch6',
-      price: '7.990.000',
-      originalPrice: '9.990.000',
-      image: '⌚',
-      badge: 'Smart',
-      category: 'wearable'
-    },
-    {
-      id: 108,
       name: 'Canon EOS R8',
       price: '42.990.000',
       originalPrice: '49.990.000',
-      image: '📷',
+      image: getProductImage(105, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Pro',
       category: 'camera'
     }
@@ -195,7 +170,7 @@ export const PRODUCT_LISTS = {
       name: 'MacBook Pro M4',
       price: '45.990.000',
       originalPrice: '49.990.000',
-      image: '💻',
+      image: getProductImage(201), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Mới nhất',
       category: 'laptop'
     },
@@ -204,7 +179,7 @@ export const PRODUCT_LISTS = {
       name: 'Dell XPS 13',
       price: '32.990.000',
       originalPrice: '36.990.000',
-      image: '💻',
+      image: getProductImage(202), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Giảm 11%',
       category: 'laptop'
     },
@@ -213,7 +188,7 @@ export const PRODUCT_LISTS = {
       name: 'ASUS ROG Zephyrus',
       price: '38.990.000',
       originalPrice: '42.990.000',
-      image: '💻',
+      image: getProductImage(203), // ✅ SỬ DỤNG FUNCTION
       badge: 'Gaming',
       category: 'laptop'
     },
@@ -222,7 +197,7 @@ export const PRODUCT_LISTS = {
       name: 'HP Spectre x360',
       price: '29.990.000',
       originalPrice: '33.990.000',
-      image: '💻',
+      image: getProductImage(204), // ✅ SỬ DỤNG FUNCTION
       badge: 'Hot',
       category: 'laptop'
     },
@@ -231,7 +206,7 @@ export const PRODUCT_LISTS = {
       name: 'Lenovo ThinkPad X1',
       price: '35.990.000',
       originalPrice: '39.990.000',
-      image: '💻',
+      image: getProductImage(205), // ✅ SỬ DỤNG FUNCTION
       badge: 'Doanh nhân',
       category: 'laptop'
     },
@@ -240,7 +215,7 @@ export const PRODUCT_LISTS = {
       name: 'MSI Creator Z17',
       price: '55.990.000',
       originalPrice: '62.990.000',
-      image: '💻',
+      image: getProductImage(206), // ✅ SỬ DỤNG FUNCTION
       badge: 'Creator',
       category: 'laptop'
     },
@@ -249,7 +224,7 @@ export const PRODUCT_LISTS = {
       name: 'Surface Laptop 6',
       price: '27.990.000',
       originalPrice: '31.990.000',
-      image: '💻',
+      image: getProductImage(207), // ✅ SỬ DỤNG FUNCTION
       badge: 'Microsoft',
       category: 'laptop'
     },
@@ -258,7 +233,7 @@ export const PRODUCT_LISTS = {
       name: 'Acer Predator Helios',
       price: '43.990.000',
       originalPrice: '48.990.000',
-      image: '💻',
+      image: getProductImage(208), // ✅ SỬ DỤNG FUNCTION
       badge: 'Gaming',
       category: 'laptop'
     },
@@ -267,7 +242,7 @@ export const PRODUCT_LISTS = {
       name: 'LG Gram 17',
       price: '33.990.000',
       originalPrice: '37.990.000',
-      image: '💻',
+      image: getProductImage(209), // ✅ SỬ DỤNG FUNCTION
       badge: 'Ultralight',
       category: 'laptop'
     },
@@ -276,7 +251,7 @@ export const PRODUCT_LISTS = {
       name: 'ASUS Zenbook Pro',
       price: '41.990.000',
       originalPrice: '46.990.000',
-      image: '💻',
+      image: getProductImage(210), // ✅ SỬ DỤNG FUNCTION
       badge: 'OLED',
       category: 'laptop'
     },
@@ -285,17 +260,8 @@ export const PRODUCT_LISTS = {
       name: 'MacBook Air M3',
       price: '26.990.000',
       originalPrice: '29.990.000',
-      image: '💻',
-      badge: 'Phổ biến',
-      category: 'laptop'
-    },
-    {
-      id: 212,
-      name: 'Razer Blade 15',
-      price: '52.990.000',
-      originalPrice: '58.990.000',
-      image: '💻',
-      badge: 'Pro Gaming',
+      image: getProductImage(211), // ✅ SỬ DỤNG FUNCTION
+      badge: 'Compact',
       category: 'laptop'
     }
   ],
@@ -306,53 +272,53 @@ export const PRODUCT_LISTS = {
       name: 'iPhone 15 Pro',
       price: '24.990.000',
       originalPrice: '28.990.000',
-      image: '📱',
+      image: getProductImage(301), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Hot',
       category: 'smartphone'
     },
     {
       id: 302,
-      name: 'Samsung Galaxy S24',
-      price: '18.990.000',
-      originalPrice: '22.990.000',
-      image: '📱',
-      badge: 'Giảm 17%',
+      name: 'Samsung Galaxy S24 Ultra',
+      price: '26.990.000',
+      originalPrice: '31.990.000',
+      image: getProductImage(302), // ✅ SỬ DỤNG ID SPECIFIC
+      badge: 'AI Phone',
       category: 'smartphone'
     },
     {
       id: 303,
-      name: 'Xiaomi 14 Pro',
-      price: '16.990.000',
-      originalPrice: '19.990.000',
-      image: '📱',
-      badge: 'Mới nhất',
+      name: 'Google Pixel 8 Pro',
+      price: '19.990.000',
+      originalPrice: '24.990.000',
+      image: getProductImage(303), // ✅ SỬ DỤNG ID SPECIFIC
+      badge: 'AI Camera',
       category: 'smartphone'
     },
     {
       id: 304,
-      name: 'Google Pixel 8',
-      price: '15.990.000',
-      originalPrice: '18.990.000',
-      image: '📱',
-      badge: 'AI',
-      category: 'smartphone'
-    },
-    {
-      id: 305,
       name: 'OnePlus 12',
-      price: '17.990.000',
-      originalPrice: '20.990.000',
-      image: '📱',
+      price: '16.990.000',
+      originalPrice: '19.990.000',
+      image: getProductImage(304), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Fast Charge',
       category: 'smartphone'
     },
     {
-      id: 306,
-      name: 'iPhone 14 Plus',
-      price: '21.990.000',
+      id: 305,
+      name: 'iPhone 15 Plus',
+      price: '22.990.000',
       originalPrice: '25.990.000',
-      image: '📱',
+      image: getProductImage(305), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Large Screen',
+      category: 'smartphone'
+    },
+    {
+      id: 306,
+      name: 'Samsung Galaxy S24',
+      price: '18.990.000',
+      originalPrice: '22.990.000',
+      image: getProductImage(306), // ✅ SỬ DỤNG ID SPECIFIC
+      badge: 'Compact',
       category: 'smartphone'
     },
     {
@@ -360,7 +326,7 @@ export const PRODUCT_LISTS = {
       name: 'Samsung Galaxy Z Fold6',
       price: '42.990.000',
       originalPrice: '47.990.000',
-      image: '📱',
+      image: getProductImage(307), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Foldable',
       category: 'smartphone'
     },
@@ -369,7 +335,7 @@ export const PRODUCT_LISTS = {
       name: 'Xiaomi 14 Ultra',
       price: '22.990.000',
       originalPrice: '26.990.000',
-      image: '📱',
+      image: getProductImage(308), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Camera Pro',
       category: 'smartphone'
     },
@@ -378,7 +344,7 @@ export const PRODUCT_LISTS = {
       name: 'OPPO Find X7 Pro',
       price: '19.990.000',
       originalPrice: '23.990.000',
-      image: '📱',
+      image: getProductImage(309), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Portrait Master',
       category: 'smartphone'
     },
@@ -387,7 +353,7 @@ export const PRODUCT_LISTS = {
       name: 'Vivo X100 Pro',
       price: '18.990.000',
       originalPrice: '21.990.000',
-      image: '📱',
+      image: getProductImage(310), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Zeiss Lens',
       category: 'smartphone'
     },
@@ -396,7 +362,7 @@ export const PRODUCT_LISTS = {
       name: 'Nothing Phone (2a)',
       price: '8.990.000',
       originalPrice: '10.990.000',
-      image: '📱',
+      image: getProductImage(311, 'smartphone'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Unique Design',
       category: 'smartphone'
     },
@@ -405,20 +371,20 @@ export const PRODUCT_LISTS = {
       name: 'Realme GT 6',
       price: '12.990.000',
       originalPrice: '15.990.000',
-      image: '📱',
+      image: getProductImage(312, 'smartphone'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Performance',
       category: 'smartphone'
     }
   ],
 
-  // THÊM DANH MỤC MỚI
+  // ✅ TIẾP TỤC CHO CÁC CATEGORY KHÁC...
   audio: [
     {
       id: 401,
       name: 'Sony WH-1000XM5',
       price: '6.990.000',
       originalPrice: '8.990.000',
-      image: '🎧',
+      image: getProductImage(401, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Bestseller',
       category: 'audio'
     },
@@ -427,7 +393,7 @@ export const PRODUCT_LISTS = {
       name: 'AirPods Pro 2',
       price: '5.990.000',
       originalPrice: '6.990.000',
-      image: '🎧',
+      image: getProductImage(402, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Apple',
       category: 'audio'
     },
@@ -436,7 +402,7 @@ export const PRODUCT_LISTS = {
       name: 'Bose QuietComfort Ultra',
       price: '8.990.000',
       originalPrice: '10.990.000',
-      image: '🎧',
+      image: getProductImage(403, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Premium',
       category: 'audio'
     },
@@ -445,7 +411,7 @@ export const PRODUCT_LISTS = {
       name: 'Sennheiser Momentum 4',
       price: '7.990.000',
       originalPrice: '9.990.000',
-      image: '🎧',
+      image: getProductImage(404, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Audiophile',
       category: 'audio'
     },
@@ -454,7 +420,7 @@ export const PRODUCT_LISTS = {
       name: 'Marshall Major IV',
       price: '3.990.000',
       originalPrice: '4.990.000',
-      image: '🎧',
+      image: getProductImage(405, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Classic',
       category: 'audio'
     },
@@ -463,7 +429,7 @@ export const PRODUCT_LISTS = {
       name: 'JBL Tour One M2',
       price: '4.990.000',
       originalPrice: '6.990.000',
-      image: '🎧',
+      image: getProductImage(406, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Wireless',
       category: 'audio'
     }
@@ -475,7 +441,7 @@ export const PRODUCT_LISTS = {
       name: 'Canon EOS R8',
       price: '42.990.000',
       originalPrice: '49.990.000',
-      image: '📷',
+      image: getProductImage(501, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Mirrorless',
       category: 'camera'
     },
@@ -484,7 +450,7 @@ export const PRODUCT_LISTS = {
       name: 'Sony A7 IV',
       price: '51.990.000',
       originalPrice: '58.990.000',
-      image: '📷',
+      image: getProductImage(502, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Full Frame',
       category: 'camera'
     },
@@ -493,7 +459,7 @@ export const PRODUCT_LISTS = {
       name: 'Fujifilm X-T5',
       price: '38.990.000',
       originalPrice: '43.990.000',
-      image: '📷',
+      image: getProductImage(503, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Retro Style',
       category: 'camera'
     },
@@ -502,7 +468,7 @@ export const PRODUCT_LISTS = {
       name: 'Nikon Z6 III',
       price: '47.990.000',
       originalPrice: '52.990.000',
-      image: '📷',
+      image: getProductImage(504, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Video Pro',
       category: 'camera'
     },
@@ -511,7 +477,7 @@ export const PRODUCT_LISTS = {
       name: 'Canon EOS R10',
       price: '22.990.000',
       originalPrice: '26.990.000',
-      image: '📷',
+      image: getProductImage(505, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Entry Level',
       category: 'camera'
     },
@@ -520,7 +486,7 @@ export const PRODUCT_LISTS = {
       name: 'GoPro Hero 12',
       price: '9.990.000',
       originalPrice: '12.990.000',
-      image: '📷',
+      image: getProductImage(506, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Action Cam',
       category: 'camera'
     }
@@ -532,7 +498,7 @@ export const PRODUCT_LISTS = {
       name: 'Samsung Neo QLED 8K 65"',
       price: '49.990.000',
       originalPrice: '59.990.000',
-      image: '📺',
+      image: getProductImage(601, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: '8K',
       category: 'tv'
     },
@@ -541,7 +507,7 @@ export const PRODUCT_LISTS = {
       name: 'LG OLED C4 55"',
       price: '32.990.000',
       originalPrice: '39.990.000',
-      image: '📺',
+      image: getProductImage(602, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'OLED',
       category: 'tv'
     },
@@ -550,7 +516,7 @@ export const PRODUCT_LISTS = {
       name: 'Sony Bravia XR A95L 65"',
       price: '65.990.000',
       originalPrice: '75.990.000',
-      image: '📺',
+      image: getProductImage(603, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Premium',
       category: 'tv'
     },
@@ -559,7 +525,7 @@ export const PRODUCT_LISTS = {
       name: 'TCL C845 QLED 75"',
       price: '25.990.000',
       originalPrice: '32.990.000',
-      image: '📺',
+      image: getProductImage(604, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Large Screen',
       category: 'tv'
     },
@@ -568,7 +534,7 @@ export const PRODUCT_LISTS = {
       name: 'Xiaomi TV A Pro 43"',
       price: '6.990.000',
       originalPrice: '8.990.000',
-      image: '📺',
+      image: getProductImage(605, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Budget',
       category: 'tv'
     },
@@ -577,7 +543,7 @@ export const PRODUCT_LISTS = {
       name: 'Samsung Frame TV 55"',
       price: '28.990.000',
       originalPrice: '34.990.000',
-      image: '📺',
+      image: getProductImage(606, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Art Mode',
       category: 'tv'
     }
@@ -589,7 +555,7 @@ export const PRODUCT_LISTS = {
       name: 'Gaming PC RTX 4090',
       price: '89.990.000',
       originalPrice: '99.990.000',
-      image: '🖥️',
+      image: getProductImage(701, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Ultimate',
       category: 'pc'
     },
@@ -598,7 +564,7 @@ export const PRODUCT_LISTS = {
       name: 'MacStudio M2 Ultra',
       price: '95.990.000',
       originalPrice: '109.990.000',
-      image: '🖥️',
+      image: getProductImage(702, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Pro Workstation',
       category: 'pc'
     },
@@ -607,7 +573,7 @@ export const PRODUCT_LISTS = {
       name: 'HP Elite Desktop',
       price: '18.990.000',
       originalPrice: '22.990.000',
-      image: '🖥️',
+      image: getProductImage(703, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Business',
       category: 'pc'
     },
@@ -616,7 +582,7 @@ export const PRODUCT_LISTS = {
       name: 'Dell OptiPlex Micro',
       price: '12.990.000',
       originalPrice: '15.990.000',
-      image: '🖥️',
+      image: getProductImage(704, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Compact',
       category: 'pc'
     },
@@ -625,7 +591,7 @@ export const PRODUCT_LISTS = {
       name: 'ASUS ROG Gaming PC',
       price: '45.990.000',
       originalPrice: '52.990.000',
-      image: '🖥️',
+      image: getProductImage(705, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'RTX 4070',
       category: 'pc'
     },
@@ -634,7 +600,7 @@ export const PRODUCT_LISTS = {
       name: 'iMac M3 24"',
       price: '32.990.000',
       originalPrice: '36.990.000',
-      image: '🖥️',
+      image: getProductImage(706, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'All-in-One',
       category: 'pc'
     }
@@ -646,7 +612,7 @@ export const PRODUCT_LISTS = {
       name: 'MagSafe Charger 15W',
       price: '990.000',
       originalPrice: '1.290.000',
-      image: '🔌',
+      image: getProductImage(801, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Wireless',
       category: 'accessories'
     },
@@ -655,7 +621,7 @@ export const PRODUCT_LISTS = {
       name: 'Logitech MX Master 3S',
       price: '2.290.000',
       originalPrice: '2.690.000',
-      image: '🖱️',
+      image: getProductImage(802, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Pro Mouse',
       category: 'accessories'
     },
@@ -664,7 +630,7 @@ export const PRODUCT_LISTS = {
       name: 'Keychron K8 Pro',
       price: '3.990.000',
       originalPrice: '4.590.000',
-      image: '⌨️',
+      image: getProductImage(803, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Mechanical',
       category: 'accessories'
     },
@@ -673,7 +639,7 @@ export const PRODUCT_LISTS = {
       name: 'Anker PowerBank 20000mAh',
       price: '1.290.000',
       originalPrice: '1.590.000',
-      image: '🔋',
+      image: getProductImage(804, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Fast Charge',
       category: 'accessories'
     },
@@ -682,7 +648,7 @@ export const PRODUCT_LISTS = {
       name: 'Belkin USB-C Hub',
       price: '1.990.000',
       originalPrice: '2.490.000',
-      image: '🔌',
+      image: getProductImage(805, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: '7-in-1',
       category: 'accessories'
     },
@@ -691,7 +657,7 @@ export const PRODUCT_LISTS = {
       name: 'Peak Design Tripod',
       price: '8.990.000',
       originalPrice: '10.990.000',
-      image: '📐',
+      image: getProductImage(806, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Carbon Fiber',
       category: 'accessories'
     }
@@ -703,7 +669,7 @@ export const PRODUCT_LISTS = {
       name: 'Dyson V15 Detect',
       price: '18.990.000',
       originalPrice: '22.990.000',
-      image: '🧹',
+      image: getProductImage(901, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Laser Tech',
       category: 'home'
     },
@@ -712,7 +678,7 @@ export const PRODUCT_LISTS = {
       name: 'Xiaomi Robot Vacuum S12',
       price: '6.990.000',
       originalPrice: '8.990.000',
-      image: '🤖',
+      image: getProductImage(902, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Smart Clean',
       category: 'home'
     },
@@ -721,7 +687,7 @@ export const PRODUCT_LISTS = {
       name: 'Philips Air Fryer XXL',
       price: '4.990.000',
       originalPrice: '6.490.000',
-      image: '🍳',
+      image: getProductImage(903, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Healthy Cook',
       category: 'home'
     },
@@ -730,7 +696,7 @@ export const PRODUCT_LISTS = {
       name: 'Sharp Air Purifier',
       price: '7.990.000',
       originalPrice: '9.990.000',
-      image: '💨',
+      image: getProductImage(904, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'PlasmaCluster',
       category: 'home'
     },
@@ -739,7 +705,7 @@ export const PRODUCT_LISTS = {
       name: 'Electrolux Microwave',
       price: '3.990.000',
       originalPrice: '4.990.000',
-      image: '📦',
+      image: getProductImage(905, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Inverter',
       category: 'home'
     },
@@ -748,14 +714,14 @@ export const PRODUCT_LISTS = {
       name: 'LG TwinWash Washing Machine',
       price: '25.990.000',
       originalPrice: '31.990.000',
-      image: '🧺',
+      image: getProductImage(906, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'AI DD',
       category: 'home'
     }
   ]
 };
 
-// Thêm detailed products cho demo
+// ✅ THÊM DETAILED PRODUCTS VỚI GALLERY CHÍNH XÁC
 export const DETAILED_PRODUCTS = {
   1: {
     id: 1,
@@ -764,13 +730,10 @@ export const DETAILED_PRODUCTS = {
     description: 'iPhone 17 Pro mang đến trải nghiệm hoàn toàn mới với chip A18 Pro, camera ProMax và màn hình Super Retina XDR.',
     price: '30.990.000',
     originalPrice: '34.990.000',
-    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=400&fit=crop',
+    image: getProductImage(1),
     category: 'smartphone',
     badge: 'Mới nhất',
-    images: [
-      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&h=500&fit=crop',
-      'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500&h=500&fit=crop'
-    ],
+    images: getProductGallery(1), // ✅ 3 IMAGES CỦA iPhone 17 Pro
     specifications: {
       screen: '6.7" Super Retina XDR',
       chip: 'Apple A18 Pro',
@@ -786,9 +749,10 @@ export const DETAILED_PRODUCTS = {
     description: 'MacBook Pro M4 với chip Apple Silicon mới nhất, màn hình Liquid Retina XDR và hiệu năng vượt trội.',
     price: '45.990.000',
     originalPrice: '49.990.000',
-    image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800&h=400&fit=crop',
+    image: getProductImage(201),
     category: 'laptop',
     badge: 'Mới nhất',
+    images: getProductGallery(201), // ✅ 3 IMAGES CỦA MacBook Pro M4
     specifications: {
       processor: 'Apple M4 Chip',
       memory: '16GB Unified Memory',
@@ -804,15 +768,17 @@ export const DETAILED_PRODUCTS = {
     description: 'iPhone 15 Pro với thiết kế titanium cao cấp, chip A17 Pro và camera 48MP Pro.',
     price: '24.990.000',
     originalPrice: '28.990.000',
-    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=400&fit=crop',
+    image: getProductImage(301),
     category: 'smartphone',
     badge: 'Hot',
+    images: getProductGallery(301), // ✅ 3 IMAGES CỦA iPhone 15 Pro
     specifications: {
       screen: '6.1" Super Retina XDR',
-      chip: 'A17 Pro',
-      camera: 'Pro camera system 48MP',
-      battery: 'Up to 23 hours video',
-      material: 'Titanium design'
+      chip: 'Apple A17 Pro',
+      camera: 'Triple 48MP Pro System',
+      battery: '3274 mAh',
+      material: 'Titanium'
     }
-  }
+  },
+  // ... có thể thêm tiếp cho các sản phẩm khác
 };

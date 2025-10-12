@@ -2,20 +2,57 @@ import { useParams, useNavigate } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
 import ProductGallery from '../../components/products/ProductGallery';
 import ProductInfo from '../../components/products/ProductInfo';
+import ProductSpecifications from '../../components/products/ProductSpecifications';
+import ShopInfo from '../../components/products/ShopInfo';
+import ProductReviews from '../../components/products/ProductReviews';
 import ProductSection from '../../components/common/ProductSection';
 import { useProductDetail } from '../../hooks/useProductDetail';
+import { useProducts } from '../../hooks/useProducts';
+import { useEffect, useState } from 'react';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { product, relatedProducts, loading, error } = useProductDetail(id);
+  const { product, loading, error } = useProductDetail(id);
+  
+  // ✅ SỬA: Tạo state riêng cho related products
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [relatedLoading, setRelatedLoading] = useState(false);
+
+  // ✅ SỬA: Fetch related products sau khi có product
+  useEffect(() => {
+    const fetchRelatedProducts = async () => {
+      if (!product || !product.category) return;
+      
+      setRelatedLoading(true);
+      try {
+        // Import productService để gọi trực tiếp
+        const { productService } = await import('../../services/productService');
+        const result = await productService.getProductsByCategory(product.category, 8);
+        
+        if (result.success) {
+          // Lọc bỏ sản phẩm hiện tại và chỉ lấy 4 sản phẩm
+          const filtered = result.data
+            .filter(p => p.id !== parseInt(id))
+            .slice(0, 4);
+          setRelatedProducts(filtered);
+        }
+      } catch (err) {
+        console.error('Error fetching related products:', err);
+      } finally {
+        setRelatedLoading(false);
+      }
+    };
+
+    fetchRelatedProducts();
+  }, [product, id]);
 
   if (loading) {
     return (
       <MainLayout>
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="ml-4 text-gray-600">Đang tải sản phẩm...</p>
+        <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Đang tải sản phẩm...</p>
         </div>
       </MainLayout>
     );
@@ -85,7 +122,8 @@ const ProductDetail = () => {
 
       {/* Product Detail */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* PHẦN 1: Gallery + Product Info (50:50) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Product Gallery */}
           <div>
             <ProductGallery product={product} />
@@ -97,35 +135,74 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Product Description */}
-        <div className="mt-12 border-t pt-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Mô tả sản phẩm</h2>
-          <div className="prose max-w-none text-gray-700">
-            <p>{product.description || 'Đây là một sản phẩm tuyệt vời với nhiều tính năng nổi bật.'}</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            
-            <h3>Thông số kỹ thuật:</h3>
-            <ul>
-              <li>Chất lượng cao, bền bỉ</li>
-              <li>Thiết kế hiện đại, sang trọng</li>
-              <li>Tính năng thông minh</li>
-              <li>Bảo hành chính hãng</li>
-            </ul>
+        {/* PHẦN 2: Specifications + Shop Info (50:50) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          {/* Product Specifications */}
+          <div>
+            <ProductSpecifications product={product} />
+          </div>
+
+          {/* Shop Info */}
+          <div>
+            <ShopInfo />
           </div>
         </div>
-      </div>
 
-      {/* Related Products */}
-      {relatedProducts.length > 0 && (
-        <ProductSection
-          title="Sản phẩm liên quan"
-          products={relatedProducts}
-          columns="lg:grid-cols-4"
-          onProductClick={handleRelatedProductClick}
-          showViewAll={false}
-          backgroundColor="bg-gray-50"
-        />
-      )}
+        {/* PHẦN 3: Reviews (100% width) */}
+        <div className="mb-12">
+          <ProductReviews product={product} />
+        </div>
+
+        {/* ✅ PHẦN 4: Related Products (100% width) - LUÔN HIỂN THỊ */}
+        <div className="mb-12">
+          {relatedLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Đang tải sản phẩm liên quan...</p>
+            </div>
+          ) : relatedProducts.length > 0 ? (
+            <ProductSection
+              title="Sản phẩm liên quan"
+              products={relatedProducts}
+              onProductClick={handleRelatedProductClick}
+              backgroundColor="bg-gray-50"
+              showViewAll={false}
+            />
+          ) : (
+            // ✅ FALLBACK: Hiển thị sản phẩm mặc định nếu không có related products
+            <div className="bg-gray-50 rounded-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Sản phẩm khác bạn có thể quan tâm</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {/* Mock related products */}
+                {[
+                  { id: 301, name: 'iPhone 15 Pro', price: '24.990.000', image: '📱' },
+                  { id: 201, name: 'MacBook Pro M4', price: '45.990.000', image: '💻' },
+                  { id: 401, name: 'Sony WH-1000XM5', price: '7.990.000', image: '🎧' },
+                  { id: 501, name: 'Canon EOS R5', price: '89.990.000', image: '📷' }
+                ].map((mockProduct) => (
+                  <div 
+                    key={mockProduct.id}
+                    onClick={() => navigate(`/product/${mockProduct.id}`)}
+                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                  >
+                    <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                      <span className="text-3xl">{mockProduct.image}</span>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="font-medium text-gray-900 text-sm mb-2 line-clamp-2">
+                        {mockProduct.name}
+                      </h3>
+                      <span className="text-sm font-bold text-red-600">
+                        {mockProduct.price}đ
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </MainLayout>
   );
 };

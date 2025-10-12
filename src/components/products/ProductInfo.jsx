@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ✅ THÊM IMPORT
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import Button from '../ui/Button';
 
 const ProductInfo = ({ product }) => {
-  const navigate = useNavigate(); // ✅ THÊM HOOK
+  const navigate = useNavigate();
   const { addToCart, isInCart, getProductQuantityInCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState('Đen');
   const [selectedStorage, setSelectedStorage] = useState('128GB');
   const [isAdding, setIsAdding] = useState(false);
-  const [isBuying, setIsBuying] = useState(false); // ✅ THÊM STATE
-  const [addMode, setAddMode] = useState('combine'); // 'combine' hoặc 'separate'
+  const [isBuying, setIsBuying] = useState(false);
 
   // Mock data - trong thực tế sẽ từ product object
   const colors = ['Đen', 'Trắng', 'Xanh', 'Hồng'];
@@ -25,13 +24,13 @@ const ProductInfo = ({ product }) => {
   const productInCart = isInCart(product?.id, currentOptions);
   const totalQuantityInCart = getProductQuantityInCart(product?.id, currentOptions);
 
-  const handleAddToCart = async (forceNew = false) => {
+  const handleAddToCart = async () => {
     if (!product) return;
     
     setIsAdding(true);
     try {
-      // ✅ SỬ DỤNG THAM SỐ forceNew
-      const result = addToCart(product, quantity, currentOptions, forceNew || addMode === 'separate');
+      // ✅ LUÔN DÙNG forceNew = false để cộng dồn số lượng
+      const result = addToCart(product, quantity, currentOptions, false);
       
       if (result.success) {
         // Show success notification
@@ -58,40 +57,38 @@ const ProductInfo = ({ product }) => {
     }
   };
 
-  // ✅ SỬA LẠI handleBuyNow
+  // ✅ SỬA: handleBuyNow sử dụng forceNew = true (để tạo item riêng cho "Mua ngay")
   const handleBuyNow = async () => {
     if (!product) return;
     
     setIsBuying(true);
     try {
-      // Thêm sản phẩm vào giỏ hàng trước
+      // Thêm sản phẩm vào giỏ hàng trước (tạo item riêng cho "Mua ngay")
       const result = addToCart(product, quantity, currentOptions, true);
       
       if (result.success) {
-        // Show success notification nhưng ngắn hơn
+        // Show processing notification
         const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300';
+        notification.className = 'fixed top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300';
         notification.innerHTML = `
           <div class="flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Đang chuyển đến giỏ hàng...
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-3"></div>
+            Đang thêm vào giỏ hàng...
           </div>
         `;
         document.body.appendChild(notification);
         
-        // Chuyển hướng đến cart page sau 800ms (đủ thời gian hiển thị notification)
+        // Navigate with state sau 1 giây
         setTimeout(() => {
-          navigate('/cart');
+          navigate('/cart', { 
+            state: { fromBuyNow: true }
+          });
           
-          // Remove notification sau khi navigate
           if (notification.parentNode) {
             notification.parentNode.removeChild(notification);
           }
-        }, 800);
+        }, 1000);
         
-        // Reset quantity
         setQuantity(1);
       }
     } finally {
@@ -179,39 +176,6 @@ const ProductInfo = ({ product }) => {
         </div>
       </div>
 
-      {/* ✅ THÊM CHẾ ĐỘ THÊM VÀO GIỎ HÀNG */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-900 mb-2">Chế độ thêm vào giỏ:</h3>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setAddMode('combine')}
-            className={`px-4 py-2 rounded-lg border text-sm ${
-              addMode === 'combine'
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-300 text-gray-700 hover:border-gray-400'
-            }`}
-          >
-            Cộng dồn số lượng
-          </button>
-          <button
-            onClick={() => setAddMode('separate')}
-            className={`px-4 py-2 rounded-lg border text-sm ${
-              addMode === 'separate'
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-300 text-gray-700 hover:border-gray-400'
-            }`}
-          >
-            Tạo item riêng biệt
-          </button>
-        </div>
-        <p className="text-xs text-gray-500 mt-1">
-          {addMode === 'combine' 
-            ? 'Sản phẩm cùng loại sẽ được cộng dồn số lượng trong giỏ hàng' 
-            : 'Mỗi lần thêm sẽ tạo một item riêng biệt trong giỏ hàng'
-          }
-        </p>
-      </div>
-
       {/* Quantity */}
       <div>
         <h3 className="text-sm font-medium text-gray-900 mb-2">Số lượng:</h3>
@@ -234,25 +198,25 @@ const ProductInfo = ({ product }) => {
         </div>
       </div>
 
-      {/* Action Buttons - ✅ CẬP NHẬT BUTTONS */}
+      {/* Action Buttons */}
       <div className="space-y-3">
         <Button
           onClick={handleBuyNow}
-          className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800" // ✅ THÊM STYLE ĐẶC BIỆT
+          className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
           size="lg"
-          loading={isBuying} // ✅ SỬ DỤNG isBuying STATE
-          disabled={isAdding || isBuying} // ✅ DISABLE KHI ĐANG PROCESS
+          loading={isBuying}
+          disabled={isAdding || isBuying}
         >
           {isBuying ? 'Đang xử lý...' : 'Mua ngay'}
         </Button>
         
         <Button
-          onClick={() => handleAddToCart(false)}
+          onClick={handleAddToCart} // ✅ SỬA: Gọi trực tiếp handleAddToCart
           variant="outline"
           className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
           size="lg"
           loading={isAdding}
-          disabled={isAdding || isBuying} // ✅ DISABLE KHI ĐANG PROCESS
+          disabled={isAdding || isBuying}
         >
           <div className="flex items-center justify-center">
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

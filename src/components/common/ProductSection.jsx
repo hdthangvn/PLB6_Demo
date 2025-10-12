@@ -12,12 +12,12 @@ const ProductSection = ({
 }) => {
   const { addToCart } = useCart();
 
-  // ✅ CẬP NHẬT FUNCTION handleAddToCart
+  // ✅ SỬA: Luôn sử dụng cộng dồn số lượng cho ProductSection
   const handleAddToCart = async (e, product) => {
     e.stopPropagation(); // Ngăn event bubble lên parent
     
-    // Luôn tạo item riêng biệt khi thêm từ product grid
-    const result = addToCart(product, 1, { color: 'default', storage: 'default' }, true);
+    // ✅ SỬA: Sử dụng forceNew = false để cộng dồn số lượng
+    const result = addToCart(product, 1, { color: 'default', storage: 'default' }, false);
     
     if (result.success) {
       // Show success notification
