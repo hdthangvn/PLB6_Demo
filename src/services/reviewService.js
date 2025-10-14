@@ -7,10 +7,12 @@ export const reviewService = {
   async getProductReviews(productId, page = 1, limit = 5, filter = 'all', sortBy = 'newest') {
     await delay(300);
     
-    // TODO: Replace with real API call
-    // const response = await fetch(`${API_BASE_URL}/products/${productId}/reviews?page=${page}&limit=${limit}&filter=${filter}&sortBy=${sortBy}`);
-    
-    // Mock implementation
+    // Load persisted reviews from localStorage
+    const storeKey = 'reviews_by_product';
+    const byProduct = JSON.parse(localStorage.getItem(storeKey) || '{}');
+    const saved = Array.isArray(byProduct[productId]) ? byProduct[productId] : [];
+
+    // Seed mock reviews (kept for demo so trang chi tiết có sẵn dữ liệu)
     const mockReviews = [
       {
         id: 1,
@@ -68,27 +70,48 @@ export const reviewService = {
       }
     ];
 
+    // Combine (ưu tiên review vừa lưu lên trước)
+    let combined = [...saved, ...mockReviews];
+
+    // Filter theo số sao nếu cần
+    if (['1','2','3','4','5'].includes(filter)) {
+      combined = combined.filter(r => String(r.rating) === filter);
+    }
+
+    // Sort
+    combined.sort((a,b)=>{
+      if (sortBy === 'oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sortBy === 'highest') return b.rating - a.rating;
+      if (sortBy === 'lowest') return a.rating - b.rating;
+      return new Date(b.createdAt) - new Date(a.createdAt); // newest
+    });
+
+    // Pagination
+    const totalReviews = combined.length;
+    const totalPages = Math.max(1, Math.ceil(totalReviews / limit));
+    const start = (page - 1) * limit;
+    const paged = combined.slice(start, start + limit);
+
+    // Summary
+    const sumRating = combined.reduce((s,r)=> s + (r.rating || 0), 0);
+    const ratingDistribution = {1:0,2:0,3:0,4:0,5:0};
+    combined.forEach(r => { const k = r.rating||0; if (ratingDistribution[k] != null) ratingDistribution[k]++; });
+
     return {
       success: true,
       data: {
-        reviews: mockReviews,
+        reviews: paged,
         pagination: {
           currentPage: page,
-          totalPages: 3,
-          totalReviews: 15,
-          hasNext: page < 3,
+          totalPages,
+          totalReviews,
+          hasNext: page < totalPages,
           hasPrev: page > 1
         },
         summary: {
-          averageRating: 4.5,
-          totalReviews: 15,
-          ratingDistribution: {
-            5: 8,
-            4: 4,
-            3: 2,
-            2: 1,
-            1: 0
-          }
+          averageRating: totalReviews ? sumRating / totalReviews : 0,
+          totalReviews,
+          ratingDistribution
         }
       }
     };
@@ -116,7 +139,10 @@ export const reviewService = {
       };
     }
 
-    // Mock success response
+    // Chuẩn hóa ảnh (biểu tượng) để hiển thị đơn giản
+    const images = (reviewData.images || []).map(() => '📷');
+
+    // Success + persist to localStorage
     const newReview = {
       id: Date.now(),
       productId: parseInt(productId),
@@ -130,7 +156,7 @@ export const reviewService = {
       rating: reviewData.rating,
       title: reviewData.title || '',
       content: reviewData.content,
-      images: reviewData.images || [],
+      images,
       verifiedPurchase: reviewData.verifiedPurchase || false,
       helpful: 0,
       notHelpful: 0,
@@ -138,6 +164,12 @@ export const reviewService = {
       updatedAt: new Date().toISOString(),
       replies: []
     };
+
+    const storeKey = 'reviews_by_product';
+    const byProduct = JSON.parse(localStorage.getItem(storeKey) || '{}');
+    const list = Array.isArray(byProduct[productId]) ? byProduct[productId] : [];
+    byProduct[productId] = [newReview, ...list];
+    localStorage.setItem(storeKey, JSON.stringify(byProduct));
 
     return {
       success: true,

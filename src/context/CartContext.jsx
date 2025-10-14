@@ -19,7 +19,11 @@ export const CartProvider = ({ children }) => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       try {
-        setCartItems(JSON.parse(savedCart));
+        const parsed = JSON.parse(savedCart);
+        const normalized = Array.isArray(parsed)
+          ? parsed.map(item => ({ ...item, selected: item.selected !== false }))
+          : [];
+        setCartItems(normalized);
       } catch (error) {
         console.error('Error loading cart:', error);
       }
@@ -49,7 +53,8 @@ export const CartProvider = ({ children }) => {
       product,
       quantity,
       options,
-      addedAt: new Date().toISOString()
+      addedAt: new Date().toISOString(),
+      selected: true
     };
 
     setCartItems(prevItems => {
@@ -102,6 +107,25 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
+  // Chọn/bỏ chọn một sản phẩm
+  const toggleItemSelected = (itemId) => {
+    setCartItems(prevItems => prevItems.map(item => item.id === itemId ? { ...item, selected: !item.selected } : item));
+  };
+
+  const setItemSelected = (itemId, selected) => {
+    setCartItems(prevItems => prevItems.map(item => item.id === itemId ? { ...item, selected } : item));
+  };
+
+  // Chọn tất cả / bỏ chọn tất cả
+  const selectAll = (selected) => {
+    setCartItems(prevItems => prevItems.map(item => ({ ...item, selected })));
+  };
+
+  // Xóa các item đã chọn (sau khi thanh toán)
+  const removeSelectedItems = () => {
+    setCartItems(prevItems => prevItems.filter(item => !item.selected));
+  };
+
   // Tính tổng số lượng items
   const getTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -115,9 +139,36 @@ export const CartProvider = ({ children }) => {
     }, 0);
   };
 
+  // Tổng theo các sản phẩm đã chọn
+  const getSelectedItems = () => cartItems.filter(item => item.selected);
+
+  const getSelectedTotalItems = () => {
+    return cartItems.reduce((total, item) => total + (item.selected ? item.quantity : 0), 0);
+  };
+
+  const getSelectedTotalPrice = () => {
+    return cartItems.reduce((total, item) => {
+      if (!item.selected) return total;
+      const price = parseFloat(item.product.price.replace(/[^\d]/g, '')) || 0;
+      return total + (price * item.quantity);
+    }, 0);
+  };
+
   // Tính tổng tiết kiệm
   const getTotalSavings = () => {
     return cartItems.reduce((total, item) => {
+      if (item.product.originalPrice) {
+        const originalPrice = parseFloat(item.product.originalPrice.replace(/[^\d]/g, '')) || 0;
+        const currentPrice = parseFloat(item.product.price.replace(/[^\d]/g, '')) || 0;
+        return total + ((originalPrice - currentPrice) * item.quantity);
+      }
+      return total;
+    }, 0);
+  };
+
+  const getSelectedTotalSavings = () => {
+    return cartItems.reduce((total, item) => {
+      if (!item.selected) return total;
       if (item.product.originalPrice) {
         const originalPrice = parseFloat(item.product.originalPrice.replace(/[^\d]/g, '')) || 0;
         const currentPrice = parseFloat(item.product.price.replace(/[^\d]/g, '')) || 0;
@@ -153,9 +204,17 @@ export const CartProvider = ({ children }) => {
     updateQuantity,
     removeFromCart,
     clearCart,
+    toggleItemSelected,
+    setItemSelected,
+    selectAll,
+    removeSelectedItems,
     getTotalItems,
     getTotalPrice,
     getTotalSavings,
+    getSelectedItems,
+    getSelectedTotalItems,
+    getSelectedTotalPrice,
+    getSelectedTotalSavings,
     isInCart,
     getProductQuantityInCart, // ✅ THÊM HÀM MỚI
     formatPrice

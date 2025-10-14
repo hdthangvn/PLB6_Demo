@@ -58,6 +58,17 @@ export const searchService = {
       });
     }
 
+    // Advanced filters (mock)
+    if (filters.brands && filters.brands.length > 0) {
+      results = results.filter(p => filters.brands.some(b => p.name.toLowerCase().includes(b.toLowerCase())));
+    }
+    if (filters.cpu && filters.cpu.length > 0) {
+      results = results.filter(p => filters.cpu.some(c => p.name.toLowerCase().includes(c.toLowerCase())));
+    }
+    if (filters.ram && filters.ram.length > 0) {
+      results = results.filter(p => filters.ram.some(r => p.badge?.toLowerCase().includes(r.toLowerCase()) || p.name.toLowerCase().includes(r.toLowerCase())));
+    }
+
     // Sort results
     if (filters.sortBy) {
       results.sort((a, b) => {

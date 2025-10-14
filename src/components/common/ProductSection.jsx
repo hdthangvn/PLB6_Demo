@@ -8,7 +8,8 @@ const ProductSection = ({
   columns = "lg:grid-cols-5",
   onProductClick,
   onViewAllClick,
-  backgroundColor = "bg-gray-50"
+  backgroundColor = "bg-gray-50",
+  compact = false
 }) => {
   const { addToCart } = useCart();
 
@@ -38,12 +39,16 @@ const ProductSection = ({
     }
   };
 
+  const sectionPadding = compact ? 'py-2' : 'py-16';
+  const headerMargin = compact ? 'mb-4' : 'mb-12';
+  const titleSize = compact ? 'text-2xl' : 'text-3xl';
+
   return (
-    <section className={`py-16 ${backgroundColor}`}>
+    <section className={`${sectionPadding} ${backgroundColor}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header với title và button "Xem tất cả" */}
-        <div className="flex justify-between items-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900">
+        <div className={`flex justify-between items-center ${headerMargin}`}>
+          <h2 className={`${titleSize} font-bold text-gray-900`}>
             {title}
           </h2>
           {showViewAll && (

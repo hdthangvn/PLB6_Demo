@@ -151,27 +151,11 @@ const ProductReviews = ({ product }) => {
         <h2 className="text-xl font-bold text-gray-900">
           Đánh giá sản phẩm ({summary?.totalReviews || 0})
         </h2>
-        
-        {isAuthenticated && !showReviewForm && (
-          <Button
-            onClick={() => setShowReviewForm(true)}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            ✍️ Viết đánh giá
-          </Button>
-        )}
+
+        {/* Ẩn nút viết đánh giá trên trang chi tiết theo yêu cầu */}
       </div>
 
-      {/* Review Form */}
-      {showReviewForm && (
-        <div className="mb-8">
-          <ReviewForm
-            onSubmit={handleSubmitReview}
-            onCancel={() => setShowReviewForm(false)}
-            loading={submitting}
-          />
-        </div>
-      )}
+      {/* Form tự mở đã bị vô hiệu hóa để chỉ đánh giá từ lịch sử đơn hàng */}
 
       {/* Rating Overview */}
       {summary && (

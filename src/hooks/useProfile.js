@@ -104,6 +104,32 @@ export const useProfile = () => {
     }
   };
 
+  // Create order
+  const createOrder = async (orderData) => {
+    if (!user?.id) return { success: false, error: 'User not found' };
+    try {
+      const result = await userService.createOrder(user.id, orderData);
+      if (result.success) {
+        // refresh order history
+        await fetchOrderHistory();
+      }
+      return result;
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  };
+
+  const updateOrderStatus = async (orderId, status) => {
+    if (!user?.id) return { success: false, error: 'User not found' };
+    try {
+      const result = await userService.updateOrderStatus(user.id, orderId, status);
+      if (result.success) await fetchOrderHistory();
+      return result;
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  };
+
   // Load profile on component mount
   useEffect(() => {
     fetchProfile();
@@ -119,6 +145,8 @@ export const useProfile = () => {
     updateProfile,
     changePassword,
     uploadAvatar,
+    createOrder,
+    updateOrderStatus,
     refetchProfile: fetchProfile,
     refetchOrderHistory: fetchOrderHistory
   };

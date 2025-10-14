@@ -105,14 +105,14 @@ export const FEATURED_PRODUCTS = [
 ];
 
 export const CATEGORIES = [
-  { name: 'Điện thoại, Tablet', icon: '📱', key: 'smartphones' },
-  { name: 'Laptop', icon: '💻', key: 'laptops' },
-  { name: 'Âm thanh, Mic thu âm', icon: '🎧', key: 'audio' },
-  { name: 'Đồng hồ, Camera', icon: '📷', key: 'camera' },
-  { name: 'Đồ gia dụng', icon: '🏠', key: 'home' },
-  { name: 'Phụ kiện', icon: '🔌', key: 'accessories' },
-  { name: 'PC, Màn hình, Máy in', icon: '🖥️', key: 'pc' },
-  { name: 'Tivi', icon: '📺', key: 'tv' }
+  { name: 'Điện thoại, Tablet', icon: '📱', key: 'smartphones', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=220&q=80' },
+  { name: 'Laptop', icon: '💻', key: 'laptops', image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=220&q=80' },
+  { name: 'Âm thanh, Mic thu âm', icon: '🎧', key: 'audio', image: 'https://images.unsplash.com/photo-1519996529931-28324d5a630e?auto=format&fit=crop&w=220&q=80' },
+  { name: 'Đồng hồ, Camera', icon: '📷', key: 'camera', image: 'https://images.unsplash.com/photo-1519181245277-cffeb31da2af?auto=format&fit=crop&w=220&q=80' },
+  { name: 'Đồ gia dụng', icon: '🏠', key: 'home', image: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=220&q=80' },
+  { name: 'Phụ kiện', icon: '🔌', key: 'accessories', image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=220&q=80' },
+  { name: 'PC, Màn hình, Máy in', icon: '🖥️', key: 'pc', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=220&q=80' },
+  { name: 'Tivi', icon: '📺', key: 'tv', image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=220&q=80' }
 ];
 
 export const PRODUCT_LISTS = {
@@ -734,6 +734,13 @@ export const DETAILED_PRODUCTS = {
     category: 'smartphone',
     badge: 'Mới nhất',
     images: getProductGallery(1), // ✅ 3 IMAGES CỦA iPhone 17 Pro
+    shop: {
+      id: 'apple_official',
+      name: 'Apple Official Store',
+      logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
+      productCount: '500+',
+      address: 'TP.HCM'
+    },
     specifications: {
       screen: '6.7" Super Retina XDR',
       chip: 'Apple A18 Pro',
@@ -753,6 +760,13 @@ export const DETAILED_PRODUCTS = {
     category: 'laptop',
     badge: 'Mới nhất',
     images: getProductGallery(201), // ✅ 3 IMAGES CỦA MacBook Pro M4
+    shop: {
+      id: 'techstore_official',
+      name: 'TechStore Official',
+      logoUrl: '',
+      productCount: '1.5k+',
+      address: 'TP.HCM'
+    },
     specifications: {
       processor: 'Apple M4 Chip',
       memory: '16GB Unified Memory',
@@ -772,6 +786,13 @@ export const DETAILED_PRODUCTS = {
     category: 'smartphone',
     badge: 'Hot',
     images: getProductGallery(301), // ✅ 3 IMAGES CỦA iPhone 15 Pro
+    shop: {
+      id: 'apple_official',
+      name: 'Apple Official Store',
+      logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
+      productCount: '500+',
+      address: 'TP.HCM'
+    },
     specifications: {
       screen: '6.1" Super Retina XDR',
       chip: 'Apple A17 Pro',

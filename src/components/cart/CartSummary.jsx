@@ -4,15 +4,15 @@ import Button from '../ui/Button';
 const CartSummary = ({ onCheckout }) => {
   const { 
     cartItems, 
-    getTotalItems, 
-    getTotalPrice, 
-    getTotalSavings, 
+    getSelectedTotalItems, 
+    getSelectedTotalPrice, 
+    getSelectedTotalSavings, 
     formatPrice 
   } = useCart();
 
-  const totalItems = getTotalItems();
-  const totalPrice = getTotalPrice();
-  const totalSavings = getTotalSavings();
+  const totalItems = getSelectedTotalItems();
+  const totalPrice = getSelectedTotalPrice();
+  const totalSavings = getSelectedTotalSavings();
   const shippingFee = totalPrice >= 500000 ? 0 : 30000; // Free ship từ 500k
   const finalTotal = totalPrice + shippingFee;
 
@@ -68,7 +68,7 @@ const CartSummary = ({ onCheckout }) => {
         size="lg"
         disabled={cartItems.length === 0}
       >
-        Tiến hành thanh toán
+        Đặt hàng
       </Button>
 
       {/* Promotions */}

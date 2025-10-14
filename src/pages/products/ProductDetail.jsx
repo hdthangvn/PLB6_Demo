@@ -5,6 +5,7 @@ import ProductInfo from '../../components/products/ProductInfo';
 import ProductSpecifications from '../../components/products/ProductSpecifications';
 import ShopInfo from '../../components/products/ShopInfo';
 import ProductReviews from '../../components/products/ProductReviews';
+import ProductComments from '../../components/products/ProductComments';
 import ProductSection from '../../components/common/ProductSection';
 import { useProductDetail } from '../../hooks/useProductDetail';
 import { useProducts } from '../../hooks/useProducts';
@@ -144,13 +145,18 @@ const ProductDetail = () => {
 
           {/* Shop Info */}
           <div>
-            <ShopInfo />
+            <ShopInfo shop={product?.shop} />
           </div>
         </div>
 
         {/* PHẦN 3: Reviews (100% width) */}
         <div className="mb-12">
           <ProductReviews product={product} />
+        </div>
+
+        {/* PHẦN 3.5: Comments (100% width) */}
+        <div className="mb-12">
+          <ProductComments productId={product.id} />
         </div>
 
         {/* ✅ PHẦN 4: Related Products (100% width) - LUÔN HIỂN THỊ */}

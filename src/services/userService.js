@@ -132,31 +132,39 @@ export const userService = {
     // TODO: Thay bằng real API
     // const response = await fetch(`${API_BASE_URL}/users/${userId}/orders`);
     
-    // Mock order data
-    const mockOrders = [
-      {
-        id: 'ORD-2024-001',
-        date: '2024-01-20',
-        status: 'delivered',
-        total: 29990000,
-        items: [
-          { name: 'iPhone 15 Pro', quantity: 1, price: 29990000 }
-        ]
-      },
-      {
-        id: 'ORD-2024-002', 
-        date: '2024-01-15',
-        status: 'processing',
-        total: 45990000,
-        items: [
-          { name: 'MacBook Pro M4', quantity: 1, price: 45990000 }
-        ]
-      }
-    ];
-    
-    return {
-      success: true,
-      data: mockOrders
+    const key = `orders_${userId}`;
+    const saved = localStorage.getItem(key);
+    const orders = saved ? JSON.parse(saved) : [];
+    return { success: true, data: orders };
+  },
+
+  // Create order and persist
+  async createOrder(userId, orderData) {
+    await delay(300);
+    const key = `orders_${userId}`;
+    const saved = localStorage.getItem(key);
+    const orders = saved ? JSON.parse(saved) : [];
+    const newOrder = {
+      id: `ORD-${new Date().getFullYear()}-${(orders.length + 1).toString().padStart(3,'0')}`,
+      date: new Date().toISOString(),
+      status: 'processing',
+      ...orderData
     };
+    orders.unshift(newOrder);
+    localStorage.setItem(key, JSON.stringify(orders));
+    return { success: true, data: newOrder };
+  },
+
+  // Update order status
+  async updateOrderStatus(userId, orderId, status) {
+    await delay(200);
+    const key = `orders_${userId}`;
+    const saved = localStorage.getItem(key);
+    const orders = saved ? JSON.parse(saved) : [];
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx === -1) return { success: false, error: 'Order not found' };
+    orders[idx].status = status;
+    localStorage.setItem(key, JSON.stringify(orders));
+    return { success: true, data: orders[idx] };
   }
 };

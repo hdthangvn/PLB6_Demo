@@ -1,7 +1,15 @@
 import { useCart } from '../../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const CartItem = ({ item }) => {
-  const { updateQuantity, removeFromCart, formatPrice } = useCart();
+  const { updateQuantity, removeFromCart, formatPrice, toggleItemSelected } = useCart();
+  const navigate = useNavigate();
+
+  const handleGoDetail = () => {
+    if (item?.product?.id != null) {
+      navigate(`/product/${item.product.id}`);
+    }
+  };
 
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity > 0) {
@@ -18,8 +26,20 @@ const CartItem = ({ item }) => {
 
   return (
     <div className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-sm border">
-      {/* Product Image */}
-      <div className="w-20 h-20 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0">
+      {/* Select Checkbox */}
+      <input
+        type="checkbox"
+        checked={item.selected !== false}
+        onChange={() => toggleItemSelected(item.id)}
+        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+      />
+      {/* Product Image (click to detail) */}
+      <button
+        type="button"
+        onClick={handleGoDetail}
+        className="w-20 h-20 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 hover:ring-2 hover:ring-blue-200 transition"
+        aria-label="Xem chi tiết sản phẩm"
+      >
         {item.product.image?.startsWith('http') ? (
           <img
             src={item.product.image}
@@ -29,13 +49,18 @@ const CartItem = ({ item }) => {
         ) : (
           <span className="text-2xl">{item.product.image || '📦'}</span>
         )}
-      </div>
+      </button>
 
       {/* Product Info */}
       <div className="flex-1 min-w-0">
-        <h3 className="font-medium text-gray-900 truncate">
+        <button
+          type="button"
+          onClick={handleGoDetail}
+          className="font-medium text-gray-900 truncate text-left hover:text-blue-600"
+          aria-label="Xem chi tiết sản phẩm"
+        >
           {item.product.name}
-        </h3>
+        </button>
         
         {/* Options */}
         {(item.options?.color !== 'default' || item.options?.storage !== 'default') && (

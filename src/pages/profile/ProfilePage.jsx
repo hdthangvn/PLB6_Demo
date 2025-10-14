@@ -23,6 +23,13 @@ const ProfilePage = () => {
   
   const [activeTab, setActiveTab] = useState('personal');
 
+  // Open orders tab if ?tab=orders is provided
+  useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab === 'orders') setActiveTab('orders');
+  });
+
   const tabs = [
     { id: 'personal', name: 'Thông tin cá nhân', icon: '👤' },
     { id: 'password', name: 'Đổi mật khẩu', icon: '🔒' },
@@ -89,20 +96,47 @@ const ProfilePage = () => {
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Lịch sử đơn hàng</h2>
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 text-gray-300">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"/>
-                </svg>
+            {orderHistory && orderHistory.length > 0 ? (
+              <div className="space-y-4">
+                {orderHistory.map((o) => (
+                  <div key={o.id} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-semibold">{o.id}</div>
+                        <div className="text-sm text-gray-500">{new Date(o.date).toLocaleString('vi-VN')}</div>
+                        <div className="text-sm">Trạng thái: <span className="font-medium">{o.status}</span></div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-red-600">{(o.finalTotal || o.total).toLocaleString('vi-VN')}đ</div>
+                      </div>
+                    </div>
+                    <div className="mt-3 text-sm text-gray-700">
+                      {o.items?.map((it, idx) => (
+                        <div key={idx} className="flex justify-between">
+                          <span className="truncate mr-2">{it.name} x{it.quantity}</span>
+                          <span>{(it.price * it.quantity).toLocaleString('vi-VN')}đ</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <p className="text-gray-600 mb-4">Bạn chưa có đơn hàng nào</p>
-              <button
-                onClick={() => navigate('/')}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Tiếp tục mua sắm
-              </button>
-            </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 text-gray-300">
+                  <svg fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"/>
+                  </svg>
+                </div>
+                <p className="text-gray-600 mb-4">Bạn chưa có đơn hàng nào</p>
+                <button
+                  onClick={() => navigate('/')}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Tiếp tục mua sắm
+                </button>
+              </div>
+            )}
           </div>
         );
       case 'preferences':

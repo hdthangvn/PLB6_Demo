@@ -1,6 +1,6 @@
 import MainLayout from '../../layouts/MainLayout';
 import ProductSection from '../../components/common/ProductSection';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useProducts } from '../../hooks/useProducts';
 import { useCategories } from '../../hooks/useCategories';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,17 @@ const HomePage = () => {
   const { products: laptopProducts, loading: laptopLoading } = useProducts('laptops');
   const { products: smartphoneProducts, loading: smartphoneLoading } = useProducts('smartphones');
   const { categories, loading: categoriesLoading } = useCategories();
+  const catScrollRef = useRef(null);
+  const [catIndex, setCatIndex] = useState(0);
+  const scrollCategories = (dir) => {
+    if (!catScrollRef.current) return;
+    const total = Array.isArray(categories) ? categories.length : 0;
+    if (total === 0) return;
+    const newIndex = Math.max(0, Math.min(total - 1, catIndex + (dir === 'left' ? -1 : 1)));
+    setCatIndex(newIndex);
+    const cardWidth = 180; // approximate card width including gap
+    catScrollRef.current.scrollTo({ left: newIndex * cardWidth, behavior: 'smooth' });
+  };
 
   // GIỚI HẠN 5 SẢN PHẨM CHO HOMEPAGE
   const limitedFeaturedProducts = featuredProducts.slice(0, 5);
@@ -45,6 +56,9 @@ const HomePage = () => {
 
   // SLIDER LOGIC - GIỮ NGUYÊN
   const THUMBNAILS_TO_SHOW = 5;
+  const AUTO_PLAY_INTERVAL_MS = 4000;
+  const FADE_DURATION_MS = 300;
+  const [isFading, setIsFading] = useState(false);
   const getThumbnailStartIndex = (currentIndex) => {
     const currentStart = Math.floor(currentIndex / THUMBNAILS_TO_SHOW) * THUMBNAILS_TO_SHOW;
     return currentStart;
@@ -53,25 +67,60 @@ const HomePage = () => {
   const thumbnailStartIndex = getThumbnailStartIndex(currentImageIndex);
   
   const handlePrevious = () => {
-    setCurrentImageIndex((prev) => 
-      prev === 0 ? heroProducts.length - 1 : prev - 1
-    );
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? heroProducts.length - 1 : prev - 1
+      );
+      setIsFading(false);
+    }, FADE_DURATION_MS);
   };
   
   const handleNext = () => {
-    setCurrentImageIndex((prev) => 
-      prev === heroProducts.length - 1 ? 0 : prev + 1
-    );
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentImageIndex((prev) => 
+        prev === heroProducts.length - 1 ? 0 : prev + 1
+      );
+      setIsFading(false);
+    }, FADE_DURATION_MS);
   };
 
   const handleThumbnailClick = (index) => {
-    setCurrentImageIndex(index);
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentImageIndex(index);
+      setIsFading(false);
+    }, FADE_DURATION_MS);
   };
 
   const visibleThumbnails = heroProducts.slice(
     thumbnailStartIndex, 
     thumbnailStartIndex + THUMBNAILS_TO_SHOW
   );
+
+  // Autoplay slider with fade animation
+  useEffect(() => {
+    if (!heroProducts || heroProducts.length === 0) return;
+
+    let intervalId;
+    let timeoutId;
+
+    intervalId = setInterval(() => {
+      setIsFading(true);
+      timeoutId = setTimeout(() => {
+        setCurrentImageIndex((prev) => 
+          prev === heroProducts.length - 1 ? 0 : prev + 1
+        );
+        setIsFading(false);
+      }, FADE_DURATION_MS);
+    }, AUTO_PLAY_INTERVAL_MS);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, [heroProducts]);
 
   // Loading states
   if (heroLoading || categoriesLoading) {
@@ -128,7 +177,7 @@ const HomePage = () => {
                   </button>
 
                   {/* Content */}
-                  <div className="flex-1 flex items-center justify-between px-8">
+                  <div className={`flex-1 flex items-center justify-between px-8 transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
                     {/* Text Content */}
                     <div className="text-white">
                       <div className="flex items-center mb-2">
@@ -244,6 +293,32 @@ const HomePage = () => {
       </section>
 
       {/* Product Sections - GIỮ NGUYÊN */}
+      {/* Category one-row strip with left/right tabs */}
+      <section className="py-3 bg-white">
+        <div className="relative max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+          <button onClick={() => scrollCategories('left')} className="flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow hover:bg-gray-50" aria-label="Prev">‹</button>
+          <button onClick={() => scrollCategories('right')} className="flex items-center justify-center absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white border shadow hover:bg-gray-50" aria-label="Next">›</button>
+          <div ref={catScrollRef} className="flex gap-4 overflow-x-hidden px-10">
+            {categories.map((cat, idx) => (
+              <button key={idx} onClick={() => handleCategoryClick(cat)} className="min-w-[160px] bg-white border rounded-xl hover:shadow-sm transition p-4 flex flex-col items-center">
+                <div className="w-20 h-20 rounded-md overflow-hidden bg-gray-50 flex items-center justify-center mb-2">
+                  {cat.image ? (
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      className="w-full h-full object-cover"
+                      onError={(e)=>{ e.currentTarget.onerror=null; e.currentTarget.src='https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=220&q=80'; }}
+                    />
+                  ) : (
+                    <span className="text-3xl">{cat.icon}</span>
+                  )}
+                </div>
+                <div className="text-sm font-medium text-gray-800 text-center">{cat.name}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
       <ProductSection
         title="Sản phẩm nổi bật"
         products={limitedFeaturedProducts}

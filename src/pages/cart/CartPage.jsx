@@ -7,7 +7,7 @@ import Button from '../../components/ui/Button';
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const { cartItems, clearCart, getTotalItems } = useCart();
+  const { cartItems, clearCart, getTotalItems, selectAll, getSelectedItems } = useCart();
   const totalItems = getTotalItems();
 
   const handleContinueShopping = () => {
@@ -16,7 +16,12 @@ const CartPage = () => {
 
   const handleCheckout = () => {
     // TODO: Navigate to checkout page
-    alert('Chức năng thanh toán sẽ được phát triển sau!');
+    const selected = getSelectedItems();
+    if (selected.length === 0) {
+      alert('Vui lòng chọn ít nhất 1 sản phẩm để thanh toán.');
+      return;
+    }
+    navigate('/checkout');
   };
 
   const handleClearCart = () => {
@@ -86,7 +91,11 @@ const CartPage = () => {
           <h1 className="text-3xl font-bold text-gray-900">
             Giỏ hàng ({totalItems} sản phẩm)
           </h1>
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 items-center">
+            <label className="flex items-center space-x-2">
+              <input type="checkbox" onChange={(e) => selectAll(e.target.checked)} className="w-4 h-4" />
+              <span>Chọn tất cả</span>
+            </label>
             <Button
               variant="outline"
               onClick={handleContinueShopping}

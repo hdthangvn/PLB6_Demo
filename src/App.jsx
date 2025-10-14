@@ -6,6 +6,9 @@ import HomePage from './pages/home/HomePage';
 import ProductDetail from './pages/products/ProductDetail';
 import ProductList from './pages/products/ProductList';
 import CartPage from './pages/cart/CartPage';
+import ShopPage from './pages/shop/ShopPage';
+import CheckoutPage from './pages/checkout/CheckoutPage';
+import OrdersPage from './pages/orders/OrdersPage';
 import SearchResults from './pages/search/SearchResults';
 import ProfilePage from './pages/profile/ProfilePage'; // ✅ THÊM IMPORT
 
@@ -34,6 +37,9 @@ const AppContent = () => {
       <Route path="/products/:category" element={<ProductList />} />
       <Route path="/search" element={<SearchResults />} />
       <Route path="/cart" element={<CartPage />} />
+      <Route path="/shop/:id" element={<ShopPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/orders" element={<OrdersPage />} />
       <Route path="/profile" element={<ProfilePage />} /> {/* ✅ THÊM ROUTE */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

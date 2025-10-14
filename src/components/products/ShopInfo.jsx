@@ -1,7 +1,12 @@
-const ShopInfo = () => {
+import { useNavigate } from 'react-router-dom';
+
+const ShopInfo = ({ shop }) => {
+  const navigate = useNavigate();
+
   const handleViewShop = () => {
-    // Navigate to shop page
-    console.log('View shop');
+    if (shop?.id) {
+      navigate(`/shop/${shop.id}`);
+    }
   };
 
   const handleChatNow = () => {
@@ -19,11 +24,17 @@ const ShopInfo = () => {
       {/* Shop Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">T</span>
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center overflow-hidden">
+            {shop?.logoUrl ? (
+              <img src={shop.logoUrl} alt={shop.name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-white font-bold text-lg">{(shop?.name || 'T')[0]}</span>
+            )}
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">TechStore Official</h2>
+            <button onClick={handleViewShop} className="text-lg font-bold text-gray-900 hover:text-blue-600 text-left">
+              {shop?.name || 'TechStore Official'}
+            </button>
             <div className="flex items-center space-x-1">
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -49,7 +60,7 @@ const ShopInfo = () => {
       {/* Shop Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="text-center p-3 bg-gray-50 rounded-lg">
-          <div className="text-lg font-bold text-gray-900">1.5k+</div>
+          <div className="text-lg font-bold text-gray-900">{shop?.productCount || '1.5k+'}</div>
           <div className="text-sm text-gray-600">Sản phẩm</div>
         </div>
         <div className="text-center p-3 bg-gray-50 rounded-lg">
@@ -66,7 +77,7 @@ const ShopInfo = () => {
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-600">📍 Địa chỉ:</span>
-          <span className="font-medium">TP.HCM</span>
+          <span className="font-medium">{shop?.address || 'TP.HCM'}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-600">⏰ Hoạt động:</span>

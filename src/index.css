@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Marquee keyframes for topbar slogans */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Seamless ticker (two copies scrolling) */
+@keyframes ticker {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
 /* Custom utilities for line clamp */
 @layer utilities {
   .line-clamp-2 {
