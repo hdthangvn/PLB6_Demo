@@ -76,6 +76,20 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
+    
+    // ✅ KHI CHỌN DANH MỤC KHÁC "Tất cả", TỰ ĐỘNG FILTER THEO DANH MỤC ĐÓ
+    if (key === 'category') {
+      if (value === 'all') {
+        // Navigate to all products page
+        window.location.href = '/products/all';
+        return;
+      } else {
+        // Navigate to the specific category page
+        window.location.href = `/products/${value}`;
+        return;
+      }
+    }
+    
     setFilters(newFilters);
     onFiltersChange(newFilters);
   };
@@ -149,20 +163,29 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Khoảng giá (VNĐ):
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center gap-3">
             <input
-              type="number"
+              type="text"
               placeholder="Từ"
               value={filters.minPrice}
-              onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9]/g, '');
+                const formatted = value ? Number(value).toLocaleString('vi-VN') : '';
+                handleFilterChange('minPrice', formatted);
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
+            <span className="text-gray-500 font-medium text-lg">-</span>
             <input
-              type="number"
+              type="text"
               placeholder="Đến"
               value={filters.maxPrice}
-              onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9]/g, '');
+                const formatted = value ? Number(value).toLocaleString('vi-VN') : '';
+                handleFilterChange('maxPrice', formatted);
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </div>
         </div>

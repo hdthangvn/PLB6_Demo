@@ -17,6 +17,8 @@ export const useProducts = (category) => {
           result = await productService.getHeroProducts();
         } else if (category === 'featured') {
           result = await productService.getFeaturedProducts();
+        } else if (category === 'all') {
+          result = await productService.getAllProducts();
         } else {
           result = await productService.getProductsByCategory(category);
         }

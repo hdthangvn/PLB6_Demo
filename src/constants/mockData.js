@@ -10,7 +10,8 @@ export const FEATURED_PRODUCTS = [
     price: '30.99 Triệu',
     installment: 'Trả góp 0% đến 12 Tháng',
     image: getHeroImage(1), // ✅ SỬ DỤNG ID SPECIFIC
-    category: 'smartphone'
+    category: 'Điện thoại, Tablet',
+    categoryKey: 'smartphones'
   },
   {
     id: 2,
@@ -20,7 +21,8 @@ export const FEATURED_PRODUCTS = [
     price: '45.99 Triệu',
     installment: 'Trả góp 0% đến 24 Tháng',
     image: getHeroImage(2), // ✅ SỬ DỤNG ID SPECIFIC
-    category: 'laptop'
+    category: 'Laptop',
+    categoryKey: 'laptops'
   },
   {
     id: 3,
@@ -30,7 +32,8 @@ export const FEATURED_PRODUCTS = [
     price: '89.99 Triệu',
     installment: 'Trả góp 0% đến 36 Tháng',
     image: getHeroImage(3), // ✅ SỬ DỤNG ID SPECIFIC
-    category: 'pc'
+    category: 'PC, Màn hình, Máy in',
+    categoryKey: 'pc'
   },
   {
     id: 4,
@@ -40,7 +43,8 @@ export const FEATURED_PRODUCTS = [
     price: '28.99 Triệu',
     installment: 'Trả góp 0% đến 18 Tháng',
     image: getHeroImage(4, 'smartphone'), // ✅ TABLET DỘT SMARTPHONE IMAGES
-    category: 'tablet'
+    category: 'Điện thoại, Tablet',
+    categoryKey: 'smartphones'
   },
   {
     id: 5,
@@ -50,7 +54,8 @@ export const FEATURED_PRODUCTS = [
     price: '32.99 Triệu',
     installment: 'Trả góp 0% đến 20 Tháng',
     image: getHeroImage(5, 'smartphone'), // ✅ SỬ DỤNG HERO IMAGE
-    category: 'smartphone'
+    category: 'Điện thoại, Tablet',
+    categoryKey: 'smartphones'
   },
   {
     id: 6,
@@ -124,7 +129,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '32.990.000',
       image: getProductImage(101), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Giảm 12%',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 102,
@@ -133,7 +139,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '34.990.000',
       image: getProductImage(102), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Mới nhất',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 103,
@@ -142,7 +149,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '28.990.000',
       image: getProductImage(103, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Gaming',
-      category: 'pc'
+      category: 'PC, Màn hình, Máy in',
+      categoryKey: 'pc'
     },
     {
       id: 104,
@@ -151,7 +159,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '8.990.000',
       image: getProductImage(104, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Bestseller',
-      category: 'audio'
+      category: 'Âm thanh, Mic thu âm',
+      categoryKey: 'audio'
     },
     {
       id: 105,
@@ -160,7 +169,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '49.990.000',
       image: getProductImage(105, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Pro',
-      category: 'camera'
+      category: 'Đồng hồ, Camera',
+      categoryKey: 'camera'
     }
   ],
   
@@ -172,7 +182,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '49.990.000',
       image: getProductImage(201), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Mới nhất',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 202,
@@ -181,7 +192,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '36.990.000',
       image: getProductImage(202), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Giảm 11%',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 203,
@@ -190,7 +202,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '42.990.000',
       image: getProductImage(203), // ✅ SỬ DỤNG FUNCTION
       badge: 'Gaming',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 204,
@@ -199,7 +212,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '33.990.000',
       image: getProductImage(204), // ✅ SỬ DỤNG FUNCTION
       badge: 'Hot',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 205,
@@ -208,7 +222,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '39.990.000',
       image: getProductImage(205), // ✅ SỬ DỤNG FUNCTION
       badge: 'Doanh nhân',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 206,
@@ -217,7 +232,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '62.990.000',
       image: getProductImage(206), // ✅ SỬ DỤNG FUNCTION
       badge: 'Creator',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 207,
@@ -226,7 +242,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '31.990.000',
       image: getProductImage(207), // ✅ SỬ DỤNG FUNCTION
       badge: 'Microsoft',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 208,
@@ -235,7 +252,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '48.990.000',
       image: getProductImage(208), // ✅ SỬ DỤNG FUNCTION
       badge: 'Gaming',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 209,
@@ -244,7 +262,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '37.990.000',
       image: getProductImage(209), // ✅ SỬ DỤNG FUNCTION
       badge: 'Ultralight',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 210,
@@ -253,7 +272,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '46.990.000',
       image: getProductImage(210), // ✅ SỬ DỤNG FUNCTION
       badge: 'OLED',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     },
     {
       id: 211,
@@ -262,7 +282,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '29.990.000',
       image: getProductImage(211), // ✅ SỬ DỤNG FUNCTION
       badge: 'Compact',
-      category: 'laptop'
+      category: 'Laptop',
+      categoryKey: 'laptops'
     }
   ],
 
@@ -274,7 +295,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '28.990.000',
       image: getProductImage(301), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Hot',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 302,
@@ -283,7 +305,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '31.990.000',
       image: getProductImage(302), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'AI Phone',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 303,
@@ -292,7 +315,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '24.990.000',
       image: getProductImage(303), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'AI Camera',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 304,
@@ -301,7 +325,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '19.990.000',
       image: getProductImage(304), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Fast Charge',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 305,
@@ -310,7 +335,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '25.990.000',
       image: getProductImage(305), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Large Screen',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 306,
@@ -319,7 +345,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '22.990.000',
       image: getProductImage(306), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Compact',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 307,
@@ -328,7 +355,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '47.990.000',
       image: getProductImage(307), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Foldable',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 308,
@@ -337,7 +365,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '26.990.000',
       image: getProductImage(308), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Camera Pro',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 309,
@@ -346,7 +375,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '23.990.000',
       image: getProductImage(309), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Portrait Master',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 310,
@@ -355,7 +385,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '21.990.000',
       image: getProductImage(310), // ✅ SỬ DỤNG ID SPECIFIC
       badge: 'Zeiss Lens',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 311,
@@ -364,7 +395,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '10.990.000',
       image: getProductImage(311, 'smartphone'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Unique Design',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     },
     {
       id: 312,
@@ -373,7 +405,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '15.990.000',
       image: getProductImage(312, 'smartphone'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Performance',
-      category: 'smartphone'
+      category: 'Điện thoại, Tablet',
+      categoryKey: 'smartphones'
     }
   ],
 
@@ -386,7 +419,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '8.990.000',
       image: getProductImage(401, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Bestseller',
-      category: 'audio'
+      category: 'Âm thanh, Mic thu âm',
+      categoryKey: 'audio'
     },
     {
       id: 402,
@@ -395,7 +429,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '6.990.000',
       image: getProductImage(402, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Apple',
-      category: 'audio'
+      category: 'Âm thanh, Mic thu âm',
+      categoryKey: 'audio'
     },
     {
       id: 403,
@@ -404,7 +439,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '10.990.000',
       image: getProductImage(403, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Premium',
-      category: 'audio'
+      category: 'Âm thanh, Mic thu âm',
+      categoryKey: 'audio'
     },
     {
       id: 404,
@@ -413,7 +449,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '9.990.000',
       image: getProductImage(404, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Audiophile',
-      category: 'audio'
+      category: 'Âm thanh, Mic thu âm',
+      categoryKey: 'audio'
     },
     {
       id: 405,
@@ -422,7 +459,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '4.990.000',
       image: getProductImage(405, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Classic',
-      category: 'audio'
+      category: 'Âm thanh, Mic thu âm',
+      categoryKey: 'audio'
     },
     {
       id: 406,
@@ -431,7 +469,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '6.990.000',
       image: getProductImage(406, 'audio'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Wireless',
-      category: 'audio'
+      category: 'Âm thanh, Mic thu âm',
+      categoryKey: 'audio'
     }
   ],
 
@@ -443,7 +482,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '49.990.000',
       image: getProductImage(501, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Mirrorless',
-      category: 'camera'
+      category: 'Đồng hồ, Camera',
+      categoryKey: 'camera'
     },
     {
       id: 502,
@@ -452,7 +492,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '58.990.000',
       image: getProductImage(502, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Full Frame',
-      category: 'camera'
+      category: 'Đồng hồ, Camera',
+      categoryKey: 'camera'
     },
     {
       id: 503,
@@ -461,7 +502,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '43.990.000',
       image: getProductImage(503, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Retro Style',
-      category: 'camera'
+      category: 'Đồng hồ, Camera',
+      categoryKey: 'camera'
     },
     {
       id: 504,
@@ -470,7 +512,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '52.990.000',
       image: getProductImage(504, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Video Pro',
-      category: 'camera'
+      category: 'Đồng hồ, Camera',
+      categoryKey: 'camera'
     },
     {
       id: 505,
@@ -479,7 +522,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '26.990.000',
       image: getProductImage(505, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Entry Level',
-      category: 'camera'
+      category: 'Đồng hồ, Camera',
+      categoryKey: 'camera'
     },
     {
       id: 506,
@@ -488,7 +532,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '12.990.000',
       image: getProductImage(506, 'camera'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Action Cam',
-      category: 'camera'
+      category: 'Đồng hồ, Camera',
+      categoryKey: 'camera'
     }
   ],
 
@@ -500,7 +545,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '59.990.000',
       image: getProductImage(601, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: '8K',
-      category: 'tv'
+      category: 'Tivi',
+      categoryKey: 'tv'
     },
     {
       id: 602,
@@ -509,7 +555,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '39.990.000',
       image: getProductImage(602, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'OLED',
-      category: 'tv'
+      category: 'Tivi',
+      categoryKey: 'tv'
     },
     {
       id: 603,
@@ -518,7 +565,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '75.990.000',
       image: getProductImage(603, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Premium',
-      category: 'tv'
+      category: 'Tivi',
+      categoryKey: 'tv'
     },
     {
       id: 604,
@@ -527,7 +575,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '32.990.000',
       image: getProductImage(604, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Large Screen',
-      category: 'tv'
+      category: 'Tivi',
+      categoryKey: 'tv'
     },
     {
       id: 605,
@@ -536,7 +585,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '8.990.000',
       image: getProductImage(605, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Budget',
-      category: 'tv'
+      category: 'Tivi',
+      categoryKey: 'tv'
     },
     {
       id: 606,
@@ -545,7 +595,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '34.990.000',
       image: getProductImage(606, 'tv'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Art Mode',
-      category: 'tv'
+      category: 'Tivi',
+      categoryKey: 'tv'
     }
   ],
 
@@ -557,7 +608,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '99.990.000',
       image: getProductImage(701, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Ultimate',
-      category: 'pc'
+      category: 'PC, Màn hình, Máy in',
+      categoryKey: 'pc'
     },
     {
       id: 702,
@@ -566,7 +618,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '109.990.000',
       image: getProductImage(702, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Pro Workstation',
-      category: 'pc'
+      category: 'PC, Màn hình, Máy in',
+      categoryKey: 'pc'
     },
     {
       id: 703,
@@ -575,7 +628,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '22.990.000',
       image: getProductImage(703, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Business',
-      category: 'pc'
+      category: 'PC, Màn hình, Máy in',
+      categoryKey: 'pc'
     },
     {
       id: 704,
@@ -584,7 +638,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '15.990.000',
       image: getProductImage(704, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Compact',
-      category: 'pc'
+      category: 'PC, Màn hình, Máy in',
+      categoryKey: 'pc'
     },
     {
       id: 705,
@@ -593,7 +648,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '52.990.000',
       image: getProductImage(705, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'RTX 4070',
-      category: 'pc'
+      category: 'PC, Màn hình, Máy in',
+      categoryKey: 'pc'
     },
     {
       id: 706,
@@ -602,7 +658,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '36.990.000',
       image: getProductImage(706, 'pc'), // ✅ SỬ DỤNG FUNCTION
       badge: 'All-in-One',
-      category: 'pc'
+      category: 'PC, Màn hình, Máy in',
+      categoryKey: 'pc'
     }
   ],
 
@@ -614,7 +671,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '1.290.000',
       image: getProductImage(801, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Wireless',
-      category: 'accessories'
+      category: 'Phụ kiện',
+      categoryKey: 'accessories'
     },
     {
       id: 802,
@@ -623,7 +681,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '2.690.000',
       image: getProductImage(802, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Pro Mouse',
-      category: 'accessories'
+      category: 'Phụ kiện',
+      categoryKey: 'accessories'
     },
     {
       id: 803,
@@ -632,7 +691,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '4.590.000',
       image: getProductImage(803, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Mechanical',
-      category: 'accessories'
+      category: 'Phụ kiện',
+      categoryKey: 'accessories'
     },
     {
       id: 804,
@@ -641,7 +701,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '1.590.000',
       image: getProductImage(804, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Fast Charge',
-      category: 'accessories'
+      category: 'Phụ kiện',
+      categoryKey: 'accessories'
     },
     {
       id: 805,
@@ -650,7 +711,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '2.490.000',
       image: getProductImage(805, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: '7-in-1',
-      category: 'accessories'
+      category: 'Phụ kiện',
+      categoryKey: 'accessories'
     },
     {
       id: 806,
@@ -659,7 +721,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '10.990.000',
       image: getProductImage(806, 'accessories'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Carbon Fiber',
-      category: 'accessories'
+      category: 'Phụ kiện',
+      categoryKey: 'accessories'
     }
   ],
 
@@ -671,7 +734,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '22.990.000',
       image: getProductImage(901, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Laser Tech',
-      category: 'home'
+      category: 'Đồ gia dụng',
+      categoryKey: 'home'
     },
     {
       id: 902,
@@ -680,7 +744,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '8.990.000',
       image: getProductImage(902, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Smart Clean',
-      category: 'home'
+      category: 'Đồ gia dụng',
+      categoryKey: 'home'
     },
     {
       id: 903,
@@ -689,7 +754,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '6.490.000',
       image: getProductImage(903, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Healthy Cook',
-      category: 'home'
+      category: 'Đồ gia dụng',
+      categoryKey: 'home'
     },
     {
       id: 904,
@@ -698,7 +764,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '9.990.000',
       image: getProductImage(904, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'PlasmaCluster',
-      category: 'home'
+      category: 'Đồ gia dụng',
+      categoryKey: 'home'
     },
     {
       id: 905,
@@ -707,7 +774,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '4.990.000',
       image: getProductImage(905, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'Inverter',
-      category: 'home'
+      category: 'Đồ gia dụng',
+      categoryKey: 'home'
     },
     {
       id: 906,
@@ -716,7 +784,8 @@ export const PRODUCT_LISTS = {
       originalPrice: '31.990.000',
       image: getProductImage(906, 'home'), // ✅ SỬ DỤNG FUNCTION
       badge: 'AI DD',
-      category: 'home'
+      category: 'Đồ gia dụng',
+      categoryKey: 'home'
     }
   ]
 };
@@ -731,7 +800,8 @@ export const DETAILED_PRODUCTS = {
     price: '30.990.000',
     originalPrice: '34.990.000',
     image: getProductImage(1),
-    category: 'smartphone',
+    category: 'Điện thoại, Tablet',
+    categoryKey: 'smartphones',
     badge: 'Mới nhất',
     images: getProductGallery(1), // ✅ 3 IMAGES CỦA iPhone 17 Pro
     shop: {
@@ -757,7 +827,8 @@ export const DETAILED_PRODUCTS = {
     price: '45.990.000',
     originalPrice: '49.990.000',
     image: getProductImage(201),
-    category: 'laptop',
+    category: 'Laptop',
+    categoryKey: 'laptops',
     badge: 'Mới nhất',
     images: getProductGallery(201), // ✅ 3 IMAGES CỦA MacBook Pro M4
     shop: {

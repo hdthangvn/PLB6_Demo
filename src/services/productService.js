@@ -66,5 +66,30 @@ export const productService = {
       success: !!product,
       data: product || null
     };
+  },
+
+  // ✅ THÊM: Get all products from entire marketplace
+  async getAllProducts() {
+    await delay(300);
+    const allProducts = [
+      ...FEATURED_PRODUCTS,
+      ...PRODUCT_LISTS.featured,
+      ...PRODUCT_LISTS.laptops,
+      ...PRODUCT_LISTS.smartphones,
+      ...PRODUCT_LISTS.audio,
+      ...PRODUCT_LISTS.camera,
+      ...PRODUCT_LISTS.tv,
+      ...PRODUCT_LISTS.pc,
+      ...PRODUCT_LISTS.accessories,
+      ...PRODUCT_LISTS.home
+    ];
+    
+    // Shuffle products to make it look random/mixed
+    const shuffled = allProducts.sort(() => Math.random() - 0.5);
+    
+    return {
+      success: true,
+      data: shuffled
+    };
   }
 };

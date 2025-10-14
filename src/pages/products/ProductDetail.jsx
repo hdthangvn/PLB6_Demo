@@ -9,16 +9,22 @@ import ProductComments from '../../components/products/ProductComments';
 import ProductSection from '../../components/common/ProductSection';
 import { useProductDetail } from '../../hooks/useProductDetail';
 import { useProducts } from '../../hooks/useProducts';
+import { useCategories } from '../../hooks/useCategories';
 import { useEffect, useState } from 'react';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { product, loading, error } = useProductDetail(id);
+  const { categories } = useCategories();
   
   // ✅ SỬA: Tạo state riêng cho related products
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
+
+  // ✅ TÌM TÊN DANH MỤC DỰA TRÊN categoryKey
+  const currentCategory = categories.find(cat => cat.key === product?.categoryKey);
+  const categoryName = currentCategory?.name || (product?.categoryKey === 'all' ? 'Tất cả sản phẩm' : product?.categoryKey || 'Sản phẩm');
 
   // ✅ SỬA: Fetch related products sau khi có product
   useEffect(() => {
@@ -106,7 +112,12 @@ const ProductDetail = () => {
                 </svg>
               </li>
               <li>
-                <span className="text-gray-500">{product.category || 'Sản phẩm'}</span>
+                <button
+                  onClick={() => navigate(`/products/${product?.categoryKey || 'all'}`)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  {categoryName}
+                </button>
               </li>
               <li>
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

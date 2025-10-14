@@ -99,37 +99,37 @@ const ProductInfo = ({ product }) => {
   return (
     <div className="space-y-6">
       {/* Product Title & Badge */}
-      <div>
+      <div className="animate-in fade-in duration-700">
         <div className="flex items-center space-x-2 mb-2">
-          <h1 className="text-2xl font-bold text-gray-900">{product?.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 transition-all duration-300 ease-in-out hover:text-blue-600">{product?.name}</h1>
           {product?.badge && (
-            <span className={`px-2 py-1 rounded text-xs font-medium text-white ${
-              product.badge === 'Hot' ? 'bg-red-500' :
-              product.badge === 'Mới nhất' ? 'bg-green-500' :
-              product.badge === 'Gaming' ? 'bg-purple-500' :
-              'bg-blue-500'
+            <span className={`px-2 py-1 rounded text-xs font-medium text-white transition-all duration-300 ease-in-out transform hover:scale-110 ${
+              product.badge === 'Hot' ? 'bg-red-500 hover:bg-red-600' :
+              product.badge === 'Mới nhất' ? 'bg-green-500 hover:bg-green-600' :
+              product.badge === 'Gaming' ? 'bg-purple-500 hover:bg-purple-600' :
+              'bg-blue-500 hover:bg-blue-600'
             }`}>
               {product.badge}
             </span>
           )}
         </div>
-        <p className="text-gray-600">{product?.subtitle}</p>
+        <p className="text-gray-600 transition-colors duration-300 ease-in-out hover:text-gray-800">{product?.subtitle}</p>
       </div>
 
       {/* Price */}
-      <div className="space-y-1">
+      <div className="space-y-1 animate-in slide-in-from-left duration-500 delay-100">
         <div className="flex items-center space-x-3">
-          <span className="text-3xl font-bold text-red-600">
+          <span className="text-3xl font-bold text-red-600 transition-all duration-300 ease-in-out hover:scale-105">
             {product?.price}đ
           </span>
           {product?.originalPrice && (
-            <span className="text-lg text-gray-500 line-through">
+            <span className="text-lg text-gray-500 line-through transition-all duration-300 ease-in-out hover:text-gray-700">
               {product.originalPrice}đ
             </span>
           )}
         </div>
         {product?.originalPrice && (
-          <div className="text-sm text-green-600">
+          <div className="text-sm text-green-600 transition-all duration-300 ease-in-out hover:text-green-700 hover:scale-105 transform">
             Tiết kiệm: {(parseInt(product.originalPrice.replace(/\./g, '')) - 
                         parseInt(product.price.replace(/\./g, ''))).toLocaleString()}đ
           </div>
@@ -137,17 +137,17 @@ const ProductInfo = ({ product }) => {
       </div>
 
       {/* Color Selection */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-900 mb-2">Màu sắc:</h3>
+      <div className="animate-in slide-in-from-right duration-500 delay-200">
+        <h3 className="text-sm font-medium text-gray-900 mb-2 transition-colors duration-300 ease-in-out hover:text-blue-600">Màu sắc:</h3>
         <div className="flex space-x-2">
           {colors.map((color) => (
             <button
               key={color}
               onClick={() => setSelectedColor(color)}
-              className={`px-4 py-2 rounded-lg border text-sm ${
+              className={`px-4 py-2 rounded-lg border text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 ${
                 selectedColor === color
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md ring-2 ring-blue-200'
+                  : 'border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'
               }`}
             >
               {color}
@@ -157,17 +157,17 @@ const ProductInfo = ({ product }) => {
       </div>
 
       {/* Storage Selection */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-900 mb-2">Dung lượng:</h3>
+      <div className="animate-in slide-in-from-left duration-500 delay-300">
+        <h3 className="text-sm font-medium text-gray-900 mb-2 transition-colors duration-300 ease-in-out hover:text-blue-600">Dung lượng:</h3>
         <div className="grid grid-cols-2 gap-2">
           {storageOptions.map((storage) => (
             <button
               key={storage}
               onClick={() => setSelectedStorage(storage)}
-              className={`px-4 py-2 rounded-lg border text-sm ${
+              className={`px-4 py-2 rounded-lg border text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 ${
                 selectedStorage === storage
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md ring-2 ring-blue-200'
+                  : 'border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'
               }`}
             >
               {storage}
@@ -177,21 +177,21 @@ const ProductInfo = ({ product }) => {
       </div>
 
       {/* Quantity */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-900 mb-2">Số lượng:</h3>
+      <div className="animate-in slide-in-from-right duration-500 delay-400">
+        <h3 className="text-sm font-medium text-gray-900 mb-2 transition-colors duration-300 ease-in-out hover:text-blue-600">Số lượng:</h3>
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95 hover:border-gray-400 hover:shadow-md"
           >
             -
           </button>
-          <span className="text-lg font-medium min-w-[2rem] text-center">
+          <span className="text-lg font-medium min-w-[2rem] text-center transition-all duration-300 ease-in-out">
             {quantity}
           </span>
           <button
             onClick={() => setQuantity(quantity + 1)}
-            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95 hover:border-gray-400 hover:shadow-md"
           >
             +
           </button>
@@ -199,10 +199,10 @@ const ProductInfo = ({ product }) => {
       </div>
 
       {/* Action Buttons */}
-      <div className="space-y-3">
+      <div className="space-y-3 animate-in slide-in-from-bottom duration-500 delay-500">
         <Button
           onClick={handleBuyNow}
-          className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
+          className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 hover:shadow-xl"
           size="lg"
           loading={isBuying}
           disabled={isAdding || isBuying}
@@ -211,15 +211,15 @@ const ProductInfo = ({ product }) => {
         </Button>
         
         <Button
-          onClick={handleAddToCart} // ✅ SỬA: Gọi trực tiếp handleAddToCart
+          onClick={handleAddToCart}
           variant="outline"
-          className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
+          className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 hover:shadow-lg hover:border-blue-700"
           size="lg"
           loading={isAdding}
           disabled={isAdding || isBuying}
         >
           <div className="flex items-center justify-center">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 mr-2 transition-transform duration-300 ease-in-out group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 4M7 13v8a2 2 0 002 2h6a2 2 0 002-2v-8m-9 0V9a2 2 0 012-2h6a2 2 0 012 2v4.01"/>
             </svg>
             Thêm vào giỏ hàng
@@ -229,35 +229,35 @@ const ProductInfo = ({ product }) => {
 
       {/* Cart Status */}
       {productInCart && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3 animate-in slide-in-from-top-2 duration-500">
           <div className="flex items-center text-green-700">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 mr-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
             </svg>
-            Đã có {totalQuantityInCart} sản phẩm này trong giỏ hàng
+            <span className="font-medium">Đã có {totalQuantityInCart} sản phẩm này trong giỏ hàng</span>
           </div>
         </div>
       )}
 
       {/* Additional Info */}
       <div className="border-t pt-4 space-y-2 text-sm text-gray-600">
-        <div className="flex items-center space-x-2">
-          <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center space-x-2 group">
+          <svg className="w-5 h-5 text-green-500 transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
           </svg>
-          <span>Miễn phí vận chuyển toàn quốc</span>
+          <span className="transition-colors duration-300 ease-in-out group-hover:text-gray-800">Miễn phí vận chuyển toàn quốc</span>
         </div>
-        <div className="flex items-center space-x-2">
-          <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center space-x-2 group">
+          <svg className="w-5 h-5 text-green-500 transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
           </svg>
-          <span>Bảo hành chính hãng 12 tháng</span>
+          <span className="transition-colors duration-300 ease-in-out group-hover:text-gray-800">Bảo hành chính hãng 12 tháng</span>
         </div>
-        <div className="flex items-center space-x-2">
-          <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center space-x-2 group">
+          <svg className="w-5 h-5 text-green-500 transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
           </svg>
-          <span>Đổi trả trong 7 ngày</span>
+          <span className="transition-colors duration-300 ease-in-out group-hover:text-gray-800">Đổi trả trong 7 ngày</span>
         </div>
       </div>
     </div>

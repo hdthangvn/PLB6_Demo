@@ -41,7 +41,7 @@ const ProductSection = ({
 
   const sectionPadding = compact ? 'py-2' : 'py-16';
   const headerMargin = compact ? 'mb-4' : 'mb-12';
-  const titleSize = compact ? 'text-2xl' : 'text-3xl';
+  const titleSize = compact ? 'text-2xl' : 'text-2xl';
 
   return (
     <section className={`${sectionPadding} ${backgroundColor}`}>
@@ -73,19 +73,19 @@ const ProductSection = ({
               <div 
                 key={product.id || index} 
                 onClick={() => onProductClick?.(product)}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group hover:scale-105 hover:-translate-y-1"
               >
                 {/* Ảnh sản phẩm */}
-                <div className="relative">
+                <div className="relative overflow-hidden">
                   <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-colors">
                     {product.image?.startsWith('http') ? (
                       <img 
                         src={product.image} 
                         alt={product.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                       />
                     ) : (
-                      <span className="text-3xl">{product.image}</span>
+                      <span className="text-3xl group-hover:scale-110 transition-transform duration-500 ease-out">{product.image}</span>
                     )}
                   </div>
                   {/* Badge (Hot, Giảm giá, v.v.) */}

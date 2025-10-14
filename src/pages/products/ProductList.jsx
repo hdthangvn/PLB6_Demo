@@ -12,6 +12,13 @@ const ProductList = () => {
   const { products, loading, error } = useProducts(category);
   const [filters, setFilters] = useState({ category, brands: [], sortBy: 'relevance', minPrice: '', maxPrice: '' });
 
+  // Helper to parse price string like "12.000.000" or "12.000.000₫" to number 12000000
+  const parsePrice = (s) => {
+    if (!s) return NaN;
+    const digits = String(s).replace(/[^0-9]/g, '');
+    return digits ? parseInt(digits, 10) : NaN;
+  };
+
   const filteredProducts = useMemo(() => {
     let result = products.slice();
     // Brand filter: suy ra brand từ tên
@@ -21,26 +28,21 @@ const ProductList = () => {
         return filters.brands.some(b => name.includes(b.toLowerCase()));
       });
     }
-    // CPU filter (áp dụng cho laptop/pc): dò trong tên
-    if (filters.cpu?.length && (category === 'laptops' || category === 'pc' || category === 'smartphones')) {
+    // CPU filter (áp dụng cho laptop/pc): dò trong tên - CHỈ ÁP DỤNG KHI KHÔNG PHẢI "all"
+    if (filters.cpu?.length && category !== 'all' && (category === 'laptops' || category === 'pc' || category === 'smartphones')) {
       result = result.filter(p => {
         const name = (p.name || '').toLowerCase();
         return filters.cpu.some(c => name.includes(c.toLowerCase()));
       });
     }
-    // RAM filter (áp dụng cho laptop/pc/smartphones): dò trong name/badge nếu có
-    if (filters.ram?.length && (category === 'laptops' || category === 'pc' || category === 'smartphones')) {
+    // RAM filter (áp dụng cho laptop/pc/smartphones): dò trong name/badge nếu có - CHỈ ÁP DỤNG KHI KHÔNG PHẢI "all"
+    if (filters.ram?.length && category !== 'all' && (category === 'laptops' || category === 'pc' || category === 'smartphones')) {
       result = result.filter(p => {
         const combined = `${p.name || ''} ${p.badge || ''}`.toLowerCase();
         return filters.ram.some(r => combined.includes(r.toLowerCase()));
       });
     }
     // Price filter (giá là string VNĐ; loại bỏ ký tự)
-    const parsePrice = (s) => {
-      if (!s) return NaN;
-      const digits = String(s).replace(/[^0-9]/g, '');
-      return digits ? parseInt(digits, 10) : NaN;
-    };
     const min = parsePrice(filters.minPrice);
     const max = parsePrice(filters.maxPrice);
     if (!isNaN(min)) result = result.filter(p => parsePrice(p.price) >= min);
@@ -50,8 +52,8 @@ const ProductList = () => {
     if (filters.sortBy === 'price-desc') result.sort((a,b)=>parsePrice(b.price)-parsePrice(a.price));
     if (filters.sortBy === 'name') result.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
 
-    // TV filters: match theo tên/badge
-    if (category === 'tv') {
+    // TV filters: match theo tên/badge - CHỈ ÁP DỤNG KHI KHÔNG PHẢI "all"
+    if (category === 'tv' && category !== 'all') {
       if (filters.tvResolutions?.length) {
         result = result.filter(p => {
           const text = `${p.name||''} ${p.badge||''}`.toLowerCase();
@@ -72,8 +74,8 @@ const ProductList = () => {
       }
     }
 
-    // Camera filters
-    if (category === 'camera') {
+    // Camera filters - CHỈ ÁP DỤNG KHI KHÔNG PHẢI "all"
+    if (category === 'camera' && category !== 'all') {
       if (filters.cameraSensors?.length) {
         result = result.filter(p => {
           const text = `${p.name||''} ${p.badge||''}`.toLowerCase();
@@ -88,8 +90,8 @@ const ProductList = () => {
       }
     }
 
-    // Audio filters (suy từ tên/badge)
-    if (category === 'audio') {
+    // Audio filters (suy từ tên/badge) - CHỈ ÁP DỤNG KHI KHÔNG PHẢI "all"
+    if (category === 'audio' && category !== 'all') {
       if (filters.audioTypes?.length) {
         result = result.filter(p => {
           const t = `${p.name||''} ${p.badge||''}`.toLowerCase();
@@ -104,16 +106,16 @@ const ProductList = () => {
       }
     }
 
-    // Accessories filters
-    if (category === 'accessories' && filters.accessoriesTypes?.length) {
+    // Accessories filters - CHỈ ÁP DỤNG KHI KHÔNG PHẢI "all"
+    if (category === 'accessories' && category !== 'all' && filters.accessoriesTypes?.length) {
       result = result.filter(p => {
         const t = `${p.name||''} ${p.badge||''}`.toLowerCase();
         return filters.accessoriesTypes.some(x => t.includes(x.toLowerCase()) || (x==='Pin dự phòng' && t.includes('powerbank')));
       });
     }
 
-    // Home filters
-    if (category === 'home' && filters.homeTypes?.length) {
+    // Home filters - CHỈ ÁP DỤNG KHI KHÔNG PHẢI "all"
+    if (category === 'home' && category !== 'all' && filters.homeTypes?.length) {
       result = result.filter(p => {
         const t = `${p.name||''} ${p.badge||''}`.toLowerCase();
         return filters.homeTypes.some(x => t.includes(x.toLowerCase()) || (x==='Robot hút bụi' && t.includes('robot vacuum')));
@@ -125,7 +127,7 @@ const ProductList = () => {
 
   // ✅ TÌM TÊN DANH MỤC DỰA TRÊN KEY
   const currentCategory = categories.find(cat => cat.key === category);
-  const categoryName = currentCategory?.name || category;
+  const categoryName = currentCategory?.name || (category === 'all' ? 'Tất cả sản phẩm' : category);
 
   const handleProductClick = (product) => {
     navigate(`/product/${product.id}`);
@@ -189,7 +191,7 @@ const ProductList = () => {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <div className="flex gap-8 items-start">
-          <div className="w-64 hidden md:block flex-shrink-0 pt-1">
+          <div className="w-80 hidden md:block flex-shrink-0 pt-1">
             <SearchFilters onFiltersChange={(f)=> setFilters({...f, category})} initialFilters={{...filters, category}} />
           </div>
           <div className="flex-1">
