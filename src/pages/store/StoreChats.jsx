@@ -175,14 +175,14 @@ const StoreChats = () => {
   if (!currentStore) {
     return (
       <StoreLayout>
-        <StoreStatusGuard currentStore={currentStore} pageName="chat" />
+        <StoreStatusGuard currentStore={currentStore} pageName="chat" noSidebar={true} />
       </StoreLayout>
     );
   }
 
   return (
     <StoreLayout>
-      <StoreStatusGuard currentStore={currentStore} pageName="chat">
+      <StoreStatusGuard currentStore={currentStore} pageName="chat" noSidebar={true}>
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>

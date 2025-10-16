@@ -7,8 +7,10 @@ const StoreReviews = () => {
   const { currentStore } = useStoreContext();
   const [filter, setFilter] = useState('ALL');
 
-  // Mock data cho B2C Store
-  const reviews = [
+  // Mock data cho reviews theo chi nhánh
+  const getMockReviewsByBranch = (branchId) => {
+    const branchReviews = {
+      'branch-1': [ // Hải Châu - Đã duyệt - Nhiều đánh giá
     {
       id: 1,
       customer: 'Nguyễn Văn A',
@@ -109,7 +111,59 @@ const StoreReviews = () => {
       date: '2024-01-11',
       images: []
     }
-  ];
+      ],
+      'branch-2': [ // Thanh Khê - Đã duyệt - Đánh giá trung bình
+        {
+          id: 21,
+          customer: 'Trần Văn Thanh',
+          avatar: 'T',
+          product: 'MacBook Air M2',
+          rating: 5,
+          comment: 'Laptop đẹp, hiệu năng tốt. Giao hàng nhanh.',
+          date: '2024-01-20',
+          images: ['https://via.placeholder.com/100x100']
+        },
+        {
+          id: 22,
+          customer: 'Lê Thị Khê',
+          avatar: 'K',
+          product: 'Dell XPS 13',
+          rating: 4,
+          comment: 'Sản phẩm ổn, giá hợp lý.',
+          date: '2024-01-19',
+          images: []
+        },
+        {
+          id: 23,
+          customer: 'Phạm Văn Lê',
+          avatar: 'L',
+          product: 'AirPods Pro 2',
+          rating: 5,
+          comment: 'Tai nghe tuyệt vời, âm thanh chất lượng cao.',
+          date: '2024-01-18',
+          images: ['https://via.placeholder.com/100x100']
+        }
+      ],
+      'branch-3': [ // Sơn Trà (chờ duyệt) - Ít đánh giá
+        {
+          id: 31,
+          customer: 'Nguyễn Văn Sơn',
+          avatar: 'S',
+          product: 'Samsung Galaxy Tab S9',
+          rating: 5,
+          comment: 'Máy tính bảng đẹp, hiệu năng tốt.',
+          date: '2024-01-20',
+          images: ['https://via.placeholder.com/100x100']
+        }
+      ],
+      'branch-4': [], // Cẩm Lệ (bị từ chối) - Không có đánh giá
+      'branch-5': []  // Liên Chiểu (bị từ chối) - Không có đánh giá
+    };
+    
+    return branchReviews[branchId] || [];
+  };
+
+  const reviews = getMockReviewsByBranch(currentStore?.id);
 
   const filteredReviews = reviews.filter(review => {
     if (filter === 'ALL') return true;

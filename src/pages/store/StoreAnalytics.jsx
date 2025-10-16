@@ -124,9 +124,9 @@ const StoreAnalytics = () => {
           ]
         }
       },
-      'branch-3': { // Sơn Trà - Gaming và âm thanh
+      'branch-3': { // Sơn Trà (chờ duyệt) - Dữ liệu thấp
         revenue: {
-          total: 0,
+          total: 15000000,
           growth: 0,
           chart: [
             { month: 'T1', revenue: 0 },
@@ -136,11 +136,11 @@ const StoreAnalytics = () => {
             { month: 'T5', revenue: 0 },
             { month: 'T6', revenue: 0 },
             { month: 'T7', revenue: 0 },
-            { month: 'T8', revenue: 0 }
+            { month: 'T8', revenue: 15000000 }
           ]
         },
         orders: {
-          total: 0,
+          total: 1,
           growth: 0,
           chart: [
             { month: 'T1', orders: 0 },
@@ -150,23 +150,19 @@ const StoreAnalytics = () => {
             { month: 'T5', orders: 0 },
             { month: 'T6', orders: 0 },
             { month: 'T7', orders: 0 },
-            { month: 'T8', orders: 0 }
+            { month: 'T8', orders: 1 }
           ]
         },
         products: {
-          total: 15,
-          active: 15,
-          inactive: 0,
+          total: 5,
+          active: 3,
+          inactive: 2,
           topSelling: [
-            { name: 'Gaming Headset', sales: 0, revenue: 0 },
-            { name: 'Mechanical Keyboard', sales: 0, revenue: 0 },
-            { name: 'Gaming Mouse', sales: 0, revenue: 0 },
-            { name: 'Monitor 27"', sales: 0, revenue: 0 },
-            { name: 'Webcam HD', sales: 0, revenue: 0 }
+            { name: 'Samsung Galaxy Tab S9', sales: 1, revenue: 15000000 }
           ]
         },
         customers: {
-          total: 0,
+          total: 1,
           new: 0,
           returning: 0,
           chart: [

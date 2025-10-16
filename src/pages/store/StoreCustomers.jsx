@@ -8,8 +8,10 @@ const StoreCustomers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('ALL');
 
-  // Mock data for customers
-  const customers = [
+  // Mock data for customers theo chi nhánh
+  const getMockCustomersByBranch = (branchId) => {
+    const branchCustomers = {
+      'branch-1': [ // Hải Châu - Đã duyệt - Nhiều khách hàng
     {
       id: 1,
       name: 'Nguyễn Văn A',
@@ -65,7 +67,52 @@ const StoreCustomers = () => {
       status: 'INACTIVE',
       joinDate: '2024-01-15'
     }
-  ];
+      ],
+      'branch-2': [ // Thanh Khê - Đã duyệt - Khách hàng trung bình
+        {
+          id: 21,
+          name: 'Trần Văn Thanh',
+          email: 'tranvanthanh@email.com',
+          phone: '0987654321',
+          totalOrders: 8,
+          totalSpent: 28000000,
+          lastOrder: '2024-01-20',
+          status: 'VIP',
+          joinDate: '2023-11-15'
+        },
+        {
+          id: 22,
+          name: 'Lê Thị Khê',
+          email: 'lethikhe@email.com',
+          phone: '0369258147',
+          totalOrders: 3,
+          totalSpent: 12000000,
+          lastOrder: '2024-01-19',
+          status: 'ACTIVE',
+          joinDate: '2024-01-05'
+        }
+      ],
+      'branch-3': [ // Sơn Trà (chờ duyệt) - Ít khách hàng
+        {
+          id: 31,
+          name: 'Nguyễn Văn Sơn',
+          email: 'nguyenvanson@email.com',
+          phone: '0123456789',
+          totalOrders: 1,
+          totalSpent: 15000000,
+          lastOrder: '2024-01-20',
+          status: 'ACTIVE',
+          joinDate: '2024-01-20'
+        }
+      ],
+      'branch-4': [], // Cẩm Lệ (bị từ chối) - Không có khách hàng
+      'branch-5': []  // Liên Chiểu (bị từ chối) - Không có khách hàng
+    };
+    
+    return branchCustomers[branchId] || [];
+  };
+
+  const customers = getMockCustomersByBranch(currentStore?.id);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', {

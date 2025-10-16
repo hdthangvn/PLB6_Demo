@@ -25,7 +25,7 @@ const StoreOrders = () => {
       // Mock data với orders riêng cho từng chi nhánh (chỉ chi nhánh đã duyệt)
       const getMockOrdersByBranch = (branchId) => {
         const branchOrders = {
-          'branch-1': [ // Hải Châu - Đã duyệt
+          'branch-1': [ // Hải Châu - Đã duyệt - Nhiều đơn hàng
         {
           id: 'ORD-001',
           buyerName: 'Nguyễn Văn A',
@@ -296,7 +296,54 @@ const StoreOrders = () => {
           note: 'Khách hủy đơn'
         }
       ],
-      'branch-3': [] // Sơn Trà - Chờ duyệt, không có orders
+      'branch-3': [ // Sơn Trà (chờ duyệt) - Ít đơn hàng
+        {
+          id: 'ORD-ST-001',
+          buyerName: 'Nguyễn Văn Sơn',
+          buyerPhone: '0123456789',
+          buyerEmail: 'nguyenvanson@email.com',
+          status: 'PENDING',
+          totalPrice: 15000000,
+          createdAt: '2024-01-20T10:30:00Z',
+          items: [
+            { productName: 'Samsung Galaxy Tab S9', quantity: 1, price: 15000000 }
+          ],
+          shippingAddress: '789 Võ Nguyên Giáp, Sơn Trà, Đà Nẵng',
+          note: 'Chờ duyệt chi nhánh'
+        }
+      ],
+      'branch-4': [ // Cẩm Lệ (bị từ chối) - Đơn hàng cũ
+        {
+          id: 'ORD-CL-001',
+          buyerName: 'Trần Thị Cẩm',
+          buyerPhone: '0987654321',
+          buyerEmail: 'tranthicam@email.com',
+          status: 'CANCELLED',
+          totalPrice: 25000000,
+          createdAt: '2024-01-15T10:30:00Z',
+          items: [
+            { productName: 'iPhone 14 Pro', quantity: 1, price: 25000000 }
+          ],
+          shippingAddress: '321 Nguyễn Văn Thoại, Cẩm Lệ, Đà Nẵng',
+          note: 'Chi nhánh bị từ chối'
+        }
+      ],
+      'branch-5': [ // Liên Chiểu (bị từ chối) - Đơn hàng cũ
+        {
+          id: 'ORD-LC-001',
+          buyerName: 'Lê Văn Liên',
+          buyerPhone: '0369258147',
+          buyerEmail: 'levanlien@email.com',
+          status: 'CANCELLED',
+          totalPrice: 28000000,
+          createdAt: '2024-01-10T10:30:00Z',
+          items: [
+            { productName: 'MacBook Air M2', quantity: 1, price: 28000000 }
+          ],
+          shippingAddress: '654 Điện Biên Phủ, Liên Chiểu, Đà Nẵng',
+          note: 'Chi nhánh bị từ chối'
+        }
+      ]
     };
     
     return branchOrders[branchId] || [];

@@ -11,8 +11,10 @@ const StorePromotions = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [promotionToDelete, setPromotionToDelete] = useState(null);
 
-  // Mock data for promotions
-  const promotions = [
+  // Mock data for promotions theo chi nhánh
+  const getMockPromotionsByBranch = (branchId) => {
+    const branchPromotions = {
+      'branch-1': [ // Hải Châu - Đã duyệt - Nhiều khuyến mãi
     {
       id: 1,
       name: 'Giảm giá iPhone 15',
@@ -88,7 +90,64 @@ const StorePromotions = () => {
       status: 'EXPIRED',
       createdAt: '2023-11-20'
     }
-  ];
+      ],
+      'branch-2': [ // Thanh Khê - Đã duyệt - Khuyến mãi trung bình
+        {
+          id: 21,
+          name: 'Giảm giá Laptop',
+          description: 'Giảm giá 15% cho tất cả laptop',
+          type: 'PERCENTAGE',
+          value: 15,
+          minOrderAmount: 15000000,
+          maxDiscount: 5000000,
+          startDate: '2024-01-01',
+          endDate: '2024-01-31',
+          usageLimit: 50,
+          usedCount: 12,
+          status: 'ACTIVE',
+          createdAt: '2023-12-25'
+        },
+        {
+          id: 22,
+          name: 'Freeship Thanh Khê',
+          description: 'Miễn phí vận chuyển trong Thanh Khê',
+          type: 'FREESHIP',
+          value: 0,
+          minOrderAmount: 300000,
+          maxDiscount: 30000,
+          startDate: '2024-01-10',
+          endDate: '2024-02-10',
+          usageLimit: 200,
+          usedCount: 45,
+          status: 'ACTIVE',
+          createdAt: '2024-01-05'
+        }
+      ],
+      'branch-3': [ // Sơn Trà (chờ duyệt) - Ít khuyến mãi
+        {
+          id: 31,
+          name: 'Khuyến mãi mở cửa',
+          description: 'Giảm giá 5% cho khách hàng đầu tiên',
+          type: 'PERCENTAGE',
+          value: 5,
+          minOrderAmount: 1000000,
+          maxDiscount: 1000000,
+          startDate: '2024-01-20',
+          endDate: '2024-02-20',
+          usageLimit: 10,
+          usedCount: 1,
+          status: 'ACTIVE',
+          createdAt: '2024-01-20'
+        }
+      ],
+      'branch-4': [], // Cẩm Lệ (bị từ chối) - Không có khuyến mãi
+      'branch-5': []  // Liên Chiểu (bị từ chối) - Không có khuyến mãi
+    };
+    
+    return branchPromotions[branchId] || [];
+  };
+
+  const promotions = getMockPromotionsByBranch(currentStore?.id);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', {
