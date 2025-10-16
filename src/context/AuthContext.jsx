@@ -18,20 +18,22 @@ export const AuthProvider = ({ children }) => {
   // Kiểm tra authentication khi app khởi động
   useEffect(() => {
     const checkAuth = () => {
-      const savedUser = localStorage.getItem('user');
-      const token = localStorage.getItem('token');
+      // Luôn tạo user mặc định cho seller
+      const defaultSeller = {
+        id: 1,
+        email: 'seller@techstore.com',
+        name: 'Quang Nguyễn',
+        role: 'SELLER',
+        avatar: null
+      };
       
-      if (savedUser && token) {
-        try {
-          const userData = JSON.parse(savedUser);
-          setUser(userData);
-          setIsAuthenticated(true);
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
-        }
-      }
+      const defaultToken = 'seller_token_123';
+      
+      localStorage.setItem('user', JSON.stringify(defaultSeller));
+      localStorage.setItem('token', defaultToken);
+      
+      setUser(defaultSeller);
+      setIsAuthenticated(true);
       setLoading(false);
     };
 

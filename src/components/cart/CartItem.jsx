@@ -1,9 +1,12 @@
 import { useCart } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const CartItem = ({ item }) => {
   const { updateQuantity, removeFromCart, formatPrice, toggleItemSelected } = useCart();
   const navigate = useNavigate();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const handleGoDetail = () => {
     if (item?.product?.id != null) {
@@ -11,21 +14,43 @@ const CartItem = ({ item }) => {
     }
   };
 
-  const handleQuantityChange = (newQuantity) => {
-    if (newQuantity > 0) {
-      updateQuantity(item.id, newQuantity);
+  const handleQuantityChange = async (newQuantity) => {
+    if (newQuantity > 0 && !isUpdating) {
+      setIsUpdating(true);
+      try {
+        // Optimistic update - UI cập nhật ngay lập tức
+        updateQuantity(item.id, newQuantity);
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        console.error('Error updating quantity:', error);
+      } finally {
+        setIsUpdating(false);
+      }
     }
   };
 
-  const handleRemove = () => {
-    removeFromCart(item.id);
+  const handleRemove = async () => {
+    if (!isRemoving) {
+      setIsRemoving(true);
+      try {
+        // Optimistic update - UI cập nhật ngay lập tức
+        removeFromCart(item.id);
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        console.error('Error removing item:', error);
+      } finally {
+        setIsRemoving(false);
+      }
+    }
   };
 
   const itemPrice = parseInt(item.product.price.replace(/\./g, '')) || 0;
   const totalPrice = itemPrice * item.quantity;
 
   return (
-    <div className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-sm border">
+    <div className={`flex items-center space-x-4 bg-white p-4 rounded-lg shadow-sm border transition-all duration-300 ${isUpdating || isRemoving ? 'opacity-60' : ''}`}>
       {/* Select Checkbox */}
       <input
         type="checkbox"
@@ -96,17 +121,18 @@ const CartItem = ({ item }) => {
       <div className="flex items-center space-x-2 flex-shrink-0">
         <button
           onClick={() => handleQuantityChange(item.quantity - 1)}
-          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
-          disabled={item.quantity <= 1}
+          disabled={item.quantity <= 1 || isUpdating}
+          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           -
         </button>
         <span className="w-8 text-center font-medium">
-          {item.quantity}
+          {isUpdating ? '...' : item.quantity}
         </span>
         <button
           onClick={() => handleQuantityChange(item.quantity + 1)}
-          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+          disabled={isUpdating}
+          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           +
         </button>
@@ -119,9 +145,10 @@ const CartItem = ({ item }) => {
         </div>
         <button
           onClick={handleRemove}
-          className="text-sm text-red-500 hover:text-red-700 transition-colors"
+          disabled={isRemoving}
+          className="text-sm text-red-500 hover:text-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Xóa
+          {isRemoving ? 'Đang xóa...' : 'Xóa'}
         </button>
       </div>
     </div>

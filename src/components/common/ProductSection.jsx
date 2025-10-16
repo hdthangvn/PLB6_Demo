@@ -1,4 +1,5 @@
 import { useCart } from '../../context/CartContext';
+import { useState } from 'react';
 
 const ProductSection = ({ 
   title = "Sản phẩm nổi bật",
@@ -12,30 +13,48 @@ const ProductSection = ({
   compact = false
 }) => {
   const { addToCart } = useCart();
+  const [addingToCart, setAddingToCart] = useState(new Set()); // Track products being added to cart
 
   // ✅ SỬA: Luôn sử dụng cộng dồn số lượng cho ProductSection
   const handleAddToCart = async (e, product) => {
     e.stopPropagation(); // Ngăn event bubble lên parent
     
-    // ✅ SỬA: Sử dụng forceNew = false để cộng dồn số lượng
-    const result = addToCart(product, 1, { color: 'default', storage: 'default' }, false);
+    if (addingToCart.has(product.id)) return; // Prevent double click
     
-    if (result.success) {
-      // Show success notification
-      const notification = document.createElement('div');
-      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform transition-all duration-300';
-      notification.textContent = `✓ Đã thêm ${product.name} vào giỏ hàng`;
-      document.body.appendChild(notification);
+    setAddingToCart(prev => new Set(prev).add(product.id));
+    
+    try {
+      // Optimistic update - UI cập nhật ngay lập tức
+      const result = addToCart(product, 1, { color: 'default', storage: 'default' }, false);
       
-      // Auto remove notification after 2 seconds
-      setTimeout(() => {
-        notification.classList.add('opacity-0', 'translate-x-full');
+      if (result.success) {
+        // Show success notification
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform transition-all duration-300';
+        notification.textContent = `✓ Đã thêm ${product.name} vào giỏ hàng`;
+        document.body.appendChild(notification);
+        
+        // Auto remove notification after 2 seconds
         setTimeout(() => {
-          if (notification.parentNode) {
-            notification.parentNode.removeChild(notification);
-          }
-        }, 300);
-      }, 2000);
+          notification.classList.add('opacity-0', 'translate-x-full');
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }, 2000);
+      }
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 100));
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    } finally {
+      setAddingToCart(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(product.id);
+        return newSet;
+      });
     }
   };
 
@@ -124,9 +143,10 @@ const ProductSection = ({
                   <div className="mt-2">
                     <button 
                       onClick={(e) => handleAddToCart(e, product)}
-                      className="w-full bg-blue-600 text-white py-1.5 rounded-md hover:bg-blue-700 transition-colors text-xs font-medium"
+                      disabled={addingToCart.has(product.id)}
+                      className="w-full bg-blue-600 text-white py-1.5 rounded-md hover:bg-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium"
                     >
-                      Thêm vào giỏ
+                      {addingToCart.has(product.id) ? 'Đang thêm...' : 'Thêm vào giỏ'}
                     </button>
                   </div>
                 </div>

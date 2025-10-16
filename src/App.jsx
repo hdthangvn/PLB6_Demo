@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { StoreProvider } from './context/StoreContext';
 import AuthPage from './pages/auth/AuthPage';
 import HomePage from './pages/home/HomePage';
 import ProductDetail from './pages/products/ProductDetail';
@@ -10,11 +11,14 @@ import ShopPage from './pages/shop/ShopPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
 import OrdersPage from './pages/orders/OrdersPage';
 import SearchResults from './pages/search/SearchResults';
-import ProfilePage from './pages/profile/ProfilePage'; // ✅ THÊM IMPORT
+import ProfilePage from './pages/profile/ProfilePage';
+import SellerRoutes from './routes/SellerRoutes';
+import StoreRoutes from './routes/StoreRoutes';
 
 const AppContent = () => {
   const { isAuthenticated, loading } = useAuth();
 
+  // Bỏ qua loading check để seller routes luôn hoạt động
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -24,10 +28,6 @@ const AppContent = () => {
         </div>
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return <AuthPage />;
   }
 
   return (
@@ -40,7 +40,14 @@ const AppContent = () => {
       <Route path="/shop/:id" element={<ShopPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/orders" element={<OrdersPage />} />
-      <Route path="/profile" element={<ProfilePage />} /> {/* ✅ THÊM ROUTE */}
+      <Route path="/profile" element={<ProfilePage />} />
+      
+      {/* Seller Routes */}
+      <Route path="/seller/*" element={<SellerRoutes />} />
+      
+      {/* Store Routes */}
+      <Route path="/store/*" element={<StoreRoutes />} />
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
@@ -50,9 +57,11 @@ export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
+        <StoreProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </StoreProvider>
       </CartProvider>
     </AuthProvider>
   );

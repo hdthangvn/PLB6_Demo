@@ -1,0 +1,101 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import StoreLayout from '../../layouts/StoreLayout';
+
+const StoreStatusGuard = ({ children, currentStore, pageName = 'chức năng này' }) => {
+  // Hiển thị thông báo nếu không có chi nhánh được chọn
+  if (!currentStore) {
+    return (
+      <StoreLayout>
+        <div className="text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa chọn chi nhánh</h3>
+          <p className="text-gray-500 mb-4">Vui lòng chọn một chi nhánh để sử dụng {pageName}</p>
+          <Link
+            to="/store/management"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            Chọn chi nhánh
+          </Link>
+        </div>
+      </StoreLayout>
+    );
+  }
+
+  // Hiển thị thông báo nếu store đang chờ duyệt
+  if (currentStore.status === 'PENDING') {
+    return (
+      <StoreLayout>
+        <div className="text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Chi nhánh đang chờ duyệt</h3>
+          <p className="text-gray-500 mb-4">
+            Chi nhánh <strong>{currentStore.branchName}</strong> đang chờ admin duyệt. 
+            Bạn sẽ có thể sử dụng {pageName} sau khi chi nhánh được duyệt.
+          </p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-md mx-auto">
+            <p className="text-sm text-yellow-800">
+              <strong>Thông báo:</strong> {pageName.charAt(0).toUpperCase() + pageName.slice(1)} sẽ được mở khi cửa hàng được xét duyệt thành công.
+            </p>
+          </div>
+        </div>
+      </StoreLayout>
+    );
+  }
+
+  // Hiển thị thông báo nếu store bị từ chối
+  if (currentStore.status === 'REJECTED') {
+    return (
+      <StoreLayout>
+        <div className="text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Chi nhánh bị từ chối</h3>
+          <p className="text-gray-500 mb-4">
+            Chi nhánh <strong>{currentStore.branchName}</strong> đã bị admin từ chối. 
+            Vui lòng liên hệ admin để được hỗ trợ hoặc tạo chi nhánh mới.
+          </p>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-md mx-auto mb-4">
+            <p className="text-sm text-red-800">
+              <strong>Thông báo:</strong> {pageName.charAt(0).toUpperCase() + pageName.slice(1)} sẽ được mở khi cửa hàng được xét duyệt thành công.
+            </p>
+          </div>
+          <div className="flex gap-3 justify-center">
+            <Link
+              to="/store/management"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Quản lý chi nhánh
+            </Link>
+            <button
+              onClick={() => {
+                // TODO: Implement contact admin functionality
+                alert('Chức năng liên hệ admin sẽ được implement sau');
+              }}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Liên hệ admin
+            </button>
+          </div>
+        </div>
+      </StoreLayout>
+    );
+  }
+
+  // Nếu store đã được duyệt, hiển thị nội dung bình thường
+  return children;
+};
+
+export default StoreStatusGuard;
+

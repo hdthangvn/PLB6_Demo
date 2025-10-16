@@ -18,10 +18,14 @@ const SearchResults = () => {
     sortBy: 'relevance'
   });
 
-  // Perform search when query or filters change
+  // Perform search when query or filters change - với debounce
   useEffect(() => {
     if (query) {
-      searchProducts(query, filters);
+      const timeoutId = setTimeout(() => {
+        searchProducts(query, filters);
+      }, 300); // Debounce 300ms
+      
+      return () => clearTimeout(timeoutId);
     }
   }, [query, filters, searchProducts]);
 

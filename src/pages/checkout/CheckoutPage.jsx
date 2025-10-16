@@ -17,6 +17,7 @@ const CheckoutPage = () => {
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [freeShip, setFreeShip] = useState(false);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const { profile, createOrder } = useProfile();
 
   // Prefill from user profile
@@ -41,39 +42,53 @@ const CheckoutPage = () => {
   const finalTotal = Math.max(0, productTotal - discount) + shippingFee;
 
   const placeOrder = async () => {
+    if (isPlacingOrder) return; // Prevent double submission
+    
     if (!customer.name || !customer.phone || !customer.address) {
       alert('Vui lòng điền đủ thông tin nhận hàng');
       return;
     }
-    const orderItems = items.map(it => ({
-      productId: it.product.id,
-      name: it.product.name,
-      quantity: it.quantity,
-      price: parseInt(it.product.price.replace(/\./g,'')||0)
-    }));
-    if (!paymentMethod) {
-      alert('Vui lòng chọn phương thức thanh toán');
-      return;
-    }
-    const orderTotal = getSelectedTotalPrice();
-    const result = await createOrder({
-      customer,
-      items: orderItems,
-      total: orderTotal,
-      shippingFee,
-      paymentMethod,
-      shippingMethod,
-      note,
-      promoCode,
-      discount,
-      finalTotal
-    });
-    if (result.success) {
-      removeSelectedItems();
-      alert('Đặt hàng thành công!');
-      navigate('/profile?tab=orders');
-    } else {
-      alert(result.error || 'Có lỗi khi tạo đơn hàng');
+    
+    setIsPlacingOrder(true);
+    try {
+      const orderItems = items.map(it => ({
+        productId: it.product.id,
+        name: it.product.name,
+        quantity: it.quantity,
+        price: parseInt(it.product.price.replace(/\./g,'')||0)
+      }));
+      
+      if (!paymentMethod) {
+        alert('Vui lòng chọn phương thức thanh toán');
+        return;
+      }
+      
+      const orderTotal = getSelectedTotalPrice();
+      const result = await createOrder({
+        customer,
+        items: orderItems,
+        total: orderTotal,
+        shippingFee,
+        paymentMethod,
+        shippingMethod,
+        note,
+        promoCode,
+        discount,
+        finalTotal
+      });
+      
+      if (result.success) {
+        removeSelectedItems();
+        alert('Đặt hàng thành công!');
+        navigate('/profile?tab=orders');
+      } else {
+        alert(result.error || 'Có lỗi khi tạo đơn hàng');
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      alert('Có lỗi xảy ra khi đặt hàng');
+    } finally {
+      setIsPlacingOrder(false);
     }
   };
 
@@ -202,7 +217,13 @@ const CheckoutPage = () => {
               <div className="flex justify-between"><span>Phí vận chuyển</span><span>{shippingFee===0? 'Miễn phí' : formatPrice(shippingFee)+'đ'}</span></div>
               <div className="border-t pt-2 font-semibold text-lg flex justify-between"><span>Tổng cộng</span><span className="text-red-600">{formatPrice(finalTotal)}đ</span></div>
             </div>
-            <button onClick={placeOrder} className="w-full mt-4 bg-blue-600 text-white rounded-lg py-3 hover:bg-blue-700">Tiến hành thanh toán</button>
+            <button 
+              onClick={placeOrder} 
+              disabled={isPlacingOrder}
+              className="w-full mt-4 bg-blue-600 text-white rounded-lg py-3 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              {isPlacingOrder ? 'Đang xử lý...' : 'Tiến hành thanh toán'}
+            </button>
           </div>
         </div>
       </div>

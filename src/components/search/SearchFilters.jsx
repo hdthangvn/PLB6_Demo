@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
   const [filters, setFilters] = useState({
@@ -28,6 +29,17 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
   });
 
   const [showFilters, setShowFilters] = useState(false);
+  const [isChangingCategory, setIsChangingCategory] = useState(false);
+  const navigate = useNavigate();
+
+  // Debounce filter changes để tránh spam API
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      onFiltersChange(filters);
+    }, 300); // Debounce 300ms
+
+    return () => clearTimeout(timeoutId);
+  }, [filters, onFiltersChange]);
 
   const categories = [
     { key: 'all', name: 'Tất cả' },
@@ -75,23 +87,28 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
   const isHome = filters.category === 'home';
 
   const handleFilterChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value };
-    
     // ✅ KHI CHỌN DANH MỤC KHÁC "Tất cả", TỰ ĐỘNG FILTER THEO DANH MỤC ĐÓ
     if (key === 'category') {
-      if (value === 'all') {
-        // Navigate to all products page
-        window.location.href = '/products/all';
-        return;
-      } else {
-        // Navigate to the specific category page
-        window.location.href = `/products/${value}`;
-        return;
-      }
+      setIsChangingCategory(true);
+      
+      // Thêm delay nhỏ để có hiệu ứng mượt mà
+      setTimeout(() => {
+        if (value === 'all') {
+          // Navigate to all products page - KHÔNG RELOAD TRANG
+          navigate('/products/all');
+        } else {
+          // Navigate to the specific category page - KHÔNG RELOAD TRANG
+          navigate(`/products/${value}`);
+        }
+        setIsChangingCategory(false);
+      }, 150); // Delay 150ms để có hiệu ứng
+      
+      return;
     }
     
+    const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
-    onFiltersChange(newFilters);
+    // onFiltersChange sẽ được gọi tự động qua useEffect debounce
   };
 
   const clearFilters = () => {
@@ -144,10 +161,14 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Danh mục:
+            {isChangingCategory && (
+              <span className="ml-2 text-blue-600 text-xs">Đang chuyển...</span>
+            )}
           </label>
           <select
             value={filters.category}
             onChange={(e) => handleFilterChange('category', e.target.value)}
+            disabled={isChangingCategory}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {categories.map(category => (
