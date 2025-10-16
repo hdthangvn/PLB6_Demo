@@ -92,8 +92,8 @@ const StoreProducts = () => {
           name: 'iPad Pro 12.9',
           description: 'Máy tính bảng iPad Pro 12.9 inch 256GB WiFi',
           price: 28000000,
-        stock: 1,
-          status: 'ACTIVE',
+          stock: 0,
+          status: 'SOLD',
           category: 'Máy tính bảng',
           images: [],
           createdAt: '2024-01-12T10:00:00Z',
@@ -104,8 +104,8 @@ const StoreProducts = () => {
           name: 'AirPods Pro 2',
           description: 'Tai nghe AirPods Pro 2 với chống ồn chủ động',
           price: 5500000,
-        stock: 8,
-          status: 'ACTIVE',
+          stock: 0,
+          status: 'SOLD',
           category: 'Phụ kiện',
           images: [],
           createdAt: '2024-01-01T10:00:00Z',
@@ -116,8 +116,8 @@ const StoreProducts = () => {
           name: 'Sony WH-1000XM5',
           description: 'Tai nghe Sony WH-1000XM5 chống ồn cao cấp',
           price: 8500000,
-        stock: 6,
-          status: 'ACTIVE',
+          stock: 2,
+          status: 'HIDDEN',
           category: 'Phụ kiện',
           images: [],
           createdAt: '2024-01-19T10:00:00Z',
@@ -140,8 +140,8 @@ const StoreProducts = () => {
           name: 'ASUS ROG Strix G15',
           description: 'Laptop gaming ASUS ROG Strix G15 RTX 3060',
           price: 28000000,
-        stock: 2,
-          status: 'ACTIVE',
+          stock: 1,
+          status: 'HIDDEN',
           category: 'Laptop',
           images: [],
           createdAt: '2024-01-17T10:00:00Z',
@@ -152,174 +152,191 @@ const StoreProducts = () => {
           name: 'Xiaomi 13 Pro',
           description: 'Điện thoại Xiaomi 13 Pro 256GB Leica Camera',
           price: 18000000,
-        stock: 4,
-          status: 'ACTIVE',
+          stock: 0,
+          status: 'SOLD',
           category: 'Điện thoại',
           images: [],
           createdAt: '2024-01-16T10:00:00Z',
           updatedAt: '2024-01-16T10:00:00Z'
-      },
-      {
-        id: 11,
-        name: 'Logitech MX Master 3S',
-        description: 'Chuột không dây Logitech MX Master 3S',
-        price: 2500000,
-        stock: 10,
-        status: 'ACTIVE',
-        category: 'Phụ kiện',
-        images: [],
-        createdAt: '2024-01-15T10:00:00Z',
-        updatedAt: '2024-01-15T10:00:00Z'
-      },
-      {
-        id: 12,
-        name: 'Surface Pro 9',
-        description: 'Máy tính bảng Surface Pro 9 256GB',
-        price: 35000000,
-        stock: 1,
-        status: 'ACTIVE',
-        category: 'Máy tính bảng',
-        images: [],
-        createdAt: '2024-01-14T10:00:00Z',
-        updatedAt: '2024-01-14T10:00:00Z'
-      },
-      {
-        id: 13,
-        name: 'OnePlus 11',
-        description: 'Điện thoại OnePlus 11 256GB Snapdragon 8 Gen 2',
-        price: 16000000,
-        stock: 0,
-        status: 'HIDDEN',
-        category: 'Điện thoại',
-        images: [],
-        createdAt: '2024-01-13T10:00:00Z',
-        updatedAt: '2024-01-13T10:00:00Z'
-      },
-      {
-        id: 14,
-        name: 'Lenovo ThinkPad X1',
-        description: 'Laptop Lenovo ThinkPad X1 Carbon Gen 10',
-        price: 42000000,
-        stock: 2,
-        status: 'ACTIVE',
-        category: 'Laptop',
-        images: [],
-        createdAt: '2024-01-12T10:00:00Z',
-        updatedAt: '2024-01-12T10:00:00Z'
-      },
-      {
-        id: 15,
-        name: 'Samsung Galaxy Tab S9',
-        description: 'Máy tính bảng Samsung Galaxy Tab S9 128GB',
-        price: 15000000,
-        stock: 3,
-        status: 'ACTIVE',
-        category: 'Máy tính bảng',
-        images: [],
-        createdAt: '2024-01-11T10:00:00Z',
-        updatedAt: '2024-01-11T10:00:00Z'
-      },
-      {
-        id: 16,
-        name: 'Keychron K8 Pro',
-        description: 'Bàn phím cơ Keychron K8 Pro RGB',
-        price: 3200000,
-        stock: 7,
-        status: 'ACTIVE',
-        category: 'Phụ kiện',
-        images: [],
-        createdAt: '2024-01-10T10:00:00Z',
-        updatedAt: '2024-01-10T10:00:00Z'
-      },
-      {
-        id: 17,
-        name: 'Huawei MateBook X Pro',
-        description: 'Laptop Huawei MateBook X Pro 2023',
-        price: 38000000,
-        stock: 1,
-        status: 'ACTIVE',
-        category: 'Laptop',
-        images: [],
-        createdAt: '2024-01-09T10:00:00Z',
-        updatedAt: '2024-01-09T10:00:00Z'
-      },
-      {
-        id: 18,
-        name: 'Nothing Phone 2',
-        description: 'Điện thoại Nothing Phone 2 256GB',
-        price: 14000000,
-        stock: 5,
-        status: 'ACTIVE',
-        category: 'Điện thoại',
-        images: [],
-        createdAt: '2024-01-08T10:00:00Z',
-        updatedAt: '2024-01-08T10:00:00Z'
-      },
-      {
-        id: 19,
-        name: 'Apple Watch Series 9',
-        description: 'Đồng hồ thông minh Apple Watch Series 9 GPS',
-        price: 12000000,
-        stock: 0,
-        status: 'SOLD',
-        category: 'Phụ kiện',
-        images: [],
-        createdAt: '2024-01-07T10:00:00Z',
-        updatedAt: '2024-01-07T10:00:00Z'
-      },
-      {
-        id: 20,
-        name: 'MSI Gaming Laptop',
-        description: 'Laptop gaming MSI Katana GF66 RTX 4060',
-        price: 25000000,
-        stock: 2,
-        status: 'ACTIVE',
-        category: 'Laptop',
-        images: [],
-        createdAt: '2024-01-06T10:00:00Z',
-        updatedAt: '2024-01-06T10:00:00Z'
-      }
+        },
+        {
+          id: 11,
+          name: 'Logitech MX Master 3S',
+          description: 'Chuột không dây Logitech MX Master 3S',
+          price: 2500000,
+          stock: 3,
+          status: 'HIDDEN',
+          category: 'Phụ kiện',
+          images: [],
+          createdAt: '2024-01-15T10:00:00Z',
+          updatedAt: '2024-01-15T10:00:00Z'
+        },
+        {
+          id: 12,
+          name: 'Surface Pro 9',
+          description: 'Máy tính bảng Surface Pro 9 256GB',
+          price: 35000000,
+          stock: 0,
+          status: 'SOLD',
+          category: 'Máy tính bảng',
+          images: [],
+          createdAt: '2024-01-14T10:00:00Z',
+          updatedAt: '2024-01-14T10:00:00Z'
+        },
+        {
+          id: 13,
+          name: 'OnePlus 11',
+          description: 'Điện thoại OnePlus 11 256GB Snapdragon 8 Gen 2',
+          price: 16000000,
+          stock: 2,
+          status: 'HIDDEN',
+          category: 'Điện thoại',
+          images: [],
+          createdAt: '2024-01-13T10:00:00Z',
+          updatedAt: '2024-01-13T10:00:00Z'
+        },
+        {
+          id: 14,
+          name: 'Lenovo ThinkPad X1',
+          description: 'Laptop Lenovo ThinkPad X1 Carbon Gen 10',
+          price: 42000000,
+          stock: 0,
+          status: 'SOLD',
+          category: 'Laptop',
+          images: [],
+          createdAt: '2024-01-12T10:00:00Z',
+          updatedAt: '2024-01-12T10:00:00Z'
+        },
+        {
+          id: 15,
+          name: 'Samsung Galaxy Tab S9',
+          description: 'Máy tính bảng Samsung Galaxy Tab S9 128GB',
+          price: 15000000,
+          stock: 1,
+          status: 'HIDDEN',
+          category: 'Máy tính bảng',
+          images: [],
+          createdAt: '2024-01-11T10:00:00Z',
+          updatedAt: '2024-01-11T10:00:00Z'
+        },
+        {
+          id: 16,
+          name: 'Keychron K8 Pro',
+          description: 'Bàn phím cơ Keychron K8 Pro RGB',
+          price: 3200000,
+          stock: 0,
+          status: 'SOLD',
+          category: 'Phụ kiện',
+          images: [],
+          createdAt: '2024-01-10T10:00:00Z',
+          updatedAt: '2024-01-10T10:00:00Z'
+        },
+        {
+          id: 17,
+          name: 'Huawei MateBook X Pro',
+          description: 'Laptop Huawei MateBook X Pro 2023',
+          price: 38000000,
+          stock: 0,
+          status: 'SOLD',
+          category: 'Laptop',
+          images: [],
+          createdAt: '2024-01-09T10:00:00Z',
+          updatedAt: '2024-01-09T10:00:00Z'
+        },
+        {
+          id: 18,
+          name: 'Nothing Phone 2',
+          description: 'Điện thoại Nothing Phone 2 256GB',
+          price: 14000000,
+          stock: 2,
+          status: 'HIDDEN',
+          category: 'Điện thoại',
+          images: [],
+          createdAt: '2024-01-08T10:00:00Z',
+          updatedAt: '2024-01-08T10:00:00Z'
+        },
+        {
+          id: 19,
+          name: 'Apple Watch Series 9',
+          description: 'Đồng hồ thông minh Apple Watch Series 9 GPS',
+          price: 12000000,
+          stock: 0,
+          status: 'SOLD',
+          category: 'Phụ kiện',
+          images: [],
+          createdAt: '2024-01-07T10:00:00Z',
+          updatedAt: '2024-01-07T10:00:00Z'
+        },
+        {
+          id: 20,
+          name: 'MSI Gaming Laptop',
+          description: 'Laptop gaming MSI Katana GF66 RTX 4060',
+          price: 25000000,
+          stock: 1,
+          status: 'HIDDEN',
+          category: 'Laptop',
+          images: [],
+          createdAt: '2024-01-06T10:00:00Z',
+          updatedAt: '2024-01-06T10:00:00Z'
+        }
     ];
 
-    // Số lượng tồn kho khác nhau theo chi nhánh (giá giống nhau)
+    // Số lượng tồn kho khác nhau theo chi nhánh (giữ nguyên status đã định)
     const stockByBranch = {
-      'branch-1': { // Hải Châu
-        1: 5,   // iPhone 14 Pro
-        2: 0,   // MacBook Air M2 (hết hàng)
-        3: 3,   // Samsung Galaxy S24
-        4: 2,   // Dell XPS 13
-        5: 1,   // iPad Pro 12.9
-        6: 4,   // AirPods Pro 2
-        7: 2,   // Apple Watch Series 9
-        8: 3    // Sony WH-1000XM5
+      'branch-1': { // Hải Châu - Đã duyệt
+        1: 5,   // iPhone 14 Pro (ACTIVE)
+        2: 0,   // MacBook Air M2 (SOLD)
+        3: 3,   // Samsung Galaxy S24 (HIDDEN)
+        4: 2,   // Dell XPS 13 (ACTIVE)
+        5: 0,   // iPad Pro 12.9 (SOLD)
+        6: 0,   // AirPods Pro 2 (SOLD)
+        7: 2,   // Sony WH-1000XM5 (HIDDEN)
+        8: 0,   // iPad Air 5 (SOLD)
+        9: 1,   // ASUS ROG Strix G15 (HIDDEN)
+        10: 0,  // Xiaomi 13 Pro (SOLD)
+        11: 3,  // Logitech MX Master 3S (HIDDEN)
+        12: 0,  // Surface Pro 9 (SOLD)
+        13: 2,  // OnePlus 11 (HIDDEN)
+        14: 0,  // Lenovo ThinkPad X1 (SOLD)
+        15: 1,  // Samsung Galaxy Tab S9 (HIDDEN)
+        16: 0,  // Keychron K8 Pro (SOLD)
+        17: 0,  // Huawei MateBook X Pro (SOLD)
+        18: 2,  // Nothing Phone 2 (HIDDEN)
+        19: 0,  // Apple Watch Series 9 (SOLD)
+        20: 1   // MSI Gaming Laptop (HIDDEN)
       },
-      'branch-2': { // Thanh Khê
-        1: 8,   // iPhone 14 Pro
-        2: 2,   // MacBook Air M2
-        3: 1,   // Samsung Galaxy S24
-        4: 5,   // Dell XPS 13
-        5: 3,   // iPad Pro 12.9
-        6: 6,   // AirPods Pro 2
-        7: 4,   // Apple Watch Series 9
-        8: 2    // Sony WH-1000XM5
+      'branch-2': { // Thanh Khê - Đã duyệt
+        1: 8,   // iPhone 14 Pro (ACTIVE)
+        2: 2,   // MacBook Air M2 (SOLD)
+        3: 1,   // Samsung Galaxy S24 (HIDDEN)
+        4: 5,   // Dell XPS 13 (ACTIVE)
+        5: 0,   // iPad Pro 12.9 (SOLD)
+        6: 0,   // AirPods Pro 2 (SOLD)
+        7: 2,   // Sony WH-1000XM5 (HIDDEN)
+        8: 0,   // iPad Air 5 (SOLD)
+        9: 1,   // ASUS ROG Strix G15 (HIDDEN)
+        10: 0,  // Xiaomi 13 Pro (SOLD)
+        11: 3,  // Logitech MX Master 3S (HIDDEN)
+        12: 0,  // Surface Pro 9 (SOLD)
+        13: 2,  // OnePlus 11 (HIDDEN)
+        14: 0,  // Lenovo ThinkPad X1 (SOLD)
+        15: 1,  // Samsung Galaxy Tab S9 (HIDDEN)
+        16: 0,  // Keychron K8 Pro (SOLD)
+        17: 0,  // Huawei MateBook X Pro (SOLD)
+        18: 2,  // Nothing Phone 2 (HIDDEN)
+        19: 0,  // Apple Watch Series 9 (SOLD)
+        20: 1   // MSI Gaming Laptop (HIDDEN)
       },
-      'branch-3': { // Sơn Trà (chờ duyệt)
-        1: 0,   // iPhone 14 Pro
-        2: 0,   // MacBook Air M2
-        3: 0,   // Samsung Galaxy S24
-        4: 0,   // Dell XPS 13
-        5: 0,   // iPad Pro 12.9
-        6: 0,   // AirPods Pro 2
-        7: 0,   // Apple Watch Series 9
-        8: 0    // Sony WH-1000XM5
+      'branch-3': { // Sơn Trà (chờ duyệt) - Tất cả = 0
+        1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0,
+        11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0
       }
     };
 
-    // Cập nhật số lượng tồn kho theo chi nhánh (giá không đổi)
+    // Cập nhật số lượng tồn kho theo chi nhánh (giữ nguyên status đã định)
     return baseProducts.map(product => ({
       ...product,
-      stock: stockByBranch[branchId]?.[product.id] || 0,
-      status: stockByBranch[branchId]?.[product.id] === 0 ? 'SOLD' : 'ACTIVE'
+      stock: stockByBranch[branchId]?.[product.id] !== undefined ? stockByBranch[branchId][product.id] : product.stock
     }));
   };
 
