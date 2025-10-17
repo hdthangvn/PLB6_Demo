@@ -224,19 +224,18 @@ const StoreCategories = () => {
         <div className="space-y-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-5"></div>
+          <div className="bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-6">
             <div className="relative bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-xl flex items-center justify-center">
                     <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                     </svg>
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                      Quản lý danh mục
+                    <h1 className="text-3xl font-bold">
+                      <span className="text-cyan-600">Quản lý</span> <span className="text-blue-600">danh mục</span>
                     </h1>
                     <p className="text-gray-600 mt-1">Tổ chức và quản lý danh mục sản phẩm</p>
                   </div>
@@ -244,7 +243,7 @@ const StoreCategories = () => {
                 
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -252,56 +251,65 @@ const StoreCategories = () => {
                   Tạo danh mục
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
+              
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Tổng danh mục</p>
+                      <p className="text-xl font-bold text-gray-900">{categories.length}</p>
+                    </div>
+                  </div>
+                </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Tổng danh mục</p>
-                <p className="text-2xl font-bold text-purple-600">{categories.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📂</span>
-              </div>
-            </div>
-          </div>
+                <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đang hoạt động</p>
+                      <p className="text-xl font-bold text-gray-900">{categories.filter(c => c.isActive).length}</p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Danh mục gốc</p>
-                <p className="text-2xl font-bold text-blue-600">{categories.filter(c => !c.parentId).length}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📁</span>
-              </div>
-            </div>
-          </div>
+                <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Danh mục cha</p>
+                      <p className="text-xl font-bold text-gray-900">{categories.filter(c => !c.parentId).length}</p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Danh mục con</p>
-                <p className="text-2xl font-bold text-green-600">{categories.filter(c => c.parentId).length}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📄</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Tổng sản phẩm</p>
-                <p className="text-2xl font-bold text-orange-600">{categories.reduce((sum, c) => sum + c.productCount, 0)}</p>
-              </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📦</span>
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Sản phẩm</p>
+                      <p className="text-xl font-bold text-gray-900">{categories.reduce((sum, c) => sum + c.productCount, 0)}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

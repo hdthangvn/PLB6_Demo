@@ -321,72 +321,79 @@ const StoreShipping = () => {
         <div className="space-y-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-5"></div>
+          <div className="bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-6">
             <div className="relative bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-xl flex items-center justify-center">
                   <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Quản lý vận chuyển
+                  <h1 className="text-3xl font-bold">
+                    <span className="text-cyan-600">Quản lý</span> <span className="text-blue-600">vận chuyển</span>
                   </h1>
                   <p className="text-gray-600 mt-1">Theo dõi và quản lý đơn hàng vận chuyển</p>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+              
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Tổng đơn hàng</p>
+                      <p className="text-xl font-bold text-gray-900">{shippingOrders.length}</p>
+                    </div>
+                  </div>
+                </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Tổng đơn hàng</p>
-                <p className="text-2xl font-bold text-blue-600">{shippingOrders.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📦</span>
-              </div>
-            </div>
-          </div>
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Chờ giao</p>
+                      <p className="text-xl font-bold text-gray-900">{shippingOrders.filter(o => o.status === 'PENDING').length}</p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Chờ giao</p>
-                <p className="text-2xl font-bold text-yellow-600">{shippingOrders.filter(o => o.status === 'PENDING').length}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">⏳</span>
-              </div>
-            </div>
-          </div>
+                <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đang giao</p>
+                      <p className="text-xl font-bold text-gray-900">{shippingOrders.filter(o => o.status === 'SHIPPED').length}</p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Đang giao</p>
-                <p className="text-2xl font-bold text-blue-600">{shippingOrders.filter(o => o.status === 'SHIPPED').length}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">🚚</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Đã giao</p>
-                <p className="text-2xl font-bold text-green-600">{shippingOrders.filter(o => o.status === 'DELIVERED').length}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">✅</span>
+                <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đã giao</p>
+                      <p className="text-xl font-bold text-gray-900">{shippingOrders.filter(o => o.status === 'DELIVERED').length}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

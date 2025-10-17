@@ -624,72 +624,74 @@ const StoreProducts = () => {
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl opacity-5"></div>
+          <div className="bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-6">
             <div className="relative bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-xl flex items-center justify-center">
                     <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                     </svg>
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                      Quản lý sản phẩm
+                    <h1 className="text-3xl font-bold">
+                      <span className="text-cyan-600">Quản lý</span> <span className="text-blue-600">sản phẩm</span>
                     </h1>
                     <p className="text-gray-600 mt-1">Quản lý danh sách sản phẩm của bạn</p>
                   </div>
                 </div>
                 
-                {/* Quick Stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  + Thêm sản phẩm mới
+                </button>
               </div>
-                      <div>
-                        <p className="text-sm text-green-600 font-medium">Đang bán</p>
-                        <p className="text-lg font-bold text-green-700">
-                          {products.filter(p => p.status === 'ACTIVE').length}
-                        </p>
-            </div>
-          </div>
-        </div>
+              
+              {/* Quick Stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đang bán</p>
+                      <p className="text-xl font-bold text-gray-900">{products.filter(p => p.status === 'ACTIVE').length}</p>
+                    </div>
+                  </div>
+                </div>
 
-                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
-                        </svg>
-                      </div>
-              <div>
-                        <p className="text-sm text-yellow-600 font-medium">Đã ẩn</p>
-                        <p className="text-lg font-bold text-yellow-700">
-                          {products.filter(p => p.status === 'HIDDEN').length}
-                        </p>
-              </div>
-            </div>
-          </div>
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đã ẩn</p>
+                      <p className="text-xl font-bold text-gray-900">{products.filter(p => p.status === 'HIDDEN').length}</p>
+                    </div>
+                  </div>
+                </div>
 
-                  <div className="bg-red-50 rounded-lg p-4 border border-red-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-          </div>
-              <div>
-                        <p className="text-sm text-red-600 font-medium">Hết hàng</p>
-                        <p className="text-lg font-bold text-red-700">
-                          {products.filter(p => p.status === 'SOLD').length}
-                        </p>
-              </div>
-            </div>
-          </div>
+                <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Hết hàng</p>
+                      <p className="text-xl font-bold text-gray-900">{products.filter(p => p.status === 'SOLD').length}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

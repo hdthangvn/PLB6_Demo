@@ -119,19 +119,18 @@ const StoreInventory = () => {
         <div className="space-y-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl opacity-5"></div>
+          <div className="bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-6">
             <div className="relative bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-xl flex items-center justify-center">
                     <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                     </svg>
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                      Quản lý kho
+                    <h1 className="text-3xl font-bold">
+                      <span className="text-cyan-600">Quản lý</span> <span className="text-blue-600">kho</span>
                     </h1>
                     <p className="text-gray-600 mt-1">Theo dõi tồn kho và quản lý sản phẩm</p>
                   </div>
@@ -152,56 +151,64 @@ const StoreInventory = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+              
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Tổng sản phẩm</p>
+                      <p className="text-xl font-bold text-gray-900">5</p>
+                    </div>
+                  </div>
+                </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Tổng sản phẩm</p>
-                <p className="text-2xl font-bold text-blue-600">{inventory.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📦</span>
-              </div>
-            </div>
-          </div>
+                <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Giá trị tồn kho</p>
+                      <p className="text-xl font-bold text-gray-900">851.500.000 ₫</p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Giá trị tồn kho</p>
-                <p className="text-2xl font-bold text-green-600">{formatPrice(totalValue)}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">💰</span>
-              </div>
-            </div>
-          </div>
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Sắp hết hàng</p>
+                      <p className="text-xl font-bold text-gray-900">1</p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Sắp hết hàng</p>
-                <p className="text-2xl font-bold text-yellow-600">{lowStockItems}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">⚠️</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Hết hàng</p>
-                <p className="text-2xl font-bold text-red-600">{outOfStockItems}</p>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">❌</span>
+                <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Hết hàng</p>
+                      <p className="text-xl font-bold text-gray-900">1</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

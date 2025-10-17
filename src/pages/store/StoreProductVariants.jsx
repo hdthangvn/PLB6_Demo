@@ -182,80 +182,87 @@ const StoreProductVariants = () => {
     <StoreStatusGuard currentStore={currentStore} pageName="quản lý biến thể sản phẩm">
       <StoreLayout>
         <div className="space-y-6">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl p-6 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold mb-2">Quản lý biến thể sản phẩm</h1>
-              <p className="text-green-100">Quản lý các biến thể, màu sắc, dung lượng của sản phẩm</p>
-            </div>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="px-6 py-3 bg-white text-green-600 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-            >
-              + Tạo biến thể mới
-            </button>
-          </div>
-        </div>
+          {/* Header */}
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-6">
+              <div className="relative bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-xl flex items-center justify-center">
+                      <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h1 className="text-3xl font-bold">
+                        <span className="text-cyan-600">Biến thể</span> <span className="text-blue-600">sản phẩm</span>
+                      </h1>
+                      <p className="text-gray-600 mt-1">Quản lý các biến thể, màu sắc, dung lượng của sản phẩm</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Quick Stats */}
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Tổng biến thể</p>
+                        <p className="text-xl font-bold text-gray-900">{variants.length}</p>
+                      </div>
+                    </div>
+                  </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg p-4 border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Tổng biến thể</p>
-                <p className="text-2xl font-bold text-gray-900">{variants.length}</p>
-              </div>
-            </div>
-          </div>
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Đang bán</p>
+                        <p className="text-xl font-bold text-gray-900">{variants.filter(v => v.status === 'ACTIVE').length}</p>
+                      </div>
+                    </div>
+                  </div>
 
-          <div className="bg-white rounded-lg p-4 border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Đang bán</p>
-                <p className="text-2xl font-bold text-gray-900">{variants.filter(v => v.status === 'ACTIVE').length}</p>
-              </div>
-            </div>
-          </div>
+                  <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Hết hàng</p>
+                        <p className="text-xl font-bold text-gray-900">{variants.filter(v => v.stock === 0).length}</p>
+                      </div>
+                    </div>
+                  </div>
 
-          <div className="bg-white rounded-lg p-4 border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Hết hàng</p>
-                <p className="text-2xl font-bold text-gray-900">{variants.filter(v => v.stock === 0).length}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-4 border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">Tổng tồn kho</p>
-                <p className="text-2xl font-bold text-gray-900">{variants.reduce((sum, v) => sum + v.stock, 0)}</p>
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Tổng tồn kho</p>
+                        <p className="text-xl font-bold text-gray-900">{variants.reduce((sum, v) => sum + v.stock, 0)}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
         {/* Search and Filter */}
         <div className="bg-white rounded-lg p-4 border border-gray-200">

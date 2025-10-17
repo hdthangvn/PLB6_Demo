@@ -201,19 +201,18 @@ const StoreAnalytics = () => {
         <div className="space-y-6">
           {/* Header */}
           <div className="mb-8">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl opacity-5"></div>
+            <div className="bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-6">
               <div className="relative bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-xl flex items-center justify-center">
                       <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                       </svg>
                     </div>
                     <div>
-                      <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                        Phân tích dữ liệu
+                      <h1 className="text-3xl font-bold">
+                        <span className="text-cyan-600">Phân tích</span> <span className="text-blue-600">dữ liệu</span>
                       </h1>
                       <p className="text-gray-600 mt-1">Thống kê và báo cáo chi tiết</p>
                     </div>
@@ -222,7 +221,7 @@ const StoreAnalytics = () => {
                     <select
                       value={timeRange}
                       onChange={(e) => setTimeRange(e.target.value)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                      className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       <option value="7days">7 ngày qua</option>
                       <option value="30days">30 ngày qua</option>
@@ -231,68 +230,68 @@ const StoreAnalytics = () => {
                     </select>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
+                
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Tổng doanh thu</p>
+                        <p className="text-xl font-bold text-gray-900">{formatPrice(analyticsData.revenue.total)}</p>
+                        <p className="text-xs text-green-600">+{analyticsData.revenue.growth}% so với tháng trước</p>
+                      </div>
+                    </div>
+                  </div>
 
-          {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Tổng doanh thu</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatPrice(analyticsData.revenue.total)}</p>
-                  <p className="text-sm text-green-600">+{analyticsData.revenue.growth}% so với tháng trước</p>
-                </div>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Tổng đơn hàng</p>
+                        <p className="text-xl font-bold text-gray-900">{formatNumber(analyticsData.orders.total)}</p>
+                        <p className="text-xs text-blue-600">+{analyticsData.orders.growth}% so với tháng trước</p>
+                      </div>
+                    </div>
+                  </div>
 
-            <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Tổng đơn hàng</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatNumber(analyticsData.orders.total)}</p>
-                  <p className="text-sm text-green-600">+{analyticsData.orders.growth}% so với tháng trước</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Sản phẩm</p>
+                        <p className="text-xl font-bold text-gray-900">{formatNumber(analyticsData.products.total)}</p>
+                        <p className="text-xs text-purple-600">{formatNumber(analyticsData.products.active)} đang bán</p>
+                      </div>
+                    </div>
+                  </div>
 
-            <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Sản phẩm</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatNumber(analyticsData.products.total)}</p>
-                  <p className="text-sm text-gray-500">{formatNumber(analyticsData.products.active)} đang bán</p>
-                </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Khách hàng</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatNumber(analyticsData.customers.total)}</p>
-                  <p className="text-sm text-gray-500">{formatNumber(analyticsData.customers.new)} mới</p>
-                </div>
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                  </svg>
+                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Khách hàng</p>
+                        <p className="text-xl font-bold text-gray-900">{formatNumber(analyticsData.customers.total)}</p>
+                        <p className="text-xs text-orange-600">{formatNumber(analyticsData.customers.new)} mới</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

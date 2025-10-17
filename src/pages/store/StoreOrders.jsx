@@ -480,104 +480,95 @@ const StoreOrders = () => {
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl opacity-5"></div>
+          <div className="bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-6">
             <div className="relative bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-xl flex items-center justify-center">
                     <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                     </svg>
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                      Quản lý đơn hàng
+                    <h1 className="text-3xl font-bold">
+                      <span className="text-cyan-600">Quản lý</span> <span className="text-blue-600">đơn hàng</span>
                     </h1>
                     <p className="text-gray-600 mt-1">Quản lý và theo dõi đơn hàng của khách hàng</p>
                   </div>
                 </div>
-                
-                {/* Quick Stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
-                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+              </div>
+              
+              {/* Quick Stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mt-6">
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Chờ xác nhận</p>
+                      <p className="text-xl font-bold text-gray-900">{orders.filter(o => o.status === 'PENDING').length}</p>
+                    </div>
                   </div>
-                      <div>
-                        <p className="text-sm text-yellow-600 font-medium">Chờ xác nhận</p>
-                        <p className="text-lg font-bold text-yellow-700">
-                          {orders.filter(o => o.status === 'PENDING').length}
-                        </p>
-            </div>
-          </div>
-        </div>
+                </div>
 
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                      </div>
-              <div>
-                        <p className="text-sm text-blue-600 font-medium">Đã xác nhận</p>
-                        <p className="text-lg font-bold text-blue-700">
-                          {orders.filter(o => o.status === 'CONFIRMED').length}
-                        </p>
-              </div>
-            </div>
-          </div>
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đã xác nhận</p>
+                      <p className="text-xl font-bold text-gray-900">{orders.filter(o => o.status === 'CONFIRMED').length}</p>
+                    </div>
+                  </div>
+                </div>
 
-                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                        </svg>
-                      </div>
-              <div>
-                        <p className="text-sm text-purple-600 font-medium">Đang giao</p>
-                        <p className="text-lg font-bold text-purple-700">
-                          {orders.filter(o => o.status === 'SHIPPING').length}
-                        </p>
-              </div>
-            </div>
-          </div>
+                <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đang giao</p>
+                      <p className="text-xl font-bold text-gray-900">{orders.filter(o => o.status === 'SHIPPING').length}</p>
+                    </div>
+                  </div>
+                </div>
 
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                      </div>
-              <div>
-                        <p className="text-sm text-green-600 font-medium">Đã giao</p>
-                        <p className="text-lg font-bold text-green-700">
-                          {orders.filter(o => o.status === 'DELIVERED').length}
-                        </p>
-              </div>
-            </div>
-          </div>
+                <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đã giao</p>
+                      <p className="text-xl font-bold text-gray-900">{orders.filter(o => o.status === 'DELIVERED').length}</p>
+                    </div>
+                  </div>
+                </div>
 
-                  <div className="bg-red-50 rounded-lg p-4 border border-red-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-          </div>
-              <div>
-                        <p className="text-sm text-red-600 font-medium">Đã hủy</p>
-                        <p className="text-lg font-bold text-red-700">
-                          {orders.filter(o => o.status === 'CANCELLED').length}
-                        </p>
-              </div>
-            </div>
-          </div>
+                <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đã hủy</p>
+                      <p className="text-xl font-bold text-gray-900">{orders.filter(o => o.status === 'CANCELLED').length}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

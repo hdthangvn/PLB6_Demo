@@ -183,18 +183,94 @@ const StoreChats = () => {
   return (
     <StoreLayout>
       <StoreStatusGuard currentStore={currentStore} pageName="chat" noSidebar={true}>
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Chat với khách hàng</h1>
-              <p className="text-gray-600">Quản lý tin nhắn và hỗ trợ khách hàng</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-600">
-                <span className="text-green-600 font-medium">{chats.filter(c => c.status === 'online').length}</span> đang online
-              </div>
-              <div className="text-sm text-gray-600">
-                <span className="text-blue-600 font-medium">{chats.filter(c => c.unreadCount > 0).length}</span> tin nhắn chưa đọc
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-6">
+              <div className="relative bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-xl flex items-center justify-center">
+                      <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h1 className="text-3xl font-bold">
+                        <span className="text-cyan-600">Tin nhắn</span> <span className="text-blue-600">khách hàng</span>
+                      </h1>
+                      <p className="text-gray-600 mt-1">Quản lý tin nhắn và hỗ trợ khách hàng</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-600">
+                      <span className="text-green-600 font-medium">{chats.filter(c => c.status === 'online').length}</span> đang online
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <span className="text-blue-600 font-medium">{chats.filter(c => c.unreadCount > 0).length}</span> tin nhắn chưa đọc
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Tổng cuộc trò chuyện</p>
+                        <p className="text-xl font-bold text-gray-900">{chats.length}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Đang online</p>
+                        <p className="text-xl font-bold text-gray-900">{chats.filter(c => c.status === 'online').length}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Tin nhắn chưa đọc</p>
+                        <p className="text-xl font-bold text-gray-900">{chats.reduce((sum, c) => sum + c.unreadCount, 0)}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Đã giải quyết</p>
+                        <p className="text-xl font-bold text-gray-900">{chats.filter(c => c.status === 'resolved').length}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

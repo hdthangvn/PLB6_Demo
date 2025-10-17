@@ -40,14 +40,14 @@ const StoreSidebar = () => {
       <aside className="w-64 bg-gray-700 min-h-screen">
         <div className="p-6 border-b border-gray-600">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
               </svg>
             </div>
             <h1 className="text-xl font-bold text-white">
-              <span className="text-green-300">Tech</span>
-              <span className="text-blue-300">Store</span>
+              <span className="text-blue-300">Tech</span>
+              <span className="text-purple-300">Store</span>
             </h1>
           </div>
         </div>
@@ -76,38 +76,29 @@ const StoreSidebar = () => {
       {/* Logo */}
       <div className="p-6 border-b border-gray-600">
         <Link to={`/store/dashboard`} className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-blue-600 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-sm">
               {currentStore.name.charAt(0).toUpperCase()}
             </span>
           </div>
           <h1 className="text-xl font-bold text-white">
-            <span className="text-green-300">Tech</span>
-            <span className="text-blue-300">Store</span>
+            <span className="text-blue-300">Tech</span>
+            <span className="text-purple-300">Store</span>
           </h1>
         </Link>
       </div>
 
       {/* Store Info Section */}
       <div className="px-4 py-4 border-b border-gray-600">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-sm">Q</span>
-          </div>
-          <div>
-            <h3 className="text-white font-semibold text-sm">Quang Nguyễn</h3>
-            <p className="text-gray-300 text-xs">Store Manager</p>
-          </div>
-        </div>
         
         {/* Store Count */}
         <div className="mb-3">
           <div className="bg-gray-600 rounded-lg p-2">
             <div className="flex items-center justify-between text-xs text-gray-300">
-              <span>🏪 {userStores.length} chi nhánh</span>
+              <span className="font-medium">{userStores.length} chi nhánh</span>
               <Link
                 to="/store/management"
-                className="text-green-400 hover:text-green-300 transition-colors"
+                className="text-green-400 hover:text-green-300 transition-colors font-medium"
               >
                 Quản lý
               </Link>
@@ -117,11 +108,26 @@ const StoreSidebar = () => {
 
         {/* Store Info */}
         <div className="text-gray-300 text-xs space-y-1 mb-3">
-          <p>🏪 {currentStore.name}</p>
-          <p>📍 {currentStore.branchName}</p>
-          <p>📧 {currentStore.email || 'contact@techpro.com'}</p>
-          <p>📱 {currentStore.phone || '0123456789'}</p>
-          <p>⭐ {currentStore.stats.rating}/5 ({currentStore.stats.customers || 0} khách hàng)</p>
+          <p className="flex items-center gap-1">
+            <span className="w-4 h-4 flex items-center justify-center leading-none">🏪</span>
+            <span>{currentStore.name}</span>
+          </p>
+          <p className="flex items-center gap-1">
+            <span className="w-4 h-4 flex items-center justify-center leading-none">📍</span>
+            <span>{currentStore.branchName}</span>
+          </p>
+          <p className="flex items-center gap-1">
+            <span className="w-4 h-4 flex items-center justify-center leading-none">📧</span>
+            <span>{currentStore.email || 'contact@techpro.com'}</span>
+          </p>
+          <p className="flex items-center gap-1">
+            <span className="w-4 h-4 flex items-center justify-center leading-none">📱</span>
+            <span>{currentStore.phone || '0123456789'}</span>
+          </p>
+          <p className="flex items-center gap-1">
+            <span className="w-4 h-4 flex items-center justify-center leading-none">⭐</span>
+            <span>{currentStore.stats.rating}/5 ({currentStore.stats.customers || 0} khách hàng)</span>
+          </p>
         </div>
 
         {/* Store Status */}
