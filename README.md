@@ -21,3 +21,10 @@ Những cái đã sửa:
 6. Đặt hàng, lịch sử đặt hàng
 7. Đổi logic đánh giá : Mua hàng mới được đánh giá 
 8. Thêm mục bình luận dưới mỗi sản phẩm
+
+
+
+
+BỔ SUNG TRANG CHO SELLER VÀ CHỦ STORE CÓ NHIỀU CHI NHÁNH
+http://localhost:5173/seller/dashboard
+http://localhost:5173/store/dashboard
