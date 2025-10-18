@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import SellerDashboard from '../pages/seller/SellerDashboard';
 import SellerProducts from '../pages/seller/SellerProducts';
 import SellerOrders from '../pages/seller/SellerOrders';
@@ -13,6 +13,8 @@ import SellerReviews from '../pages/seller/SellerReviews';
 import SellerSettings from '../pages/seller/SellerSettings';
 
 const SellerRoutes = () => {
+  console.log('🔍 SellerRoutes rendered'); // Debug log
+  
   return (
     <Routes>
       <Route path="/dashboard" element={<SellerDashboard />} />
@@ -20,12 +22,14 @@ const SellerRoutes = () => {
       <Route path="/shop" element={<SellerShop />} />
       <Route path="/products" element={<SellerProducts />} />
       <Route path="/orders" element={<SellerOrders />} />
-      <Route path="/orders/:orderId" element={<SellerOrderDetail />} />
+      <Route path="/orders/:id" element={<SellerOrderDetail />} />
       <Route path="/chats" element={<SellerChats />} />
+      <Route path="/notifications" element={<SellerNotifications />} />
       <Route path="/analytics" element={<SellerAnalytics />} />
       <Route path="/reviews" element={<SellerReviews />} />
       <Route path="/settings" element={<SellerSettings />} />
-      <Route path="/notifications" element={<SellerNotifications />} />
+      {/* Redirect default to dashboard */}
+      <Route path="/" element={<Navigate to="/seller/dashboard" replace />} />
     </Routes>
   );
 };

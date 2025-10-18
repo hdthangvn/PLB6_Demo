@@ -1,87 +1,87 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom'; // Thêm useLocation
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import Button from '../components/ui/Button';
 import SearchBar from '../components/search/SearchBar'; // ✅ PHẢI CÓ DÒNG NÀY
+import LoginForm from '../components/forms/LoginForm';
+import RegisterForm from '../components/forms/RegisterForm';
 
 const MainLayout = ({ children }) => {
+  // ✅ THAY ĐỔI STATE - dùng Modal thay vì dropdown
+  const [showSellerModal, setShowSellerModal] = useState(false); // Thay showSellerMenu
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
   const { getTotalItems, cartItems } = useCart();
-  const totalItems = getTotalItems();
-  const distinctCount = cartItems.length;
+  
+  const distinctCount = cartItems ? cartItems.length : 0;
+  const totalQuantity = getTotalItems();
+  
+  // ✅ SỬA LOGIC handleSellerClick
+  const handleSellerClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const hasSeller = user?.roles?.includes?.('SELLER');
+    const hasStore = user?.roles?.includes?.('STORE_OWNER');
+    
+    console.log('🔍 Debug Info:');
+    console.log('User roles:', user?.roles);
+    console.log('Has seller:', hasSeller, 'Has store:', hasStore);
+    
+    if (hasSeller && hasStore) {
+      console.log('✅ Opening Modal for both roles');
+      setShowSellerModal(true); // Mở modal thay vì dropdown
+    } else if (hasStore) {
+      console.log('🏪 Redirecting to store dashboard');
+      navigate('/store/dashboard');
+    } else if (hasSeller) {
+      console.log('📊 Redirecting to seller dashboard');
+      navigate('/seller/dashboard');
+    } else {
+      console.log('🔄 Fallback to seller dashboard');
+      navigate('/seller/dashboard');
+    }
+  };
 
-  // Topbar marquee slogans
-  const slogans = [
-    '• Chào mừng thành viên mới – Đăng ký thành viên – Rinh quà ngay!',
-    '• Công nghệ đỉnh cao, – Giá rẻ bất ngờ',
-    '• Mua hàng online – Chuẩn từng ly – Nhận ngay tức thì!',
-    '• Sản phẩm chính hãng – Xuất VAT đầy đủ – Bảo hành 12–36 tháng'
-  ];
-  const marqueeText = slogans.join('    ');
+  const openAuthModal = (mode) => {
+    setAuthMode(mode);
+    setShowAuthModal(true);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        {/* Top Bar - GIỮ NGUYÊN */}
+        {/* Top Bar */}
         <div className="bg-blue-600 text-white text-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-10">
               {/* Left side */}
               <div className="flex items-center space-x-6 flex-nowrap overflow-hidden">
-                <span className="hover:text-blue-200 cursor-pointer whitespace-nowrap">Kênh Người Bán</span>
+                {/* ✅ SỬA PHẦN "Kênh Người Bán" - Đơn giản hóa */}
+                <button
+                  onClick={handleSellerClick}
+                  className="hover:text-blue-200 cursor-pointer whitespace-nowrap focus:outline-none transition-colors"
+                  type="button"
+                >
+                  Kênh Người Bán
+                </button>
+
                 <span className="text-blue-200">|</span>
-                <div className="flex items-center space-x-2">
-                  <span className="whitespace-nowrap">Kết nối</span>
-                  {/* Facebook */}
-                  <a href="#" className="hover:text-blue-200" aria-label="Facebook">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                  </a>
-                  {/* YouTube */}
-                  <a href="#" className="hover:text-blue-200" aria-label="YouTube">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <rect x="2" y="6" width="20" height="12" rx="3" ry="3" strokeWidth="2"/>
-                      <path d="M10 9l5 3-5 3V9z" fill="currentColor"/>
-                    </svg>
-                  </a>
-                </div>
-                <div className="hidden lg:block w-[520px] overflow-hidden">
-                  <div className="relative w-full">
-                    <div className="flex whitespace-nowrap animate-[ticker_22s_linear_infinite] will-change-transform text-sm">
-                      <span className="mr-8 italic opacity-90">{marqueeText}</span>
-                      <span className="mr-8 italic opacity-90" aria-hidden="true">{marqueeText}</span>
-                    </div>
-                  </div>
-                </div>
+                <span className="hover:text-blue-200 cursor-pointer whitespace-nowrap">Trở thành Seller TechStore</span>
+                <span className="text-blue-200">|</span>
+                <span className="hover:text-blue-200 cursor-pointer whitespace-nowrap">Tải ứng dụng</span>
+                <span className="text-blue-200">|</span>
+                <span className="hover:text-blue-200 cursor-pointer whitespace-nowrap">Kết nối</span>
               </div>
 
               {/* Right side */}
-              <div className="flex items-center space-x-6 flex-nowrap">
-                <div className="hidden md:flex items-center space-x-1 hover:text-blue-200 cursor-pointer">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h18l-2 13a2 2 0 01-2 1.7H7a2 2 0 01-2-1.7L3 3zm3 16a2 2 0 104 0m8 0a2 2 0 104 0"/>
-                  </svg>
-                  <span className="whitespace-nowrap">Tra cứu đơn</span>
-                </div>
-                <span className="hidden md:inline text-blue-200">|</span>
-                <div className="hidden sm:flex items-center space-x-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M22 16.92V21a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.05 5.2 2 2 0 014 3h4.09a2 2 0 012 1.72 12.66 12.66 0 00.7 2.81 2 2 0 01-.45 2.11L9 11a16 16 0 006 6l1.36-1.36a2 2 0 012.11-.45 12.66 12.66 0 002.81.7A2 2 0 0122 16.92z"/>
-                  </svg>
-                  <a href="tel:18001234" className="hover:text-blue-200 whitespace-nowrap">Hotline: 1800 1234</a>
-                </div>
-                <div className="flex items-center space-x-1 hover:text-blue-200 cursor-pointer">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  <span className="whitespace-nowrap">Hỗ Trợ</span>
-                </div>
+              <div className="flex items-center space-x-4 flex-nowrap">
                 {isAuthenticated ? (
                   <div className="flex items-center space-x-4">
-                    {/* User Profile Link */}
                     <button
                       onClick={() => navigate('/profile')}
                       className="flex items-center space-x-2 hover:text-blue-200 cursor-pointer whitespace-nowrap"
@@ -91,20 +91,36 @@ const MainLayout = ({ children }) => {
                       </div>
                       <span>{user?.name}</span>
                     </button>
+                    <button 
+                      onClick={logout}
+                      className="hover:text-blue-200 whitespace-nowrap"
+                    >
+                      Đăng xuất
+                    </button>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-4 flex-nowrap">
-                    <button className="hover:text-blue-200 whitespace-nowrap">Đăng Ký</button>
+                    <button 
+                      onClick={() => openAuthModal('register')}
+                      className="hover:text-blue-200 whitespace-nowrap"
+                    >
+                      Đăng Ký
+                    </button>
                     <span className="text-blue-200">|</span>
-                    <button className="hover:text-blue-200 whitespace-nowrap">Đăng Nhập</button>
+                    <button 
+                      onClick={() => openAuthModal('login')}
+                      className="hover:text-blue-200 whitespace-nowrap"
+                    >
+                      Đăng Nhập
+                    </button>
                   </div>
                 )}
               </div>
             </div>
           </div>
         </div>
-
-        {/* Main Header */}
+        
+        {/* Main Header - giữ nguyên */}
         <div className="bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-20">
@@ -126,7 +142,7 @@ const MainLayout = ({ children }) => {
                 </div>
               </div>
 
-              {/* Search Bar - PHẢI CÓ PHẦN NÀY */}
+              {/* Search Bar */}
               <div className="flex-1 max-w-3xl mx-8">
                 <SearchBar />
               </div>
@@ -143,8 +159,8 @@ const MainLayout = ({ children }) => {
                   </span>
                 </button>
 
-                {/* Orders - standalone orders page */}
-                <button className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors" onClick={()=>navigate('/orders')}>
+                {/* Orders */}
+                <button className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate('/orders')}>
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                   </svg>
@@ -169,17 +185,6 @@ const MainLayout = ({ children }) => {
                     {distinctCount > 0 ? `${distinctCount} sản phẩm khác nhau trong giỏ` : 'Giỏ hàng trống'}
                   </div>
                 </button>
-
-                {isAuthenticated && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={logout}
-                    className="ml-2"
-                  >
-                    Đăng xuất
-                  </Button>
-                )}
               </div>
             </div>
           </div>
@@ -191,7 +196,7 @@ const MainLayout = ({ children }) => {
         {children}
       </main>
 
-      {/* Footer - CẢI THIỆN */}
+      {/* Footer - giữ nguyên */}
       <footer className="bg-gray-800 text-white py-16 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -250,9 +255,8 @@ const MainLayout = ({ children }) => {
             <div>
               <h4 className="text-lg font-semibold mb-6 text-white">Hỗ trợ</h4>
               <ul className="space-y-3 text-sm text-gray-300">
-                <li><a href="#" className="hover:text-white transition-colors flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Trung tâm hỗ trợ</a></li>
-                <li><a href="#" className="hover:text-white transition-colors flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Hướng dẫn mua hàng</a></li>
                 <li><a href="#" className="hover:text-white transition-colors flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Chính sách đổi trả</a></li>
+                <li><a href="#" className="hover:text-white transition-colors flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Hướng dẫn mua hàng</a></li>
                 <li><a href="#" className="hover:text-white transition-colors flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Bảo hành sản phẩm</a></li>
                 <li><a href="#" className="hover:text-white transition-colors flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Liên hệ</a></li>
                 <li><a href="#" className="hover:text-white transition-colors flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>FAQ</a></li>
@@ -292,85 +296,120 @@ const MainLayout = ({ children }) => {
                 <h5 className="text-md font-semibold mb-3 text-white">Đăng ký nhận tin</h5>
                 <div className="flex">
                   <input 
-                    type="email" 
-                    placeholder="Email của bạn" 
-                    className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-l-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    type="email"
+                    placeholder="Email của bạn"
+                    className="flex-1 px-3 py-2 rounded-l-md border-0 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                  <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-r-lg transition-colors">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                    </svg>
+                  <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-md text-white transition-colors">
+                    Gửi
                   </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Bottom Section */}
-          <div className="border-t border-gray-700 pt-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Payment Methods */}
-              <div>
-                <h5 className="text-md font-semibold mb-4 text-white">Phương thức thanh toán</h5>
-                <div className="flex space-x-3">
-                  <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-blue-600">VISA</span>
-                  </div>
-                  <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-red-600">MC</span>
-                  </div>
-                  <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-blue-800">ATM</span>
-                  </div>
-                  <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-green-600">COD</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Certifications */}
-              <div>
-                <h5 className="text-md font-semibold mb-4 text-white">Chứng nhận</h5>
-                <div className="flex space-x-3">
-                  <div className="w-12 h-8 bg-green-600 rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">SSL</span>
-                  </div>
-                  <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">ISO</span>
-                  </div>
-                  <div className="w-12 h-8 bg-purple-600 rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">GDPR</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Business Hours */}
-              <div>
-                <h5 className="text-md font-semibold mb-4 text-white">Giờ làm việc</h5>
-                <div className="text-sm text-gray-300 space-y-1">
-                  <p>Thứ 2 - Thứ 6: 8:00 - 22:00</p>
-                  <p>Thứ 7 - Chủ nhật: 9:00 - 21:00</p>
-                  <p className="text-green-400">Hỗ trợ 24/7 online</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Copyright */}
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center">
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-              <p className="text-sm text-gray-300">
-                &copy; 2024 TechStore. All rights reserved.
-              </p>
-              <div className="flex space-x-6 text-sm text-gray-300">
-                <a href="#" className="hover:text-white transition-colors">Điều khoản sử dụng</a>
-                <a href="#" className="hover:text-white transition-colors">Chính sách bảo mật</a>
-                <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
-              </div>
-            </div>
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-700 pt-8 text-center">
+            <p className="text-sm text-gray-400">
+              © 2024 TechStore. Tất cả quyền được bảo lưu. | 
+              <a href="#" className="hover:text-white ml-1">Điều khoản</a> | 
+              <a href="#" className="hover:text-white ml-1">Bảo mật</a>
+            </p>
           </div>
         </div>
       </footer>
+
+      {/* ✅ THÊM SELLER SELECTION MODAL */}
+      {showSellerModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-96 max-w-md mx-4 transform transition-all">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-900">Chọn Dashboard</h3>
+              <button
+                onClick={() => setShowSellerModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            
+            <p className="text-gray-600 mb-6 text-center">
+              Bạn có cả 2 vai trò. Vui lòng chọn dashboard muốn truy cập:
+            </p>
+
+            {/* Options */}
+            <div className="space-y-4">
+              <button
+                onClick={() => {
+                  console.log('🎯 Modal: Navigating to Seller Dashboard');
+                  setShowSellerModal(false);
+                  navigate('/seller/dashboard');
+                }}
+                className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-left group"
+              >
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                  <span className="text-2xl">📊</span>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 group-hover:text-blue-700">Seller Dashboard</div>
+                  <div className="text-sm text-gray-500">Quản lý bán hàng cá nhân</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => {
+                  console.log('🎯 Modal: Navigating to Store Dashboard');
+                  setShowSellerModal(false);
+                  navigate('/store/dashboard');
+                }}
+                className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all duration-200 text-left group"
+              >
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                  <span className="text-2xl">🏪</span>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 group-hover:text-green-700">Store Dashboard</div>
+                  <div className="text-sm text-gray-500">Quản lý cửa hàng & chi nhánh</div>
+                </div>
+              </button>
+            </div>
+
+            {/* Footer info */}
+            <div className="mt-6 text-center text-xs text-gray-500">
+              Vai trò hiện tại: {user?.roles?.join(', ')}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Auth Modal - giữ nguyên */}
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="relative">
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+            {authMode === 'login' ? (
+              <LoginForm 
+                onSwitchToSignUp={() => setAuthMode('register')}
+                onSwitchToForgotPassword={() => setAuthMode('forgot')}
+              />
+            ) : (
+              <RegisterForm 
+                onSwitchToLogin={() => setAuthMode('login')}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import StoreDashboard from '../pages/store/StoreDashboard';
 import StoreProducts from '../pages/store/StoreProducts';
 import StoreProfile from '../pages/store/StoreProfile';
@@ -22,6 +22,8 @@ import StoreProductVariants from '../pages/store/StoreProductVariants';
 import StoreChats from '../pages/store/StoreChats';
 
 const StoreRoutes = () => {
+  console.log('🔍 StoreRoutes rendered'); // Debug log
+  
   return (
     <Routes>
       <Route path="/dashboard" element={<StoreDashboard />} />
@@ -49,6 +51,7 @@ const StoreRoutes = () => {
       <Route path="/support" element={<div>Store Support Page</div>} />
       <Route path="/reports" element={<div>Store Reports Page</div>} />
       <Route path="/website" element={<div>Store Website Page</div>} />
+      <Route path="/" element={<Navigate to="/store/dashboard" replace />} />
     </Routes>
   );
 };

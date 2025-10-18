@@ -10,30 +10,56 @@ export const useAuth = () => {
   return context;
 };
 
+// ROLE MAP cho testing (thêm vào đầu file)
+const ROLE_MAP = {
+  'seller@techstore.com': ['SELLER'],
+  'owner@techstore.com': ['STORE_OWNER'],
+  'both@techstore.com': ['SELLER', 'STORE_OWNER'],
+  'admin@techstore.com': ['ADMIN','SELLER','STORE_OWNER'],
+  'user@test.com': ['BUYER']
+};
+
+const MOCK_STORES_FOR_OWNER = [
+  { id: 'branch-1', name: 'TechPro - Hải Châu' },
+  { id: 'branch-2', name: 'TechPro - Thanh Khê' }
+];
+
+const assignRolesForEmail = (email, user) => {
+  const roles = ROLE_MAP[email] || ['BUYER'];
+  user.roles = roles;
+  if (roles.includes('STORE_OWNER')) {
+    user.stores = MOCK_STORES_FOR_OWNER;
+  } else {
+    user.stores = [];
+  }
+  return user;
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Kiểm tra authentication khi app khởi động
+  // SỬA: Kiểm tra auth từ localStorage thay vì tự động tạo user
   useEffect(() => {
     const checkAuth = () => {
-      // Luôn tạo user mặc định cho seller
-      const defaultSeller = {
-        id: 1,
-        email: 'seller@techstore.com',
-        name: 'Quang Nguyễn',
-        role: 'SELLER',
-        avatar: null
-      };
+      try {
+        const storedUser = localStorage.getItem('user');
+        const storedToken = localStorage.getItem('token');
+        
+        if (storedUser && storedToken) {
+          const parsedUser = JSON.parse(storedUser);
+          const userWithRoles = assignRolesForEmail(parsedUser.email, parsedUser);
+          setUser(userWithRoles);
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        // Clear invalid data
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      }
       
-      const defaultToken = 'seller_token_123';
-      
-      localStorage.setItem('user', JSON.stringify(defaultSeller));
-      localStorage.setItem('token', defaultToken);
-      
-      setUser(defaultSeller);
-      setIsAuthenticated(true);
       setLoading(false);
     };
 
@@ -43,9 +69,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      // Simulate API call - thay bằng real API sau
+      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Mock validation - accept any email/password for demo
       const userData = {
         id: Date.now(),
         email: email,
@@ -53,16 +80,18 @@ export const AuthProvider = ({ children }) => {
         avatar: null
       };
       
+      // Assign roles based on email
+      const userWithRoles = assignRolesForEmail(email, userData);
       const token = `token_${Date.now()}`;
       
-      // Lưu vào localStorage
-      localStorage.setItem('user', JSON.stringify(userData));
+      // Save to localStorage
+      localStorage.setItem('user', JSON.stringify(userWithRoles));
       localStorage.setItem('token', token);
       
-      setUser(userData);
+      setUser(userWithRoles);
       setIsAuthenticated(true);
       
-      return { success: true, data: userData };
+      return { success: true, data: userWithRoles };
     } catch (error) {
       return { success: false, error: error.message };
     } finally {
@@ -83,15 +112,17 @@ export const AuthProvider = ({ children }) => {
         avatar: null
       };
       
+      // Assign roles based on email
+      const userWithRoles = assignRolesForEmail(userData.email, newUser);
       const token = `token_${Date.now()}`;
       
-      localStorage.setItem('user', JSON.stringify(newUser));
+      localStorage.setItem('user', JSON.stringify(userWithRoles));
       localStorage.setItem('token', token);
       
-      setUser(newUser);
+      setUser(userWithRoles);
       setIsAuthenticated(true);
       
-      return { success: true, data: newUser };
+      return { success: true, data: userWithRoles };
     } catch (error) {
       return { success: false, error: error.message };
     } finally {
@@ -108,7 +139,6 @@ export const AuthProvider = ({ children }) => {
 
   const forgotPassword = async (email) => {
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       return { success: true };
     } catch (error) {
