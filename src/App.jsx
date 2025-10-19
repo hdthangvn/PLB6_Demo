@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { StoreProvider } from './context/StoreContext';
+import ScrollToTop from './components/common/ScrollToTop'; // ✅ THÊM IMPORT
 import AuthPage from './pages/auth/AuthPage';
 import HomePage from './pages/home/HomePage';
 import ProductDetail from './pages/products/ProductDetail';
@@ -59,6 +60,7 @@ export default function App() {
       <CartProvider>
         <StoreProvider>
           <BrowserRouter>
+            <ScrollToTop /> {/* ✅ THÊM COMPONENT */}
             <AppContent />
           </BrowserRouter>
         </StoreProvider>

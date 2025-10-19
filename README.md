@@ -28,7 +28,10 @@ BỔ SUNG TRANG CHO SELLER VÀ CHỦ STORE CÓ NHIỀU CHI NHÁNH
 http://localhost:5173/seller/dashboard
 http://localhost:5173/store/dashboard
 
+Thắng:
 Đăng nhập với seller@techstore.com → Chỉ hiện Seller Dashboard
 Đăng nhập với owner@techstore.com → Chỉ hiện Store Dashboard
 Đăng nhập với both@techstore.com → Hiện dropdown menu với 2 options
 Đăng nhập với email bất kỳ → Tự động được role BUYER
+
+đã fix lỗi: khi tôi chuyển sang trang chi tiết sản phẩm, trình duyệt không tự động cuộn lên đầu trang 
