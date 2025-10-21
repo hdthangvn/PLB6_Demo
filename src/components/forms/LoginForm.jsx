@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 
 const LoginForm = ({ onSwitchToSignUp, onSwitchToForgotPassword }) => {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -50,7 +52,10 @@ const LoginForm = ({ onSwitchToSignUp, onSwitchToForgotPassword }) => {
     setLoading(true);
     const result = await login(formData.email, formData.password);
     
-    if (!result.success) {
+    if (result.success) {
+      // Đăng nhập thành công, redirect về trang chủ
+      navigate('/');
+    } else {
       setErrors({ general: result.error || 'Đăng nhập thất bại' });
     }
     

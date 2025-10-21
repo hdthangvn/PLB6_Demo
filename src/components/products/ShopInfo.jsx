@@ -1,11 +1,23 @@
 import { useNavigate } from 'react-router-dom';
+import { useStores } from '../../hooks/useStores';
+import { useState } from 'react';
 
 const ShopInfo = ({ shop }) => {
   const navigate = useNavigate();
+  const { stores } = useStores();
+  const [showOtherStores, setShowOtherStores] = useState(false);
+
+  // ✅ TÍCH HỢP STORES API: Lấy các stores khác để so sánh
+  const otherStores = stores.filter(s => s.id !== shop?.id).slice(0, 3);
 
   const handleViewShop = () => {
+    console.log('Shop data:', shop); // Debug log
     if (shop?.id) {
-      navigate(`/shop/${shop.id}`);
+      navigate(`/store/${shop.id}`);
+    } else {
+      console.warn('Shop ID is missing:', shop);
+      // Fallback: navigate to stores list
+      navigate('/stores');
     }
   };
 
@@ -25,8 +37,8 @@ const ShopInfo = ({ shop }) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center overflow-hidden">
-            {shop?.logoUrl ? (
-              <img src={shop.logoUrl} alt={shop.name} className="w-full h-full object-cover" />
+            {shop?.logo ? (
+              <img src={`https://e-commerce-raq1.onrender.com${shop.logo}`} alt={shop.name} className="w-full h-full object-cover" />
             ) : (
               <span className="text-white font-bold text-lg">{(shop?.name || 'T')[0]}</span>
             )}
@@ -165,6 +177,46 @@ const ShopInfo = ({ shop }) => {
           <li>• Tích điểm đổi quà hấp dẫn</li>
         </ul>
       </div>
+
+      {/* ✅ TÍCH HỢP STORES API: Other Stores Comparison */}
+      {otherStores.length > 0 && (
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-medium text-blue-900">🏪 So sánh với cửa hàng khác</h3>
+            <button
+              onClick={() => setShowOtherStores(!showOtherStores)}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              {showOtherStores ? 'Thu gọn' : 'Xem thêm'}
+            </button>
+          </div>
+          
+          {showOtherStores && (
+            <div className="space-y-2">
+              {otherStores.map((otherStore) => (
+                <div key={otherStore.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 bg-gradient-to-br from-gray-400 to-gray-600 rounded flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {otherStore.name?.charAt(0) || 'S'}
+                      </span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {otherStore.name}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => navigate(`/shop/${otherStore.id}`)}
+                    className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                  >
+                    Xem shop
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

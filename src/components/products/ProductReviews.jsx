@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useReviews } from '../../hooks/useReviews';
+import { reviewService } from '../../services/reviewService';
 import ReviewForm from './ReviewForm';
 import Button from '../ui/Button';
 
@@ -24,6 +25,29 @@ const ProductReviews = ({ product }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyContent, setReplyContent] = useState('');
+  
+  // ✅ TÍCH HỢP REVIEWS API: Real-time stats từ API
+  const [apiStats, setApiStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(false);
+
+  const fetchApiStats = async () => {
+    if (!product?.id) return;
+    setStatsLoading(true);
+    try {
+      const result = await reviewService.getProductVariantReviewStats(product.id);
+      if (result.success) {
+        setApiStats(result.data);
+      }
+    } catch (error) {
+      console.error('Error fetching review stats:', error);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchApiStats();
+  }, [product?.id]);
 
   // Handle filter change
   const handleFilterChange = (filter) => {
@@ -167,6 +191,16 @@ const ProductReviews = ({ product }) => {
             </div>
             {renderStars(Math.floor(summary.averageRating), 'w-6 h-6')}
             <p className="text-gray-600 mt-2">{summary.totalReviews} đánh giá</p>
+            
+            {/* ✅ TÍCH HỢP REVIEWS API: Real-time API Stats */}
+            {apiStats && (
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="text-xs text-blue-600 font-medium mb-1">📊 API Stats</div>
+                <div className="text-xs text-blue-700">
+                  {statsLoading ? 'Loading...' : `API: ${apiStats.totalReviews || 0} reviews`}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Rating Distribution */}

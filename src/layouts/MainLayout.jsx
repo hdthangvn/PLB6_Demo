@@ -81,6 +81,14 @@ const MainLayout = ({ children }) => {
                 </div>
                 {isAuthenticated ? (
                   <div className="flex items-center space-x-4">
+                    {/* API Test Link */}
+                    <button
+                      onClick={() => navigate('/test')}
+                      className="hover:text-blue-200 whitespace-nowrap text-sm"
+                    >
+                      🧪 API Test
+                    </button>
+                    <span className="text-blue-200">|</span>
                     {/* User Profile Link */}
                     <button
                       onClick={() => navigate('/profile')}
@@ -94,9 +102,19 @@ const MainLayout = ({ children }) => {
                   </div>
                 ) : (
                   <div className="flex items-center space-x-4 flex-nowrap">
-                    <button className="hover:text-blue-200 whitespace-nowrap">Đăng Ký</button>
+                    <button 
+                      onClick={() => navigate('/auth?mode=register')}
+                      className="hover:text-blue-200 whitespace-nowrap"
+                    >
+                      Đăng Ký
+                    </button>
                     <span className="text-blue-200">|</span>
-                    <button className="hover:text-blue-200 whitespace-nowrap">Đăng Nhập</button>
+                    <button 
+                      onClick={() => navigate('/auth?mode=login')}
+                      className="hover:text-blue-200 whitespace-nowrap"
+                    >
+                      Đăng Nhập
+                    </button>
                   </div>
                 )}
               </div>
@@ -108,8 +126,8 @@ const MainLayout = ({ children }) => {
         <div className="bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-20">
-              {/* Logo */}
-              <div className="flex items-center">
+              {/* Logo & Navigation */}
+              <div className="flex items-center space-x-8">
                 <div 
                   className="flex items-center cursor-pointer"
                   onClick={() => navigate('/')}
@@ -124,6 +142,22 @@ const MainLayout = ({ children }) => {
                     <span className="text-purple-600">Store</span>
                   </h1>
                 </div>
+                
+                {/* Navigation Menu */}
+                <nav className="hidden md:flex items-center space-x-6">
+                  <button 
+                    onClick={() => navigate('/')}
+                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  >
+                    Trang chủ
+                  </button>
+                  <button 
+                    onClick={() => navigate('/stores')}
+                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  >
+                    🏪 Cửa hàng
+                  </button>
+                </nav>
               </div>
 
               {/* Search Bar - PHẢI CÓ PHẦN NÀY */}
@@ -174,7 +208,10 @@ const MainLayout = ({ children }) => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={logout}
+                    onClick={() => {
+                      logout();
+                      navigate('/');
+                    }}
                     className="ml-2"
                   >
                     Đăng xuất

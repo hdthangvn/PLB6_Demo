@@ -8,8 +8,154 @@ const StoreInventory = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('ALL');
 
-  // Mock data for inventory
-  const inventory = [
+  // Mock data for inventory - phân biệt theo chi nhánh
+  const getInventoryByBranch = (branchId) => {
+    if (branchId === 'branch-1') {
+      // Chi nhánh Hải Châu - Chuyên điện thoại cao cấp
+      return [
+        {
+          id: 1,
+          productName: 'iPhone 15 Pro Max',
+          sku: 'IPH15PM-256',
+          category: 'Điện thoại',
+          currentStock: 25,
+          minStock: 5,
+          maxStock: 50,
+          costPrice: 30000000,
+          sellingPrice: 35000000,
+          status: 'IN_STOCK',
+          lastUpdated: '2024-01-20'
+        },
+        {
+          id: 2,
+          productName: 'Samsung Galaxy S24 Ultra',
+          sku: 'SGS24U-512',
+          category: 'Điện thoại',
+          currentStock: 18,
+          minStock: 3,
+          maxStock: 30,
+          costPrice: 28000000,
+          sellingPrice: 32000000,
+          status: 'IN_STOCK',
+          lastUpdated: '2024-01-19'
+        },
+        {
+          id: 3,
+          productName: 'AirPods Pro 2',
+          sku: 'APP2-USB',
+          category: 'Phụ kiện',
+          currentStock: 40,
+          minStock: 10,
+          maxStock: 100,
+          costPrice: 5000000,
+          sellingPrice: 6500000,
+          status: 'IN_STOCK',
+          lastUpdated: '2024-01-18'
+        },
+        {
+          id: 4,
+          productName: 'iPhone 14 Pro',
+          sku: 'IPH14P-128',
+          category: 'Điện thoại',
+          currentStock: 0,
+          minStock: 5,
+          maxStock: 25,
+          costPrice: 20000000,
+          sellingPrice: 25000000,
+          status: 'OUT_OF_STOCK',
+          lastUpdated: '2024-01-17'
+        },
+        {
+          id: 5,
+          productName: 'Samsung Galaxy Buds Pro',
+          sku: 'SGBP-BLK',
+          category: 'Phụ kiện',
+          currentStock: 3,
+          minStock: 5,
+          maxStock: 20,
+          costPrice: 3500000,
+          sellingPrice: 4500000,
+          status: 'LOW_STOCK',
+          lastUpdated: '2024-01-16'
+        }
+      ];
+    }
+    
+    if (branchId === 'branch-2') {
+      // Chi nhánh Thanh Khê - Chuyên laptop gaming và văn phòng
+      return [
+        {
+          id: 1,
+          productName: 'MacBook Pro M3',
+          sku: 'MBP-M3-512',
+          category: 'Laptop',
+          currentStock: 12,
+          minStock: 3,
+          maxStock: 25,
+          costPrice: 40000000,
+          sellingPrice: 45000000,
+          status: 'IN_STOCK',
+          lastUpdated: '2024-01-20'
+        },
+        {
+          id: 2,
+          productName: 'ASUS ROG Strix G15',
+          sku: 'ROG-G15-4060',
+          category: 'Laptop',
+          currentStock: 8,
+          minStock: 2,
+          maxStock: 15,
+          costPrice: 25000000,
+          sellingPrice: 28000000,
+          status: 'IN_STOCK',
+          lastUpdated: '2024-01-19'
+        },
+        {
+          id: 3,
+          productName: 'Dell XPS 13',
+          sku: 'DXP13-I7',
+          category: 'Laptop',
+          currentStock: 6,
+          minStock: 2,
+          maxStock: 12,
+          costPrice: 30000000,
+          sellingPrice: 35000000,
+          status: 'IN_STOCK',
+          lastUpdated: '2024-01-18'
+        },
+        {
+          id: 4,
+          productName: 'Logitech MX Master 3S',
+          sku: 'MXM3S-GRY',
+          category: 'Phụ kiện',
+          currentStock: 25,
+          minStock: 5,
+          maxStock: 50,
+          costPrice: 2000000,
+          sellingPrice: 2500000,
+          status: 'IN_STOCK',
+          lastUpdated: '2024-01-17'
+        },
+        {
+          id: 5,
+          productName: 'MacBook Air M2',
+          sku: 'MBA-M2-256',
+          category: 'Laptop',
+          currentStock: 0,
+          minStock: 2,
+          maxStock: 10,
+          costPrice: 28000000,
+          sellingPrice: 32000000,
+          status: 'OUT_OF_STOCK',
+          lastUpdated: '2024-01-16'
+        }
+      ];
+    }
+    
+    return [];
+  };
+
+  const inventory = getInventoryByBranch(currentStore?.id) || [
     {
       id: 1,
       productName: 'iPhone 15 Pro Max',

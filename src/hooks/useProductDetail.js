@@ -13,28 +13,43 @@ export const useProductDetail = (productId) => {
         setLoading(true);
         setError(null);
         
+        console.log('🔍 Fetching product with ID:', productId);
+        
         // Fetch product by ID
-        const productResult = await productService.getProductById(parseInt(productId));
+        const productResult = await productService.getProductById(productId);
         
         if (productResult.success) {
+          console.log('✅ Product found:', productResult.data);
+          console.log('📂 Product category:', productResult.data.category);
+          
           setProduct(productResult.data);
           
           // Fetch related products based on category
-          const relatedResult = await productService.getProductsByCategory(
-            productResult.data.category || 'featured', 
-            4
-          );
+          let categoryForAPI = productResult.data.category || 'featured';
+          // Map category từ API sang format đúng
+          if (productResult.data.category === 'Äiá»n thoáº¡i') categoryForAPI = 'Phone';
+          if (productResult.data.category === 'Laptop') categoryForAPI = 'Laptop';
+          
+          console.log('🔄 Category for related products API:', categoryForAPI);
+          
+          const relatedResult = await productService.getProductsByCategory(categoryForAPI, 4);
           if (relatedResult.success) {
+            console.log('📦 Related products raw:', relatedResult.data);
             // Filter out current product
-            const filtered = relatedResult.data.filter(p => p.id !== parseInt(productId));
+            const filtered = relatedResult.data.filter(p => p.id !== productId);
+            console.log('✂️ Filtered related products:', filtered);
             setRelatedProducts(filtered.slice(0, 4));
+          } else {
+            console.log('❌ No related products found for category:', categoryForAPI);
+            setRelatedProducts([]);
           }
         } else {
+          console.log('❌ Product not found:', productResult.error);
           setError('Product not found');
         }
       } catch (err) {
+        console.error('💥 Error fetching product detail:', err);
         setError(err.message);
-        console.error('Error fetching product detail:', err);
       } finally {
         setLoading(false);
       }

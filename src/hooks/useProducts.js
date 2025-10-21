@@ -19,6 +19,26 @@ export const useProducts = (category) => {
           result = await productService.getFeaturedProducts();
         } else if (category === 'all') {
           result = await productService.getAllProducts();
+        } else if (category === 'laptop') {
+          result = await productService.getProductsByCategory('Laptop');
+        } else if (category === 'phone') {
+          result = await productService.getProductsByCategory('Phone');
+        } else if (category === 'laptops') {
+          result = await productService.getProductsByCategory('Laptop');
+        } else if (category === 'smartphones') {
+          result = await productService.getProductsByCategory('Phone');
+        } else if (category === 'audio') {
+          result = await productService.getProductsByCategory('Audio');
+        } else if (category === 'camera') {
+          result = await productService.getProductsByCategory('Camera');
+        } else if (category === 'tv') {
+          result = await productService.getProductsByCategory('TV');
+        } else if (category === 'pc') {
+          result = await productService.getProductsByCategory('PC');
+        } else if (category === 'accessories') {
+          result = await productService.getProductsByCategory('Accessories');
+        } else if (category === 'home') {
+          result = await productService.getProductsByCategory('Home');
         } else {
           result = await productService.getProductsByCategory(category);
         }

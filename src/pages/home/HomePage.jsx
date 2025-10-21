@@ -1,5 +1,6 @@
 import MainLayout from '../../layouts/MainLayout';
 import ProductSection from '../../components/common/ProductSection';
+import APIStatusWidget from '../../components/common/APIStatusWidget';
 import { useState, useEffect } from 'react';
 import { useProducts } from '../../hooks/useProducts';
 import { useCategories } from '../../hooks/useCategories';
@@ -12,14 +13,14 @@ const HomePage = () => {
   // Fetch data using custom hooks
   const { products: heroProducts, loading: heroLoading } = useProducts('hero');
   const { products: featuredProducts, loading: featuredLoading } = useProducts('featured');
-  const { products: laptopProducts, loading: laptopLoading } = useProducts('laptops');
-  const { products: smartphoneProducts, loading: smartphoneLoading } = useProducts('smartphones');
+  const { products: laptopProducts, loading: laptopLoading } = useProducts('laptop');
+  const { products: smartphoneProducts, loading: smartphoneLoading } = useProducts('phone');
   const { categories, loading: categoriesLoading } = useCategories();
 
   // GIỚI HẠN 5 SẢN PHẨM CHO HOMEPAGE
-  const limitedFeaturedProducts = featuredProducts.slice(0, 5);
-  const limitedLaptopProducts = laptopProducts.slice(0, 5);
-  const limitedSmartphoneProducts = smartphoneProducts.slice(0, 5);
+  const limitedFeaturedProducts = Array.isArray(featuredProducts) ? featuredProducts.slice(0, 5) : [];
+  const limitedLaptopProducts = Array.isArray(laptopProducts) ? laptopProducts.slice(0, 5) : [];
+  const limitedSmartphoneProducts = Array.isArray(smartphoneProducts) ? smartphoneProducts.slice(0, 5) : [];
 
   // Event handlers
   const handleProductClick = (product) => {
@@ -411,7 +412,7 @@ const HomePage = () => {
       />
 
       <ProductSection
-        title="Điện thoại, Tablet"
+        title="Điện thoại"
         products={limitedSmartphoneProducts}
         loading={smartphoneLoading}
         onProductClick={handleProductClick}
@@ -460,6 +461,13 @@ const HomePage = () => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* API Status Widget */}
+      <section className="py-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <APIStatusWidget />
         </div>
       </section>
 

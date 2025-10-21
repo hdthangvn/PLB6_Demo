@@ -9,13 +9,15 @@ const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const query = searchParams.get('q') || '';
+  const brandParam = searchParams.get('brand') || '';
   
   const { searchResults, loading, error, totalResults, searchProducts } = useSearch();
   const [filters, setFilters] = useState({
     category: 'all',
     minPrice: '',
     maxPrice: '',
-    sortBy: 'relevance'
+    sortBy: 'relevance',
+    brands: brandParam ? [brandParam] : [] // ✅ ĐỌC BRAND TỪ URL
   });
 
   // Perform search when query or filters change - với debounce

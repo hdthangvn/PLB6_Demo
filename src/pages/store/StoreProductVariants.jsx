@@ -13,8 +13,156 @@ const StoreProductVariants = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState('');
 
-  // Mock data for product variants
-  const mockVariants = [
+  // Mock data for product variants - phân biệt theo chi nhánh
+  const getMockVariantsByBranch = (branchId) => {
+    if (branchId === 'branch-1') {
+      // Chi nhánh Hải Châu - Chuyên điện thoại cao cấp
+      return [
+        {
+          id: 'PV-001',
+          productId: 'P-001',
+          productName: 'iPhone 15 Pro Max',
+          name: 'iPhone 15 Pro Max 256GB Titanium Blue',
+          price: 35000000,
+          stock: 25,
+          images: ['/images/iphone15-blue.jpg'],
+          attributes: {
+            color: 'Titanium Blue',
+            storage: '256GB',
+            ram: '8GB'
+          },
+          status: 'ACTIVE',
+          createdAt: '2024-01-15T10:30:00Z'
+        },
+        {
+          id: 'PV-002',
+          productId: 'P-001',
+          productName: 'iPhone 15 Pro Max',
+          name: 'iPhone 15 Pro Max 512GB Titanium White',
+          price: 40000000,
+          stock: 18,
+          images: ['/images/iphone15-white.jpg'],
+          attributes: {
+            color: 'Titanium White',
+            storage: '512GB',
+            ram: '8GB'
+          },
+          status: 'ACTIVE',
+          createdAt: '2024-01-15T10:35:00Z'
+        },
+        {
+          id: 'PV-003',
+          productId: 'P-002',
+          productName: 'Samsung Galaxy S24 Ultra',
+          name: 'Galaxy S24 Ultra 256GB Titanium Black',
+          price: 32000000,
+          stock: 15,
+          images: ['/images/s24-black.jpg'],
+          attributes: {
+            color: 'Titanium Black',
+            storage: '256GB',
+            ram: '12GB'
+          },
+          status: 'ACTIVE',
+          createdAt: '2024-01-16T09:00:00Z'
+        },
+        {
+          id: 'PV-004',
+          productId: 'P-003',
+          productName: 'AirPods Pro 2',
+          name: 'AirPods Pro 2 USB-C White',
+          price: 6500000,
+          stock: 40,
+          images: ['/images/airpods-white.jpg'],
+          attributes: {
+            color: 'White',
+            version: 'USB-C',
+            case: 'MagSafe'
+          },
+          status: 'ACTIVE',
+          createdAt: '2024-01-17T11:00:00Z'
+        }
+      ];
+    }
+    
+    if (branchId === 'branch-2') {
+      // Chi nhánh Thanh Khê - Chuyên laptop gaming và văn phòng
+      return [
+        {
+          id: 'PV-001',
+          productId: 'P-001',
+          productName: 'MacBook Pro M3',
+          name: 'MacBook Pro M3 14" 512GB Space Gray',
+          price: 45000000,
+          stock: 12,
+          images: ['/images/macbook-space-gray.jpg'],
+          attributes: {
+            color: 'Space Gray',
+            storage: '512GB',
+            ram: '8GB',
+            screen: '14 inch'
+          },
+          status: 'ACTIVE',
+          createdAt: '2024-01-15T10:30:00Z'
+        },
+        {
+          id: 'PV-002',
+          productId: 'P-002',
+          productName: 'ASUS ROG Strix G15',
+          name: 'ROG Strix G15 RTX 4060 16GB Eclipse Gray',
+          price: 28000000,
+          stock: 8,
+          images: ['/images/rog-gray.jpg'],
+          attributes: {
+            color: 'Eclipse Gray',
+            gpu: 'RTX 4060',
+            ram: '16GB',
+            storage: '512GB SSD'
+          },
+          status: 'ACTIVE',
+          createdAt: '2024-01-15T10:35:00Z'
+        },
+        {
+          id: 'PV-003',
+          productId: 'P-003',
+          productName: 'Dell XPS 13',
+          name: 'Dell XPS 13 i7 16GB 512GB Platinum',
+          price: 35000000,
+          stock: 6,
+          images: ['/images/dell-platinum.jpg'],
+          attributes: {
+            color: 'Platinum',
+            processor: 'Intel i7',
+            ram: '16GB',
+            storage: '512GB SSD'
+          },
+          status: 'ACTIVE',
+          createdAt: '2024-01-16T09:00:00Z'
+        },
+        {
+          id: 'PV-004',
+          productId: 'P-004',
+          productName: 'Logitech MX Master 3S',
+          name: 'MX Master 3S Wireless Mouse Graphite',
+          price: 2500000,
+          stock: 25,
+          images: ['/images/mx-master-graphite.jpg'],
+          attributes: {
+            color: 'Graphite',
+            connectivity: 'Wireless',
+            sensor: '8000 DPI',
+            battery: '70 days'
+          },
+          status: 'ACTIVE',
+          createdAt: '2024-01-17T11:00:00Z'
+        }
+      ];
+    }
+    
+    return [];
+  };
+
+  const mockVariants = getMockVariantsByBranch(currentStore?.id) || [
     {
       id: 'PV-001',
       productId: 'P-001',
@@ -202,7 +350,7 @@ const StoreProductVariants = () => {
                   </div>
                 </div>
                 
-                {/* Quick Stats */}
+                {/* Quick Stats - Phân biệt số liệu theo chi nhánh */}
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
                   <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
                     <div className="flex items-center gap-3">
@@ -213,7 +361,9 @@ const StoreProductVariants = () => {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-600">Tổng biến thể</p>
-                        <p className="text-xl font-bold text-gray-900">{variants.length}</p>
+                        <p className="text-xl font-bold text-gray-900">
+                          {currentStore?.id === 'branch-1' ? '4' : '4'}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -227,7 +377,9 @@ const StoreProductVariants = () => {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-600">Đang bán</p>
-                        <p className="text-xl font-bold text-gray-900">{variants.filter(v => v.status === 'ACTIVE').length}</p>
+                        <p className="text-xl font-bold text-gray-900">
+                          {currentStore?.id === 'branch-1' ? '4' : '4'}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -241,7 +393,9 @@ const StoreProductVariants = () => {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-600">Hết hàng</p>
-                        <p className="text-xl font-bold text-gray-900">{variants.filter(v => v.stock === 0).length}</p>
+                        <p className="text-xl font-bold text-gray-900">
+                          {currentStore?.id === 'branch-1' ? '0' : '0'}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -255,7 +409,9 @@ const StoreProductVariants = () => {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-600">Tổng tồn kho</p>
-                        <p className="text-xl font-bold text-gray-900">{variants.reduce((sum, v) => sum + v.stock, 0)}</p>
+                        <p className="text-xl font-bold text-gray-900">
+                          {currentStore?.id === 'branch-1' ? '98' : '51'}
+                        </p>
                       </div>
                     </div>
                   </div>

@@ -283,49 +283,49 @@ const StoreProducts = () => {
 
     // Số lượng tồn kho khác nhau theo chi nhánh (giữ nguyên status đã định)
     const stockByBranch = {
-      'branch-1': { // Hải Châu - Đã duyệt
-        1: 5,   // iPhone 14 Pro (ACTIVE)
+      'branch-1': { // Hải Châu - Chuyên điện thoại cao cấp
+        1: 8,   // iPhone 14 Pro (ACTIVE) - Điện thoại cao cấp
         2: 0,   // MacBook Air M2 (SOLD)
-        3: 3,   // Samsung Galaxy S24 (HIDDEN)
+        3: 6,   // Samsung Galaxy S24 (HIDDEN) - Điện thoại cao cấp
         4: 2,   // Dell XPS 13 (ACTIVE)
         5: 0,   // iPad Pro 12.9 (SOLD)
-        6: 0,   // AirPods Pro 2 (SOLD)
-        7: 2,   // Sony WH-1000XM5 (HIDDEN)
+        6: 15,  // AirPods Pro 2 (SOLD) - Phụ kiện điện thoại
+        7: 8,   // Sony WH-1000XM5 (HIDDEN) - Phụ kiện âm thanh
         8: 0,   // iPad Air 5 (SOLD)
         9: 1,   // ASUS ROG Strix G15 (HIDDEN)
-        10: 0,  // Xiaomi 13 Pro (SOLD)
-        11: 3,  // Logitech MX Master 3S (HIDDEN)
+        10: 0,  // Xiaomi 13 Pro (SOLD) - Điện thoại Android
+        11: 12, // Logitech MX Master 3S (HIDDEN) - Phụ kiện văn phòng
         12: 0,  // Surface Pro 9 (SOLD)
-        13: 2,  // OnePlus 11 (HIDDEN)
+        13: 5,  // OnePlus 11 (HIDDEN) - Điện thoại Android
         14: 0,  // Lenovo ThinkPad X1 (SOLD)
-        15: 1,  // Samsung Galaxy Tab S9 (HIDDEN)
+        15: 3,  // Samsung Galaxy Tab S9 (HIDDEN) - Máy tính bảng
         16: 0,  // Keychron K8 Pro (SOLD)
         17: 0,  // Huawei MateBook X Pro (SOLD)
-        18: 2,  // Nothing Phone 2 (HIDDEN)
+        18: 4,  // Nothing Phone 2 (HIDDEN) - Điện thoại Android
         19: 0,  // Apple Watch Series 9 (SOLD)
         20: 1   // MSI Gaming Laptop (HIDDEN)
       },
-      'branch-2': { // Thanh Khê - Đã duyệt
-        1: 8,   // iPhone 14 Pro (ACTIVE)
-        2: 2,   // MacBook Air M2 (SOLD)
-        3: 1,   // Samsung Galaxy S24 (HIDDEN)
-        4: 5,   // Dell XPS 13 (ACTIVE)
+      'branch-2': { // Thanh Khê - Chuyên laptop gaming và văn phòng
+        1: 3,   // iPhone 14 Pro (ACTIVE)
+        2: 7,   // MacBook Air M2 (SOLD) - Laptop văn phòng
+        3: 2,   // Samsung Galaxy S24 (HIDDEN)
+        4: 12,  // Dell XPS 13 (ACTIVE) - Laptop văn phòng cao cấp
         5: 0,   // iPad Pro 12.9 (SOLD)
         6: 0,   // AirPods Pro 2 (SOLD)
         7: 2,   // Sony WH-1000XM5 (HIDDEN)
         8: 0,   // iPad Air 5 (SOLD)
-        9: 1,   // ASUS ROG Strix G15 (HIDDEN)
+        9: 8,   // ASUS ROG Strix G15 (HIDDEN) - Laptop gaming
         10: 0,  // Xiaomi 13 Pro (SOLD)
-        11: 3,  // Logitech MX Master 3S (HIDDEN)
-        12: 0,  // Surface Pro 9 (SOLD)
+        11: 15, // Logitech MX Master 3S (HIDDEN) - Chuột văn phòng
+        12: 6,  // Surface Pro 9 (SOLD) - Máy tính bảng văn phòng
         13: 2,  // OnePlus 11 (HIDDEN)
-        14: 0,  // Lenovo ThinkPad X1 (SOLD)
+        14: 4,  // Lenovo ThinkPad X1 (SOLD) - Laptop doanh nhân
         15: 1,  // Samsung Galaxy Tab S9 (HIDDEN)
-        16: 0,  // Keychron K8 Pro (SOLD)
-        17: 0,  // Huawei MateBook X Pro (SOLD)
+        16: 8,  // Keychron K8 Pro (SOLD) - Bàn phím cơ gaming
+        17: 3,  // Huawei MateBook X Pro (SOLD) - Laptop văn phòng
         18: 2,  // Nothing Phone 2 (HIDDEN)
         19: 0,  // Apple Watch Series 9 (SOLD)
-        20: 1   // MSI Gaming Laptop (HIDDEN)
+        20: 6   // MSI Gaming Laptop (HIDDEN) - Laptop gaming
       },
       'branch-3': { // Sơn Trà (chờ duyệt) - Tất cả = 0
         1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0,

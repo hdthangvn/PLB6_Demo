@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from '../services/authService.js';
 
 const AuthContext = createContext();
 
@@ -17,23 +18,36 @@ export const AuthProvider = ({ children }) => {
 
   // Kiểm tra authentication khi app khởi động
   useEffect(() => {
-    const checkAuth = () => {
-      // Luôn tạo user mặc định cho seller
-      const defaultSeller = {
-        id: 1,
-        email: 'seller@techstore.com',
-        name: 'Quang Nguyễn',
-        role: 'SELLER',
-        avatar: null
-      };
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
       
-      const defaultToken = 'seller_token_123';
+      if (token && userData) {
+        try {
+          // Nếu là mock token hoặc session token, skip verification
+          if (token.startsWith('mock-token-') || token.startsWith('session-')) {
+            console.log('Using session token, skipping API verification');
+            setUser(JSON.parse(userData));
+            setIsAuthenticated(true);
+          } else {
+            // Verify token với backend
+            console.log('Verifying JWT token with backend');
+            const result = await authService.getCurrentUser();
+            if (result.success) {
+              setUser(JSON.parse(userData));
+              setIsAuthenticated(true);
+            } else {
+              // Token invalid, clear storage
+              console.log('Token invalid, clearing storage');
+              authService.logout();
+            }
+          }
+        } catch (error) {
+          console.error('Auth check failed:', error);
+          authService.logout();
+        }
+      }
       
-      localStorage.setItem('user', JSON.stringify(defaultSeller));
-      localStorage.setItem('token', defaultToken);
-      
-      setUser(defaultSeller);
-      setIsAuthenticated(true);
       setLoading(false);
     };
 
@@ -43,26 +57,12 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      // Simulate API call - thay bằng real API sau
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const userData = {
-        id: Date.now(),
-        email: email,
-        name: email.split('@')[0],
-        avatar: null
-      };
-      
-      const token = `token_${Date.now()}`;
-      
-      // Lưu vào localStorage
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', token);
-      
-      setUser(userData);
-      setIsAuthenticated(true);
-      
-      return { success: true, data: userData };
+      const result = await authService.login(email, password);
+      if (result.success) {
+        setUser(JSON.parse(localStorage.getItem('user')));
+        setIsAuthenticated(true);
+      }
+      return result;
     } catch (error) {
       return { success: false, error: error.message };
     } finally {
@@ -73,25 +73,8 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newUser = {
-        id: Date.now(),
-        email: userData.email,
-        name: userData.fullName,
-        avatar: null
-      };
-      
-      const token = `token_${Date.now()}`;
-      
-      localStorage.setItem('user', JSON.stringify(newUser));
-      localStorage.setItem('token', token);
-      
-      setUser(newUser);
-      setIsAuthenticated(true);
-      
-      return { success: true, data: newUser };
+      const result = await authService.register(userData);
+      return result;
     } catch (error) {
       return { success: false, error: error.message };
     } finally {
@@ -100,8 +83,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    authService.logout();
     setUser(null);
     setIsAuthenticated(false);
   };

@@ -1,95 +1,161 @@
-import { FEATURED_PRODUCTS, PRODUCT_LISTS, DETAILED_PRODUCTS } from '../constants/mockData.js';
-
-// Mock API calls - sẽ thay bằng real API sau
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
-// Simulate network delay
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://e-commerce-raq1.onrender.com/api/v1';
 
 export const productService = {
-  // Get hero slider products
+  // Get hero slider products - sử dụng search API để lấy sản phẩm nổi bật
   async getHeroProducts() {
-    await delay(300);
-    return {
-      success: true,
-      data: FEATURED_PRODUCTS
-    };
+    try {
+      const response = await fetch(`${API_BASE_URL}/products?name=&page=0&size=8`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data: data.data?.content || [] };
+    } catch (error) {
+      console.error('API Error:', error.message);
+      return { success: false, data: [], error: error.message };
+    }
   },
 
   // Get products by category
-  async getProductsByCategory(category, limit = 10) {
-    await delay(200);
-    return {
-      success: true,
-      data: PRODUCT_LISTS[category] || []
-    };
-  },
+  async getProductsByCategory(category, page = 0, size = 10) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/products/category/${encodeURIComponent(category)}?page=${page}&size=${size}`
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
 
-  // Get featured products
-  async getFeaturedProducts(limit = 5) {
-    await delay(200);
-    return {
-      success: true,
-      data: PRODUCT_LISTS.featured
-    };
-  },
-
-  // ✅ CẬP NHẬT: Get product by ID với detailed info
-  async getProductById(id) {
-    await delay(100);
-    
-    // Tìm trong DETAILED_PRODUCTS trước
-    const detailedProduct = DETAILED_PRODUCTS[id];
-    if (detailedProduct) {
-      return {
-        success: true,
-        data: detailedProduct
-      };
+      const data = await response.json();
+      return { success: true, data: data.data?.content || [] };
+    } catch (error) {
+      console.error('API Error:', error.message);
+      return { success: false, data: [], error: error.message };
     }
-    
-    // Fallback: tìm trong tất cả products
-    const allProducts = [
-      ...FEATURED_PRODUCTS,
-      ...PRODUCT_LISTS.featured,
-      ...PRODUCT_LISTS.laptops,
-      ...PRODUCT_LISTS.smartphones,
-      ...PRODUCT_LISTS.audio,
-      ...PRODUCT_LISTS.camera,
-      ...PRODUCT_LISTS.tv,
-      ...PRODUCT_LISTS.pc,
-      ...PRODUCT_LISTS.accessories,
-      ...PRODUCT_LISTS.home
-    ];
-    
-    const product = allProducts.find(p => p.id === parseInt(id));
-    return {
-      success: !!product,
-      data: product || null
-    };
   },
 
-  // ✅ THÊM: Get all products from entire marketplace
-  async getAllProducts() {
-    await delay(300);
-    const allProducts = [
-      ...FEATURED_PRODUCTS,
-      ...PRODUCT_LISTS.featured,
-      ...PRODUCT_LISTS.laptops,
-      ...PRODUCT_LISTS.smartphones,
-      ...PRODUCT_LISTS.audio,
-      ...PRODUCT_LISTS.camera,
-      ...PRODUCT_LISTS.tv,
-      ...PRODUCT_LISTS.pc,
-      ...PRODUCT_LISTS.accessories,
-      ...PRODUCT_LISTS.home
-    ];
-    
-    // Shuffle products to make it look random/mixed
-    const shuffled = allProducts.sort(() => Math.random() - 0.5);
-    
-    return {
-      success: true,
-      data: shuffled
-    };
+  // Get featured products - sử dụng search API với từ khóa phổ biến
+  async getFeaturedProducts(limit = 5) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products?name=&page=0&size=${limit}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data: data.data?.content || [] };
+    } catch (error) {
+      console.error('API Error:', error.message);
+      return { success: false, data: [], error: error.message };
+    }
+  },
+
+  // Get product by ID
+  async getProductById(id) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products/${id}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data: data.data };
+    } catch (error) {
+      console.error('API Error:', error.message);
+      return { success: false, data: null, error: error.message };
+    }
+  },
+
+  // Search products by name
+  async searchProducts(name, page = 0, size = 10) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/products?name=${encodeURIComponent(name)}&page=${page}&size=${size}`
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data: data.data?.content || [] };
+    } catch (error) {
+      console.error('API Error:', error.message);
+      return { success: false, data: [], error: error.message };
+    }
+  },
+
+  // Get products by category and brand
+  async getProductsByCategoryAndBrand(category, brand, page = 0, size = 10) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/products/category/${encodeURIComponent(category)}/brand/${encodeURIComponent(brand)}?page=${page}&size=${size}`
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data: data.data?.content || [] };
+    } catch (error) {
+      console.error('API Error:', error.message);
+      return { success: false, data: [], error: error.message };
+    }
+  },
+
+  // Get all products - sử dụng search API với query rỗng
+  async getAllProducts(page = 0, size = 20) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products?name=&page=${page}&size=${size}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data: data.data?.content || [] };
+    } catch (error) {
+      console.error('API Error:', error.message);
+      return { success: false, data: [], error: error.message };
+    }
+  },
+
+  // Get products by store ID
+  async getProductsByStore(storeId, page = 0, size = 20) {
+    try {
+      // Fetch all products and filter by store ID client-side
+      const response = await fetch(`${API_BASE_URL}/products?name=&page=${page}&size=${size}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const allProducts = data.data?.content || [];
+      
+      // Filter products by store ID
+      const storeProducts = allProducts.filter(product => 
+        product.store && product.store.id === storeId
+      );
+      
+      return { success: true, data: storeProducts };
+    } catch (error) {
+      console.error('API Error:', error.message);
+      return { success: false, data: [], error: error.message };
+    }
   }
 };

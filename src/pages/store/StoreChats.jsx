@@ -20,8 +20,78 @@ const StoreChats = () => {
   const fetchChats = async () => {
     try {
       setLoading(true);
-      // Mock data cho danh sách chat
-      const mockChats = [
+      // Mock data cho danh sách chat - phân biệt theo chi nhánh
+      const getMockChatsByBranch = (branchId) => {
+        if (branchId === 'branch-1') {
+          // Chi nhánh Hải Châu - Chuyên điện thoại cao cấp
+          return [
+            {
+              id: 'chat-001',
+              customerName: 'Nguyễn Minh Tuấn',
+              customerAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+              lastMessage: 'Khi nào có hàng lại iPhone 15 Pro Max?',
+              lastMessageTime: '2024-01-21T10:30:00Z',
+              unreadCount: 2,
+              status: 'online'
+            },
+            {
+              id: 'chat-002',
+              customerName: 'Trần Thị Lan',
+              customerAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
+              lastMessage: 'AirPods Pro 2 có màu nào khác không?',
+              lastMessageTime: '2024-01-21T09:15:00Z',
+              unreadCount: 0,
+              status: 'offline'
+            },
+            {
+              id: 'chat-003',
+              customerName: 'Lê Văn Đức',
+              customerAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+              lastMessage: 'Samsung Galaxy S24 Ultra có bảo hành bao lâu?',
+              lastMessageTime: '2024-01-21T08:45:00Z',
+              unreadCount: 1,
+              status: 'online'
+            },
+          ];
+        }
+        
+        if (branchId === 'branch-2') {
+          // Chi nhánh Thanh Khê - Chuyên laptop gaming và văn phòng
+          return [
+            {
+              id: 'chat-001',
+              customerName: 'Phạm Văn Hùng',
+              customerAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+              lastMessage: 'MacBook Pro M3 có thể nâng cấp RAM không?',
+              lastMessageTime: '2024-01-21T10:30:00Z',
+              unreadCount: 3,
+              status: 'online'
+            },
+            {
+              id: 'chat-002',
+              customerName: 'Nguyễn Thị Mai',
+              customerAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
+              lastMessage: 'ASUS ROG Strix G15 có phù hợp cho học tập không?',
+              lastMessageTime: '2024-01-21T09:15:00Z',
+              unreadCount: 0,
+              status: 'offline'
+            },
+            {
+              id: 'chat-003',
+              customerName: 'Hoàng Văn Nam',
+              customerAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+              lastMessage: 'Logitech MX Master 3S có thể dùng cho Mac không?',
+              lastMessageTime: '2024-01-21T08:45:00Z',
+              unreadCount: 1,
+              status: 'online'
+            },
+          ];
+        }
+        
+        return [];
+      };
+      
+      const mockChats = getMockChatsByBranch(currentStore?.id) || [
         {
           id: 'chat-001',
           customerName: 'Nguyễn Văn A',

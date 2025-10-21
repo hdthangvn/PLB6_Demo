@@ -59,7 +59,16 @@ const RegisterForm = ({ onSwitchToLogin }) => {
     }
     
     setLoading(true);
-    const result = await register(formData);
+    
+    // Map dữ liệu theo format API yêu cầu
+    const apiData = {
+      full_name: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+      retype_password: formData.confirmPassword
+    };
+    
+    const result = await register(apiData);
     
     if (!result.success) {
       setErrors({ general: result.error || 'Đăng ký thất bại' });

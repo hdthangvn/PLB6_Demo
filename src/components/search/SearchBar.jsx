@@ -1,13 +1,35 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '../../hooks/useSearch';
+import { useBrands } from '../../hooks/useBrands';
 
 const SearchBar = ({ onSearch, className = "" }) => {
   const [query, setQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const navigate = useNavigate();
   const { suggestions, getSuggestions } = useSearch();
+  const { brands } = useBrands();
   const searchRef = useRef(null);
+
+  // ✅ TÍCH HỢP BRANDS API: Kết hợp suggestions với brands (loại bỏ duplicate)
+  const allSuggestions = [
+    ...suggestions,
+    ...brands.filter(brand => 
+      brand.name.toLowerCase().includes(query.toLowerCase())
+    ).map(brand => `${brand.name} (Thương hiệu)`)
+  ];
+  
+  // ✅ LOẠI BỎ DUPLICATE BRANDS (ASUS vs Asus)
+  const uniqueSuggestions = allSuggestions.filter((suggestion, index, self) => {
+    if (suggestion.includes('(Thương hiệu)')) {
+      const brandName = suggestion.replace(' (Thương hiệu)', '').toLowerCase();
+      return self.findIndex(s => 
+        s.includes('(Thương hiệu)') && 
+        s.replace(' (Thương hiệu)', '').toLowerCase() === brandName
+      ) === index;
+    }
+    return true;
+  });
 
   // Debounce suggestions
   useEffect(() => {
@@ -48,8 +70,15 @@ const SearchBar = ({ onSearch, className = "" }) => {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    setQuery(suggestion);
-    performSearch(suggestion);
+    if (suggestion.includes('(Thương hiệu)')) {
+      // ✅ KHI CLICK BRAND: Search theo brand thay vì tên
+      const brandName = suggestion.replace(' (Thương hiệu)', '');
+      setQuery(brandName);
+      navigate(`/search?q=${encodeURIComponent(brandName)}&brand=${encodeURIComponent(brandName)}`);
+    } else {
+      setQuery(suggestion);
+      performSearch(suggestion);
+    }
   };
 
   return (
@@ -75,9 +104,9 @@ const SearchBar = ({ onSearch, className = "" }) => {
       </form>
 
       {/* Search Suggestions */}
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && uniqueSuggestions.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-          {suggestions.map((suggestion, index) => (
+          {uniqueSuggestions.slice(0, 8).map((suggestion, index) => (
             <button
               key={index}
               onClick={() => handleSuggestionClick(suggestion)}
@@ -88,6 +117,11 @@ const SearchBar = ({ onSearch, className = "" }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
                 <span className="text-sm">{suggestion}</span>
+                {suggestion.includes('(Thương hiệu)') && (
+                  <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full">
+                    Brand
+                  </span>
+                )}
               </div>
             </button>
           ))}

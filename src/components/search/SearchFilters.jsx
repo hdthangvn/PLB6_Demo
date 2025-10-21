@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useBrands } from '../../hooks/useBrands';
 
 const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
+  const { brands, loading: brandsLoading } = useBrands();
   const [filters, setFilters] = useState({
     category: 'all',
     minPrice: '',
@@ -60,17 +62,17 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
     { key: 'name', name: 'Tên A-Z' }
   ];
 
-  // Dynamic brand options theo danh mục
+  // Dynamic brand options từ API thay vì hardcode
   const brandOptionsByCategory = {
-    all: ['Apple','Samsung','Dell','ASUS','Sony','MSI','LG','Xiaomi','OPPO','Google','Lenovo','Bose','Canon','Nikon','Fujifilm','GoPro','JBL','Marshall','Sennheiser','Acer','Realme','Vivo','OnePlus','Belkin','Anker','Logitech','Keychron','Peak Design','Sharp','Electrolux','Dyson'],
-    smartphones: ['Apple','Samsung','Google','Xiaomi','OPPO','Vivo','OnePlus','Nothing','Realme'],
-    laptops: ['Apple','Dell','ASUS','HP','Lenovo','MSI','Acer','LG'],
-    audio: ['Sony','Apple','Bose','Sennheiser','JBL','Marshall'],
-    camera: ['Canon','Sony','Nikon','Fujifilm','GoPro'],
-    tv: ['Samsung','LG','Sony','TCL','Xiaomi'],
-    pc: ['ASUS','MSI','HP','Dell','Lenovo','Apple'],
-    accessories: ['Anker','Belkin','Logitech','Keychron','Peak Design','Apple'],
-    home: ['Dyson','Xiaomi','Philips','Sharp','Electrolux','LG']
+    all: brands.map(b => b.name),
+    smartphones: brands.filter(b => ['Apple','Samsung','Google','Xiaomi','OPPO','Vivo','OnePlus','Nothing','Realme'].includes(b.name)).map(b => b.name),
+    laptops: brands.filter(b => ['Apple','Dell','ASUS','HP','Lenovo','MSI','Acer','LG'].includes(b.name)).map(b => b.name),
+    audio: brands.filter(b => ['Sony','Apple','Bose','Sennheiser','JBL','Marshall'].includes(b.name)).map(b => b.name),
+    camera: brands.filter(b => ['Canon','Sony','Nikon','Fujifilm','GoPro'].includes(b.name)).map(b => b.name),
+    tv: brands.filter(b => ['Samsung','LG','Sony','TCL','Xiaomi'].includes(b.name)).map(b => b.name),
+    pc: brands.filter(b => ['ASUS','MSI','HP','Dell','Lenovo','Apple'].includes(b.name)).map(b => b.name),
+    accessories: brands.filter(b => ['Anker','Belkin','Logitech','Keychron','Peak Design','Apple'].includes(b.name)).map(b => b.name),
+    home: brands.filter(b => ['Dyson','Xiaomi','Philips','Sharp','Electrolux','LG'].includes(b.name)).map(b => b.name)
   };
   const availableBrands = brandOptionsByCategory[filters.category] || brandOptionsByCategory.all;
   const supportsCpuRam = ['laptops','pc','smartphones'].includes(filters.category);

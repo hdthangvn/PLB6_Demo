@@ -1,4 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { cartService } from '../services/cartService';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://e-commerce-raq1.onrender.com/api/v1';
 
 const CartContext = createContext();
 
@@ -14,31 +17,121 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Load cart từ localStorage khi khởi tạo
+  // Load cart từ server khi khởi tạo (nếu đã đăng nhập) - CHỈ KHI CẦN
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const parsed = JSON.parse(savedCart);
-        const normalized = Array.isArray(parsed)
-          ? parsed.map(item => ({ ...item, selected: item.selected !== false }))
-          : [];
-        setCartItems(normalized);
-      } catch (error) {
-        console.error('Error loading cart:', error);
+    const loadCartFromServer = async () => {
+      const token = localStorage.getItem('token');
+      if (!token || token.startsWith('mock-token-') || token.startsWith('session-')) {
+        // Nếu không có token hoặc là mock/session token, load từ localStorage
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+          try {
+            const parsed = JSON.parse(savedCart);
+            const normalized = Array.isArray(parsed)
+              ? parsed.map(item => ({ ...item, selected: item.selected !== false }))
+              : [];
+            setCartItems(normalized);
+          } catch (error) {
+            console.error('Error loading cart from localStorage:', error);
+          }
+        }
+        return;
       }
-    }
+
+      // ✅ CHỈ LOAD CART KHI USER THỰC SỰ CẦN (không tự động)
+      // Cart sẽ được load khi:
+      // 1. User click vào cart icon
+      // 2. User thêm sản phẩm vào cart
+      // 3. User vào trang cart
+      
+      console.log('JWT token detected, cart will be loaded on demand');
+    };
   }, []);
 
-  // Lưu cart vào localStorage mỗi khi cartItems thay đổi
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-  }, [cartItems]);
 
-  // ✅ CẬP NHẬT FUNCTION addToCart
-  const addToCart = (product, quantity = 1, options = {}, forceNew = false) => {
+  // ✅ FUNCTION addToCart - THÊM VÀO DATABASE
+  const addToCart = async (product, quantity = 1, options = {}, forceNew = false) => {
     setLoading(true);
     
+    try {
+      const token = localStorage.getItem('token');
+      
+      // ✅ KIỂM TRA ĐĂNG NHẬP
+      if (!token || token.startsWith('mock-token-') || token.startsWith('session-')) {
+        throw new Error('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!');
+      }
+      
+      // ✅ LẤY PRODUCT VARIANT ID
+      let productVariantId = product.id;
+      try {
+        const variantsResponse = await fetch(`${API_BASE_URL}/product-variants/product/${product.id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (variantsResponse.ok) {
+          const variantsData = await variantsResponse.json();
+          if (variantsData.data?.content && variantsData.data.content.length > 0) {
+            productVariantId = variantsData.data.content[0].id;
+          }
+        }
+      } catch (variantError) {
+        console.warn('Could not fetch product variants:', variantError);
+      }
+      
+      // ✅ GỬI LÊN SERVER
+      const cartDTO = [{
+        productVariantId: productVariantId,
+        quantity: quantity,
+        colorId: options.color !== 'default' ? options.color : null,
+        storageId: options.storage !== 'default' ? options.storage : null
+      }];
+      
+      console.log('🛒 Adding to cart:', cartDTO);
+      const result = await cartService.addToCart(cartDTO);
+      
+      if (result.success) {
+        // ✅ RELOAD CART TỪ SERVER
+        const cartResult = await cartService.getCart();
+        if (cartResult.success && cartResult.data?.cartItems) {
+          const serverCartItems = cartResult.data.cartItems.map(item => ({
+            id: item.id || `${item.productVariantId}-${Date.now()}`,
+            product: {
+              id: item.productVariant?.product?.id || item.productVariantId,
+              name: item.productVariant?.product?.name || 'Unknown Product',
+              price: item.productVariant?.price?.toString() || '0',
+              image: item.productVariant?.image || '📦',
+              originalPrice: item.productVariant?.originalPrice?.toString(),
+              category: item.productVariant?.product?.category,
+              store: item.productVariant?.product?.store
+            },
+            quantity: item.quantity || 1,
+            options: {
+              color: item.colorId || 'default',
+              storage: item.storageId || 'default'
+            },
+            selected: true,
+            addedAt: item.createdAt || new Date().toISOString()
+          }));
+          setCartItems(serverCartItems);
+          localStorage.setItem('cart', JSON.stringify(serverCartItems));
+        }
+        return { success: true, message: `Đã thêm ${quantity} ${product.name} vào giỏ hàng` };
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function for localStorage fallback
+  const addToCartLocal = (product, quantity = 1, options = {}, forceNew = false) => {
     // Tạo unique ID cho item
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substr(2, 9);
@@ -77,7 +170,6 @@ export const CartProvider = ({ children }) => {
       }
     });
 
-    setLoading(false);
     return { success: true, message: `Đã thêm ${quantity} ${product.name} vào giỏ hàng` };
   };
 
@@ -149,7 +241,7 @@ export const CartProvider = ({ children }) => {
   const getSelectedTotalPrice = () => {
     return cartItems.reduce((total, item) => {
       if (!item.selected) return total;
-      const price = parseFloat(item.product.price.replace(/[^\d]/g, '')) || 0;
+      const price = parseFloat(item.product.price?.replace(/[^\d]/g, '') || '0') || 0;
       return total + (price * item.quantity);
     }, 0);
   };
@@ -158,8 +250,8 @@ export const CartProvider = ({ children }) => {
   const getTotalSavings = () => {
     return cartItems.reduce((total, item) => {
       if (item.product.originalPrice) {
-        const originalPrice = parseFloat(item.product.originalPrice.replace(/[^\d]/g, '')) || 0;
-        const currentPrice = parseFloat(item.product.price.replace(/[^\d]/g, '')) || 0;
+        const originalPrice = parseFloat(item.product.originalPrice?.replace(/[^\d]/g, '') || '0') || 0;
+        const currentPrice = parseFloat(item.product.price?.replace(/[^\d]/g, '') || '0') || 0;
         return total + ((originalPrice - currentPrice) * item.quantity);
       }
       return total;
@@ -170,8 +262,8 @@ export const CartProvider = ({ children }) => {
     return cartItems.reduce((total, item) => {
       if (!item.selected) return total;
       if (item.product.originalPrice) {
-        const originalPrice = parseFloat(item.product.originalPrice.replace(/[^\d]/g, '')) || 0;
-        const currentPrice = parseFloat(item.product.price.replace(/[^\d]/g, '')) || 0;
+        const originalPrice = parseFloat(item.product.originalPrice?.replace(/[^\d]/g, '') || '0') || 0;
+        const currentPrice = parseFloat(item.product.price?.replace(/[^\d]/g, '') || '0') || 0;
         return total + ((originalPrice - currentPrice) * item.quantity);
       }
       return total;

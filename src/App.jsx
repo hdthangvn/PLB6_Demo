@@ -12,8 +12,12 @@ import CheckoutPage from './pages/checkout/CheckoutPage';
 import OrdersPage from './pages/orders/OrdersPage';
 import SearchResults from './pages/search/SearchResults';
 import ProfilePage from './pages/profile/ProfilePage';
+import APITestPage from './pages/test/APITestPage';
+import StoresPage from './pages/stores/StoresPage';
+import StoreDetailPage from './pages/stores/StoreDetailPage';
 import SellerRoutes from './routes/SellerRoutes';
 import StoreRoutes from './routes/StoreRoutes';
+import AdminRoutes from './routes/AdminRoutes';
 
 const AppContent = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -32,6 +36,7 @@ const AppContent = () => {
 
   return (
     <Routes>
+      <Route path="/auth" element={<AuthPage />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/product/:id" element={<ProductDetail />} />
       <Route path="/products/:category" element={<ProductList />} />
@@ -41,12 +46,18 @@ const AppContent = () => {
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/orders" element={<OrdersPage />} />
       <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/test" element={<APITestPage />} />
+      <Route path="/stores" element={<StoresPage />} />
+      <Route path="/store/:id" element={<StoreDetailPage />} />
       
       {/* Seller Routes */}
       <Route path="/seller/*" element={<SellerRoutes />} />
       
       {/* Store Routes */}
       <Route path="/store/*" element={<StoreRoutes />} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin/*" element={<AdminRoutes />} />
       
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

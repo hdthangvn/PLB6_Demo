@@ -46,7 +46,7 @@ const CartItem = ({ item }) => {
     }
   };
 
-  const itemPrice = parseInt(item.product.price.replace(/\./g, '')) || 0;
+  const itemPrice = parseInt(item.product.price?.replace(/\./g, '') || '0') || 0;
   const totalPrice = itemPrice * item.quantity;
 
   return (
@@ -110,7 +110,7 @@ const CartItem = ({ item }) => {
             </span>
             {item.product.originalPrice && (
               <span className="text-sm text-gray-500 line-through">
-                {formatPrice(parseInt(item.product.originalPrice.replace(/\./g, '')))}đ
+                {formatPrice(parseInt(item.product.originalPrice?.replace(/\./g, '') || '0'))}đ
               </span>
             )}
           </div>

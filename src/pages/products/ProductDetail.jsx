@@ -10,6 +10,7 @@ import ProductSection from '../../components/common/ProductSection';
 import { useProductDetail } from '../../hooks/useProductDetail';
 import { useProducts } from '../../hooks/useProducts';
 import { useCategories } from '../../hooks/useCategories';
+import { useVariants } from '../../hooks/useVariants';
 import { useEffect, useState } from 'react';
 
 const ProductDetail = () => {
@@ -17,14 +18,26 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { product, loading, error } = useProductDetail(id);
   const { categories } = useCategories();
+  const { variants, loading: variantsLoading } = useVariants(id);
+  
+  // ✅ KHÔNG BLOCK UI KHI VARIANTS LOADING
+  const isLoading = loading; // Chỉ block khi product loading, không block khi variants loading
   
   // ✅ SỬA: Tạo state riêng cho related products
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
 
-  // ✅ TÌM TÊN DANH MỤC DỰA TRÊN categoryKey
-  const currentCategory = categories.find(cat => cat.key === product?.categoryKey);
-  const categoryName = currentCategory?.name || (product?.categoryKey === 'all' ? 'Tất cả sản phẩm' : product?.categoryKey || 'Sản phẩm');
+  // ✅ TÌM TÊN DANH MỤC DỰA TRÊN category từ API
+  const getCategoryKeyFromProduct = (product) => {
+    if (!product?.category) return 'all';
+    if (product.category === 'Laptop') return 'laptops';
+    if (product.category === 'Phone' || product.category === 'Äiá»n thoáº¡i') return 'smartphones';
+    return product.category.toLowerCase();
+  };
+  
+  const categoryKey = getCategoryKeyFromProduct(product);
+  const currentCategory = categories.find(cat => cat.key === categoryKey);
+  const categoryName = currentCategory?.name || (categoryKey === 'all' ? 'Tất cả sản phẩm' : product?.category || 'Sản phẩm');
 
   // ✅ SỬA: Fetch related products sau khi có product
   useEffect(() => {
@@ -35,12 +48,20 @@ const ProductDetail = () => {
       try {
         // Import productService để gọi trực tiếp
         const { productService } = await import('../../services/productService');
-        const result = await productService.getProductsByCategory(product.category, 8);
+        
+        // Map category từ API sang format đúng
+        let categoryForAPI = product.category;
+        if (product.category === 'Äiá»n thoáº¡i') categoryForAPI = 'Phone';
+        if (product.category === 'Laptop') categoryForAPI = 'Laptop';
+        
+        console.log('🔄 ProductDetail: Category mapping:', product.category, '→', categoryForAPI);
+        
+        const result = await productService.getProductsByCategory(categoryForAPI, 8);
         
         if (result.success) {
           // Lọc bỏ sản phẩm hiện tại và chỉ lấy 4 sản phẩm
           const filtered = result.data
-            .filter(p => p.id !== parseInt(id))
+            .filter(p => p.id !== id)
             .slice(0, 4);
           setRelatedProducts(filtered);
         }
@@ -54,7 +75,7 @@ const ProductDetail = () => {
     fetchRelatedProducts();
   }, [product, id]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <MainLayout>
         <div className="max-w-7xl mx-auto px-4 py-16 text-center">
@@ -113,7 +134,7 @@ const ProductDetail = () => {
               </li>
               <li>
                 <button
-                  onClick={() => navigate(`/products/${product?.categoryKey || 'all'}`)}
+                  onClick={() => navigate(`/products/${categoryKey}`)}
                   className="text-gray-500 hover:text-gray-700"
                 >
                   {categoryName}
@@ -143,7 +164,7 @@ const ProductDetail = () => {
 
           {/* Product Info */}
           <div>
-            <ProductInfo product={product} />
+            <ProductInfo product={product} variants={variants} variantsLoading={variantsLoading} />
           </div>
         </div>
 
@@ -156,7 +177,7 @@ const ProductDetail = () => {
 
           {/* Shop Info */}
           <div>
-            <ShopInfo shop={product?.shop} />
+            <ShopInfo shop={product?.store} />
           </div>
         </div>
 
@@ -186,35 +207,17 @@ const ProductDetail = () => {
               showViewAll={false}
             />
           ) : (
-            // ✅ FALLBACK: Hiển thị sản phẩm mặc định nếu không có related products
+            // ✅ KHÔNG CÓ MOCK DATA - chỉ hiển thị khi không có related products
             <div className="bg-gray-50 rounded-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Sản phẩm khác bạn có thể quan tâm</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {/* Mock related products */}
-                {[
-                  { id: 301, name: 'iPhone 15 Pro', price: '24.990.000', image: '📱' },
-                  { id: 201, name: 'MacBook Pro M4', price: '45.990.000', image: '💻' },
-                  { id: 401, name: 'Sony WH-1000XM5', price: '7.990.000', image: '🎧' },
-                  { id: 501, name: 'Canon EOS R5', price: '89.990.000', image: '📷' }
-                ].map((mockProduct) => (
-                  <div 
-                    key={mockProduct.id}
-                    onClick={() => navigate(`/product/${mockProduct.id}`)}
-                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                  >
-                    <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                      <span className="text-3xl">{mockProduct.image}</span>
-                    </div>
-                    <div className="p-3">
-                      <h3 className="font-medium text-gray-900 text-sm mb-2 line-clamp-2">
-                        {mockProduct.name}
-                      </h3>
-                      <span className="text-sm font-bold text-red-600">
-                        {mockProduct.price}đ
-                      </span>
-                    </div>
-                  </div>
-                ))}
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Sản phẩm liên quan</h2>
+              <div className="text-center py-8">
+                <div className="text-gray-400 text-4xl mb-4">📦</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Chưa có sản phẩm liên quan
+                </h3>
+                <p className="text-gray-600">
+                  Không tìm thấy sản phẩm cùng danh mục
+                </p>
               </div>
             </div>
           )}
