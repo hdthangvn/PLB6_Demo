@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import StoreLayout from '../../layouts/StoreLayout';
 import { useStoreContext } from '../../context/StoreContext';
 import StoreStatusGuard from '../../components/store/StoreStatusGuard';
 
 const StoreOrders = () => {
-  const { currentStore } = useStoreContext();
+  const { currentStore, loading: storeLoading } = useStoreContext();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -25,7 +25,7 @@ const StoreOrders = () => {
       // Mock data với orders riêng cho từng chi nhánh (chỉ chi nhánh đã duyệt)
       const getMockOrdersByBranch = (branchId) => {
         const branchOrders = {
-          'branch-1': [ // Hải Châu - Đã duyệt - Nhiều đơn hàng
+          'branch-1-1': [ // Chi nhánh Hải Châu - Đã duyệt - Nhiều đơn hàng
         {
           id: 'ORD-001',
           buyerName: 'Nguyễn Văn A',
@@ -224,7 +224,7 @@ const StoreOrders = () => {
           note: 'Giao hàng cẩn thận'
         }
       ],
-      'branch-2': [ // Thanh Khê - Đã duyệt
+          'branch-1-2': [ // Chi nhánh Thanh Khê - Đã duyệt
         {
           id: 'ORD-TK-001',
           buyerName: 'Trần Văn B',
@@ -296,7 +296,7 @@ const StoreOrders = () => {
           note: 'Khách hủy đơn'
         }
       ],
-      'branch-3': [ // Sơn Trà (chờ duyệt) - Ít đơn hàng
+          'branch-1-3': [ // Chi nhánh Sơn Trà (chờ duyệt) - Ít đơn hàng
         {
           id: 'ORD-ST-001',
           buyerName: 'Nguyễn Văn Sơn',
@@ -312,7 +312,7 @@ const StoreOrders = () => {
           note: 'Chờ duyệt chi nhánh'
         }
       ],
-      'branch-4': [ // Cẩm Lệ (bị từ chối) - Đơn hàng cũ
+          'branch-1-4': [ // Chi nhánh Cẩm Lệ (bị từ chối) - Đơn hàng cũ
         {
           id: 'ORD-CL-001',
           buyerName: 'Trần Thị Cẩm',
@@ -328,7 +328,7 @@ const StoreOrders = () => {
           note: 'Chi nhánh bị từ chối'
         }
       ],
-      'branch-5': [ // Liên Chiểu (bị từ chối) - Đơn hàng cũ
+          'branch-1-5': [ // Chi nhánh Ngũ Hành Sơn (bị từ chối) - Đơn hàng cũ
         {
           id: 'ORD-LC-001',
           buyerName: 'Lê Văn Liên',
@@ -359,20 +359,22 @@ const StoreOrders = () => {
     }
   };
 
-  const filteredOrders = orders.filter(order => {
-      const matchesSearch = searchTerm === '' || 
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      const matchesSearch = searchTerm === '' ||
         order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.buyerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.buyerPhone.includes(searchTerm) ||
-      order.buyerEmail.toLowerCase().includes(searchTerm.toLowerCase());
+        order.buyerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.buyerPhone.includes(searchTerm) ||
+        order.buyerEmail.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesStatus = statusFilter === 'ALL' || order.status === statusFilter;
       
-    const matchesDate = (!startDate || new Date(order.createdAt) >= new Date(startDate)) &&
-                       (!endDate || new Date(order.createdAt) <= new Date(endDate));
-    
-    return matchesSearch && matchesStatus && matchesDate;
-  });
+      const matchesDate = (!startDate || new Date(order.createdAt) >= new Date(startDate)) &&
+                         (!endDate || new Date(order.createdAt) <= new Date(endDate));
+      
+      return matchesSearch && matchesStatus && matchesDate;
+    });
+  }, [orders, searchTerm, statusFilter, startDate, endDate]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
@@ -474,10 +476,10 @@ const StoreOrders = () => {
   }
 
   return (
-    <StoreStatusGuard currentStore={currentStore} pageName="quản lý đơn hàng">
-    <StoreLayout>
+    <StoreStatusGuard currentStore={currentStore} pageName="quản lý đơn hàng" loading={storeLoading}>
+      <StoreLayout>
         {/* Orders Content */}
-      <div className="space-y-6">
+        <div className="space-y-6">
         {/* Header */}
         <div className="mb-8">
           <div className="bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-6">
@@ -575,253 +577,253 @@ const StoreOrders = () => {
         </div>
 
         {/* Search and Filter */}
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border border-green-100 p-6 mb-8">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
-              {/* Search Section */}
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border border-green-100 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
+            {/* Search Section */}
             <div className="flex-1">
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg className="w-5 h-5 text-green-500 group-focus-within:text-green-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                  </div>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-green-500 group-focus-within:text-green-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  </svg>
+                </div>
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Tìm kiếm đơn hàng..."
-                    className="w-full pl-12 pr-12 py-3 bg-white border-2 border-green-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-100 focus:border-green-400 transition-all duration-200 text-gray-700 placeholder-gray-400"
-                  />
-                  {searchTerm && (
-                    <button
-                      onClick={() => setSearchTerm('')}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-                    </button>
-                  )}
+                  placeholder="Tìm kiếm đơn hàng..."
+                  className="w-full pl-12 pr-12 py-3 bg-white border-2 border-green-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-100 focus:border-green-400 transition-all duration-200 text-gray-700 placeholder-gray-400"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
             
-              {/* Status Filter */}
-              <div className="lg:w-64">
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg className="w-5 h-5 text-blue-500 group-focus-within:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                    </svg>
-                  </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full pl-12 pr-10 py-3 bg-white border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all duration-200 text-gray-700 appearance-none cursor-pointer"
-              >
-                <option value="ALL">Tất cả trạng thái</option>
-                    <option value="PENDING">🟡 Chờ xác nhận</option>
-                    <option value="CONFIRMED">🔵 Đã xác nhận</option>
-                    <option value="SHIPPING">🟣 Đang giao hàng</option>
-                    <option value="DELIVERED">🟢 Đã giao hàng</option>
-                    <option value="CANCELLED">🔴 Đã hủy</option>
-              </select>
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                  </div>
+            {/* Status Filter */}
+            <div className="lg:w-64">
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-blue-500 group-focus-within:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                  </svg>
                 </div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full pl-12 pr-10 py-3 bg-white border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all duration-200 text-gray-700 appearance-none cursor-pointer"
+                >
+                  <option value="ALL">Tất cả trạng thái</option>
+                  <option value="PENDING">🟡 Chờ xác nhận</option>
+                  <option value="CONFIRMED">🔵 Đã xác nhận</option>
+                  <option value="SHIPPING">🟣 Đang giao hàng</option>
+                  <option value="DELIVERED">🟢 Đã giao hàng</option>
+                  <option value="CANCELLED">🔴 Đã hủy</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Date Range Filter */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Từ ngày</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Đến ngày</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
+          <div className="flex flex-col sm:flex-row gap-4 mt-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Từ ngày</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Đến ngày</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              />
             </div>
           </div>
         </div>
 
-          {/* Orders Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
-            {filteredOrders.length > 0 ? (
-              filteredOrders.map(order => (
-                <div key={order.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-100 flex flex-col">
-                  {/* Order Header */}
-                  <div className="p-2 border-b border-gray-100">
-                    <div className="flex justify-between items-start mb-1">
-                  <div>
-                        <h3 className="text-xs font-semibold text-gray-900">{order.id}</h3>
-                        <p className="text-xs text-gray-600">{order.buyerName}</p>
-                  </div>
-                      <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(order.status)}`}>
-                        {getStatusIcon(order.status)}
-                        {getStatusLabel(order.status)}
-                      </span>
-                </div>
-                    <div className="text-xs text-gray-500">
-                      <p>📞 {order.buyerPhone}</p>
-                </div>
-              </div>
-
-                  {/* Order Items */}
-                  <div className="p-2 flex-1">
-                    <h4 className="text-xs font-medium text-gray-700 mb-1">Sản phẩm:</h4>
-                    <div className="max-h-12 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                      {order.items.map((item, index) => (
-                        <div key={index} className="flex justify-between items-center py-0.5 text-xs">
-                          <span className="text-gray-600 truncate flex-1">{item.productName}</span>
-                          <span className="text-gray-500 ml-1">x{item.quantity}</span>
+        {/* Orders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+          {filteredOrders.length > 0 ? (
+            filteredOrders.map(order => (
+              <div key={order.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-100 flex flex-col">
+                {/* Order Header */}
+                <div className="p-2 border-b border-gray-100">
+                  <div className="flex justify-between items-start mb-1">
+                    <div>
+                      <h3 className="text-xs font-semibold text-gray-900">{order.id}</h3>
+                      <p className="text-xs text-gray-600">{order.buyerName}</p>
                     </div>
-                  ))}
+                    <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(order.status)}`}>
+                      {getStatusIcon(order.status)}
+                      {getStatusLabel(order.status)}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    <p>📞 {order.buyerPhone}</p>
+                  </div>
                 </div>
-              </div>
 
-                  {/* Order Summary */}
-                  <div className="p-2 border-t border-gray-100 mt-auto">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs font-medium text-gray-700">Tổng:</span>
-                      <span className="text-xs font-bold text-red-600">
-                        {new Intl.NumberFormat('vi-VN', {
-                          style: 'currency',
-                          currency: 'VND'
-                        }).format(order.totalPrice)}
-                      </span>
+                {/* Order Items */}
+                <div className="p-2 flex-1">
+                  <h4 className="text-xs font-medium text-gray-700 mb-1">Sản phẩm:</h4>
+                  <div className="max-h-12 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                    {order.items.map((item, index) => (
+                      <div key={index} className="flex justify-between items-center py-0.5 text-xs">
+                        <span className="text-gray-600 truncate flex-1">{item.productName}</span>
+                        <span className="text-gray-500 ml-1">x{item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                    <div className="text-xs text-gray-500 mb-2">
-                      <p>📅 {new Date(order.createdAt).toLocaleDateString('vi-VN')}</p>
-              </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-1 mt-auto">
-                {order.status === 'PENDING' && (
-                  <>
-                    <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusChange(order.id, 'CONFIRMED');
-                            }}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
-                          >
-                            ✓
-                    </button>
-                    <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusChange(order.id, 'CANCELLED');
-                            }}
-                            className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
-                          >
-                            ✕
-                    </button>
-                          <Link
-                            to={`/store/orders/${order.id}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="px-2 py-1.5 border border-gray-300 text-gray-700 rounded text-xs font-medium hover:bg-gray-50 transition-colors"
-                          >
-                            👁️
-                          </Link>
-                  </>
-                )}
-                
-                {order.status === 'CONFIRMED' && (
-                        <>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusChange(order.id, 'SHIPPING');
-                            }}
-                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
-                          >
-                            🚚
-                          </button>
-                  <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusChange(order.id, 'CANCELLED');
-                            }}
-                            className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
-                          >
-                            ✕
-                  </button>
-                          <Link
-                            to={`/store/orders/${order.id}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="px-2 py-1.5 border border-gray-300 text-gray-700 rounded text-xs font-medium hover:bg-gray-50 transition-colors"
-                          >
-                            👁️
-                          </Link>
-                        </>
-                      )}
-                      
-                      {order.status === 'SHIPPING' && (
-                        <>
-                  <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusChange(order.id, 'DELIVERED');
-                            }}
-                            className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
-                          >
-                            ✓
-                  </button>
-                          <Link
-                            to={`/store/orders/${order.id}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="px-2 py-1.5 border border-gray-300 text-gray-700 rounded text-xs font-medium hover:bg-gray-50 transition-colors"
-                          >
-                            👁️
-                          </Link>
-                        </>
-                      )}
-                      
-                      {(order.status === 'DELIVERED' || order.status === 'CANCELLED') && (
-                        <Link
-                          to={`/store/orders/${order.id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="w-full px-2 py-1.5 border border-gray-300 text-gray-700 rounded text-xs font-medium hover:bg-gray-50 transition-colors text-center"
+                {/* Order Summary */}
+                <div className="p-2 border-t border-gray-100 mt-auto">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-medium text-gray-700">Tổng:</span>
+                    <span className="text-xs font-bold text-red-600">
+                      {new Intl.NumberFormat('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND'
+                      }).format(order.totalPrice)}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 mb-2">
+                    <p>📅 {new Date(order.createdAt).toLocaleDateString('vi-VN')}</p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-1 mt-auto">
+                    {order.status === 'PENDING' && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusChange(order.id, 'CONFIRMED');
+                          }}
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
                         >
-                          👁️ Xem chi tiết
+                          ✓
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusChange(order.id, 'CANCELLED');
+                          }}
+                          className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
+                        >
+                          ✕
+                        </button>
+                        <Link
+                          to={`/store-dashboard/orders/${order.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-2 py-1.5 border border-gray-300 text-gray-700 rounded text-xs font-medium hover:bg-gray-50 transition-colors"
+                        >
+                          👁️
                         </Link>
-                      )}
+                      </>
+                    )}
+                    
+                    {order.status === 'CONFIRMED' && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusChange(order.id, 'SHIPPING');
+                          }}
+                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
+                        >
+                          🚚
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusChange(order.id, 'CANCELLED');
+                          }}
+                          className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
+                        >
+                          ✕
+                        </button>
+                        <Link
+                          to={`/store-dashboard/orders/${order.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-2 py-1.5 border border-gray-300 text-gray-700 rounded text-xs font-medium hover:bg-gray-50 transition-colors"
+                        >
+                          👁️
+                        </Link>
+                      </>
+                    )}
+                    
+                    {order.status === 'SHIPPING' && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusChange(order.id, 'DELIVERED');
+                          }}
+                          className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors"
+                        >
+                          ✓
+                        </button>
+                        <Link
+                          to={`/store-dashboard/orders/${order.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-2 py-1.5 border border-gray-300 text-gray-700 rounded text-xs font-medium hover:bg-gray-50 transition-colors"
+                        >
+                          👁️
+                        </Link>
+                      </>
+                    )}
+                    
+                    {(order.status === 'DELIVERED' || order.status === 'CANCELLED') && (
+                      <Link
+                        to={`/store-dashboard/orders/${order.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-full px-2 py-1.5 border border-gray-300 text-gray-700 rounded text-xs font-medium hover:bg-gray-50 transition-colors text-center"
+                      >
+                        👁️ Xem chi tiết
+                      </Link>
+                    )}
+                  </div>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {searchTerm ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'}
+              </h3>
+              <p className="text-gray-500 mb-4">
+                {searchTerm 
+                  ? `Không có đơn hàng nào khớp với "${searchTerm}"`
+                  : 'Chưa có đơn hàng nào được đặt'
+                }
+              </p>
             </div>
+          )}
         </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                  </svg>
-            </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {searchTerm ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'}
-                </h3>
-                <p className="text-gray-500 mb-4">
-                  {searchTerm 
-                    ? `Không có đơn hàng nào khớp với "${searchTerm}"`
-                    : 'Chưa có đơn hàng nào được đặt'
-                  }
-                </p>
-          </div>
-        )}
-          </div>
       </div>
     </StoreLayout>
     </StoreStatusGuard>
@@ -829,4 +831,3 @@ const StoreOrders = () => {
 };
 
 export default StoreOrders;
-

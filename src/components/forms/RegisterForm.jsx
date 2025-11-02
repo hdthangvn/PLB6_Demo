@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 
 const RegisterForm = ({ onSwitchToLogin }) => {
   const { register } = useAuth();
+  const { success: showSuccessToast, error: showErrorToast } = useToast();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -13,6 +15,7 @@ const RegisterForm = ({ onSwitchToLogin }) => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,10 +62,23 @@ const RegisterForm = ({ onSwitchToLogin }) => {
     }
     
     setLoading(true);
+    setErrors({});
+    setSuccessMessage('');
+    
     const result = await register(formData);
     
-    if (!result.success) {
-      setErrors({ general: result.error || 'Đăng ký thất bại' });
+    if (result.success) {
+      // ✅ Thành công → Hiển thị thông báo verify email
+      const message = result.message || 'Đăng ký thành công! Vui lòng kiểm tra email để xác minh.';
+      setSuccessMessage(message);
+      showSuccessToast(message);
+      // Reset form
+      setFormData({ fullName: '', email: '', password: '', confirmPassword: '' });
+    } else {
+      // ❌ Thất bại → Hiển thị lỗi
+      const errorMessage = result.error || 'Đăng ký thất bại';
+      setErrors({ general: errorMessage });
+      showErrorToast(errorMessage);
     }
     
     setLoading(false);
@@ -88,6 +104,14 @@ const RegisterForm = ({ onSwitchToLogin }) => {
         </div>
 
         <div className="bg-white py-8 px-4 shadow rounded-lg sm:px-10">
+          {/* Success Message */}
+          {successMessage && (
+            <div className="mb-4 bg-green-50 border border-green-300 text-green-800 px-4 py-3 rounded-md text-sm">
+              {successMessage}
+            </div>
+          )}
+
+          {/* Error Message */}
           {errors.general && (
             <div className="mb-4 bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-md text-sm">
               {errors.general}

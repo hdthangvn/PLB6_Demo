@@ -37,22 +37,26 @@ const ProductComments = ({ productId }) => {
     if (!replyContent.trim()) return;
     setSubmitting(true);
     const res = await commentService.addComment(productId, { content: replyContent, parentId, userName: user?.name || 'Khách', userId: user?.id });
-  const handleDelete = async (commentId) => {
-    if (!isAuthenticated) return;
-    if (!window.confirm('Xóa bình luận này?')) return;
-    const res = await commentService.deleteComment(productId, commentId, user?.id);
-    if (res.success) {
-      await load();
-    } else {
-      alert(res.error || 'Không thể xóa bình luận');
-    }
-  };
     if (res.success) {
       setReplyTo(null);
       setReplyContent('');
       await load();
     }
     setSubmitting(false);
+  };
+
+  const handleDelete = async (commentId) => {
+    if (!isAuthenticated) return;
+    if (!window.confirm('Xóa bình luận này?')) return;
+    
+    console.log('Deleting comment:', commentId, 'User ID:', user?.id);
+    
+    const res = await commentService.deleteComment(productId, commentId, user?.id);
+    if (res.success) {
+      await load();
+    } else {
+      alert(res.error || 'Không thể xóa bình luận');
+    }
   };
 
   const roots = comments.filter(c => !c.parentId);

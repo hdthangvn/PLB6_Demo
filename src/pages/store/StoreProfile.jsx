@@ -1,36 +1,134 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StoreLayout from '../../layouts/StoreLayout';
 import StoreStatusGuard from '../../components/store/StoreStatusGuard';
 import { useStoreContext } from '../../context/StoreContext';
 
 const StoreProfile = () => {
   const { currentStore } = useStoreContext();
-  const [storeInfo, setStoreInfo] = useState({
-    storeName: 'Cửa hàng ABC',
-    branchName: 'Chi nhánh Quận 1',
-    address: '123 Đường ABC, Phường 1, Quận 1, TP.HCM',
-    phone: '0123456789',
-    email: 'store@example.com',
-    description: 'Cửa hàng chuyên bán các sản phẩm chất lượng cao',
-    logo: null,
-    operatingHours: {
-      monday: { open: '08:00', close: '22:00', closed: false },
-      tuesday: { open: '08:00', close: '22:00', closed: false },
-      wednesday: { open: '08:00', close: '22:00', closed: false },
-      thursday: { open: '08:00', close: '22:00', closed: false },
-      friday: { open: '08:00', close: '22:00', closed: false },
-      saturday: { open: '09:00', close: '23:00', closed: false },
-      sunday: { open: '09:00', close: '21:00', closed: false }
-    },
-    socialMedia: {
-      facebook: '',
-      instagram: '',
-      website: ''
+  
+  // Mock data phân biệt theo chi nhánh
+  const getStoreInfoByBranch = (branchId) => {
+    if (branchId === 'branch-1-1') {
+      // Chi nhánh Hải Châu - Chuyên điện thoại cao cấp
+      return {
+        storeName: 'TechPro Store',
+        branchName: 'Chi nhánh Hải Châu',
+        address: '123 Lê Duẩn, Hải Châu, Đà Nẵng',
+        phone: '0236 123 4567',
+        email: 'haichau@techpro.com',
+        description: 'Cửa hàng chính tại Hải Châu, Đà Nẵng - Chuyên bán điện thoại cao cấp và phụ kiện',
+        logo: null,
+        operatingHours: {
+          monday: { open: '08:00', close: '22:00', closed: false },
+          tuesday: { open: '08:00', close: '22:00', closed: false },
+          wednesday: { open: '08:00', close: '22:00', closed: false },
+          thursday: { open: '08:00', close: '22:00', closed: false },
+          friday: { open: '08:00', close: '22:00', closed: false },
+          saturday: { open: '09:00', close: '23:00', closed: false },
+          sunday: { open: '09:00', close: '21:00', closed: false }
+        },
+        socialMedia: {
+          facebook: 'https://facebook.com/techprohaichau',
+          instagram: 'https://instagram.com/techpro_haichau',
+          website: 'https://techpro.com.vn/haichau'
+        }
+      };
     }
+    
+    if (branchId === 'branch-1-2') {
+      // Chi nhánh Thanh Khê - Chuyên laptop gaming và văn phòng
+      return {
+        storeName: 'TechPro Store',
+        branchName: 'Chi nhánh Thanh Khê',
+        address: '456 Nguyễn Văn Linh, Thanh Khê, Đà Nẵng',
+        phone: '0236 987 6543',
+        email: 'thanhkhe@techpro.com',
+        description: 'Cửa hàng tại Thanh Khê, Đà Nẵng - Chuyên bán laptop gaming và thiết bị văn phòng',
+        logo: null,
+        operatingHours: {
+          monday: { open: '09:00', close: '21:00', closed: false },
+          tuesday: { open: '09:00', close: '21:00', closed: false },
+          wednesday: { open: '09:00', close: '21:00', closed: false },
+          thursday: { open: '09:00', close: '21:00', closed: false },
+          friday: { open: '09:00', close: '21:00', closed: false },
+          saturday: { open: '10:00', close: '22:00', closed: false },
+          sunday: { open: '10:00', close: '20:00', closed: false }
+        },
+        socialMedia: {
+          facebook: 'https://facebook.com/techprothanhkhe',
+          instagram: 'https://instagram.com/techpro_thanhkhe',
+          website: 'https://techpro.com.vn/thanhkhe'
+        }
+      };
+    }
+    
+    // Default fallback
+    return {
+      storeName: 'TechPro Store',
+      branchName: 'Chi nhánh mặc định',
+      address: 'Địa chỉ mặc định',
+      phone: '0123456789',
+      email: 'store@techpro.com',
+      description: 'Cửa hàng chuyên bán các sản phẩm chất lượng cao',
+      logo: null,
+      operatingHours: {
+        monday: { open: '08:00', close: '22:00', closed: false },
+        tuesday: { open: '08:00', close: '22:00', closed: false },
+        wednesday: { open: '08:00', close: '22:00', closed: false },
+        thursday: { open: '08:00', close: '22:00', closed: false },
+        friday: { open: '08:00', close: '22:00', closed: false },
+        saturday: { open: '09:00', close: '23:00', closed: false },
+        sunday: { open: '09:00', close: '21:00', closed: false }
+      },
+      socialMedia: {
+        facebook: '',
+        instagram: '',
+        website: ''
+      }
+    };
+  };
+
+  const [storeInfo, setStoreInfo] = useState(() => {
+    if (currentStore) {
+      return getStoreInfoByBranch(currentStore.id);
+    }
+    return {
+      storeName: 'TechPro Store',
+      branchName: 'Chi nhánh mặc định',
+      address: 'Địa chỉ mặc định',
+      phone: '0123456789',
+      email: 'store@techpro.com',
+      description: 'Cửa hàng chuyên bán các sản phẩm chất lượng cao',
+      logo: null,
+      operatingHours: {
+        monday: { open: '08:00', close: '22:00', closed: false },
+        tuesday: { open: '08:00', close: '22:00', closed: false },
+        wednesday: { open: '08:00', close: '22:00', closed: false },
+        thursday: { open: '08:00', close: '22:00', closed: false },
+        friday: { open: '08:00', close: '22:00', closed: false },
+        saturday: { open: '09:00', close: '23:00', closed: false },
+        sunday: { open: '09:00', close: '21:00', closed: false }
+      },
+      socialMedia: {
+        facebook: '',
+        instagram: '',
+        website: ''
+      }
+    };
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('info');
+
+  // Cập nhật storeInfo khi currentStore thay đổi
+  useEffect(() => {
+    if (currentStore) {
+      console.log('Current store changed:', currentStore.id);
+      const newStoreInfo = getStoreInfoByBranch(currentStore.id);
+      console.log('New store info:', newStoreInfo);
+      setStoreInfo(newStoreInfo);
+    }
+  }, [currentStore]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -70,30 +168,8 @@ const StoreProfile = () => {
   };
 
   const handleCancel = () => {
-    // Reset về giá trị ban đầu
-    setStoreInfo({
-      storeName: 'Cửa hàng ABC',
-      branchName: 'Chi nhánh Quận 1',
-      address: '123 Đường ABC, Phường 1, Quận 1, TP.HCM',
-      phone: '0123456789',
-      email: 'store@example.com',
-      description: 'Cửa hàng chuyên bán các sản phẩm chất lượng cao',
-      logo: null,
-      operatingHours: {
-        monday: { open: '08:00', close: '22:00', closed: false },
-        tuesday: { open: '08:00', close: '22:00', closed: false },
-        wednesday: { open: '08:00', close: '22:00', closed: false },
-        thursday: { open: '08:00', close: '22:00', closed: false },
-        friday: { open: '08:00', close: '22:00', closed: false },
-        saturday: { open: '09:00', close: '23:00', closed: false },
-        sunday: { open: '09:00', close: '21:00', closed: false }
-      },
-      socialMedia: {
-        facebook: '',
-        instagram: '',
-        website: ''
-      }
-    });
+    // Reset về thông tin của chi nhánh hiện tại
+    setStoreInfo(getStoreInfoByBranch(currentStore?.id));
     setIsEditing(false);
   };
 
@@ -543,7 +619,7 @@ const StoreProfile = () => {
                 </div>
               </div>
               
-              {/* Stats Cards */}
+              {/* Stats Cards - Phân biệt số liệu theo chi nhánh */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
                 <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
                   <div className="flex items-center gap-3">
@@ -554,7 +630,9 @@ const StoreProfile = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">Tổng sản phẩm</p>
-                      <p className="text-xl font-bold text-gray-900">156</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        {currentStore?.id === 'branch-1' ? '45' : '32'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -568,7 +646,9 @@ const StoreProfile = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">Đánh giá TB</p>
-                      <p className="text-xl font-bold text-gray-900">4.8</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        {currentStore?.id === 'branch-1' ? '4.9' : '4.8'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -582,7 +662,9 @@ const StoreProfile = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">Khách hàng</p>
-                      <p className="text-xl font-bold text-gray-900">2.4K</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        {currentStore?.id === 'branch-1' ? '89' : '67'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -596,7 +678,9 @@ const StoreProfile = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">Doanh thu</p>
-                      <p className="text-xl font-bold text-gray-900">45M</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        {currentStore?.id === 'branch-1' ? '2.5B' : '1.8B'}
+                      </p>
                     </div>
                   </div>
                 </div>

@@ -303,10 +303,25 @@ const ProductReviews = ({ product }) => {
               
               {/* Review Images */}
               {review.images && review.images.length > 0 && (
-                <div className="flex space-x-2 mb-3">
+                <div className="flex flex-wrap gap-2 mb-3">
                   {review.images.map((image, index) => (
-                    <div key={index} className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <span className="text-2xl">{image}</span>
+                    <div key={index} className="relative">
+                      {typeof image === 'string' && image.startsWith('data:') ? (
+                        <img
+                          src={image}
+                          alt={`Review image ${index + 1}`}
+                          className="w-20 h-20 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => {
+                            // Open image in modal or lightbox
+                            const newWindow = window.open();
+                            newWindow.document.write(`<img src="${image}" style="max-width: 100%; height: auto;" />`);
+                          }}
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <span className="text-2xl">{image}</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

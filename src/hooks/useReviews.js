@@ -15,7 +15,10 @@ export const useReviews = (productId) => {
       setLoading(true);
       setError(null);
       
-      const result = await reviewService.getProductReviews(productId, page, 5, filter, sortBy);
+      // ❌ REMOVED: getProductReviews() - API không tồn tại trong Swagger
+      // API chỉ support product-variant reviews, không có product reviews
+      // TODO: Refactor to use productVariantId instead of productId
+      throw new Error('getProductReviews API không tồn tại. Vui lòng dùng getProductVariantReviews với productVariantId.');
       
       if (result.success) {
         setReviews(result.data.reviews);
@@ -36,7 +39,9 @@ export const useReviews = (productId) => {
   const submitReview = async (reviewData) => {
     try {
       setSubmitting(true);
-      const result = await reviewService.submitReview(productId, reviewData);
+      // ❌ REMOVED: submitReview() - API không tồn tại
+      // TODO: Use createReview() from reviewService với productVariantId
+      throw new Error('submitReview API không tồn tại. Vui lòng dùng createReview với productVariantId.');
       
       if (result.success) {
         // Add new review to the beginning of the list
@@ -64,7 +69,8 @@ export const useReviews = (productId) => {
   // Reply to review
   const replyToReview = async (reviewId, replyData) => {
     try {
-      const result = await reviewService.replyToReview(reviewId, replyData);
+      // ❌ REMOVED: replyToReview() - API không tồn tại trong Swagger
+      throw new Error('replyToReview API không tồn tại.');
       
       if (result.success) {
         // Add reply to the specific review
@@ -86,7 +92,8 @@ export const useReviews = (productId) => {
   // Mark review as helpful
   const markHelpful = async (reviewId, isHelpful) => {
     try {
-      const result = await reviewService.markReviewHelpful(reviewId, isHelpful);
+      // ❌ REMOVED: markReviewHelpful() - API không tồn tại trong Swagger
+      throw new Error('markReviewHelpful API không tồn tại.');
       
       if (result.success) {
         setReviews(prev => prev.map(review => 

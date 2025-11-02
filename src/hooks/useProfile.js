@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { userService } from '../services/userService';
+import * as authService from '../services/authService';
 import { useAuth } from '../context/AuthContext';
+import { createOrder as createOrderAPI, getMyOrders } from '../services/orderService';
+import { clearCart } from '../services/cartService';
 
 export const useProfile = () => {
   const { user } = useAuth();
@@ -77,10 +80,24 @@ export const useProfile = () => {
     
     try {
       setUpdating(true);
-      const result = await userService.uploadAvatar(user.id, file);
+      
+      // ✅ Gọi API update avatar
+      const result = await authService.updateAvatar(file);
+      
       if (result.success) {
-        setProfile(prev => ({ ...prev, avatar: result.data.avatarUrl }));
-        return { success: true, avatarUrl: result.data.avatarUrl };
+        // Cập nhật avatar trong profile state
+        const newAvatarUrl = result.data.avatar || result.data.avatarUrl || result.data;
+        setProfile(prev => ({ ...prev, avatar: newAvatarUrl }));
+        
+        // Cập nhật avatar trong localStorage + AuthContext
+        const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        savedUser.avatar = newAvatarUrl;
+        localStorage.setItem('user', JSON.stringify(savedUser));
+        
+        // Dispatch event để AuthContext cập nhật
+        window.dispatchEvent(new CustomEvent('userUpdated', { detail: savedUser }));
+        
+        return { success: true, avatarUrl: newAvatarUrl };
       }
       return result;
     } catch (err) {
@@ -95,12 +112,18 @@ export const useProfile = () => {
     if (!user?.id) return;
     
     try {
-      const result = await userService.getOrderHistory(user.id);
-      if (result.success) {
-        setOrderHistory(result.data);
+      // ✅ Dùng orderService.getMyOrders() thay vì userService (mock)
+      const { getMyOrders } = await import('../services/orderService');
+      const response = await getMyOrders();
+      
+      if (response.data) {
+        // ✅ Parse paginated response
+        const orders = response.data.content || response.data || [];
+        setOrderHistory(orders);
+        console.log(`✅ Loaded ${orders.length} orders from API`);
       }
     } catch (err) {
-      console.error('Error fetching order history:', err);
+      console.error('❌ Error fetching order history:', err);
     }
   };
 
@@ -108,11 +131,20 @@ export const useProfile = () => {
   const createOrder = async (orderData) => {
     if (!user?.id) return { success: false, error: 'User not found' };
     try {
-      const result = await userService.createOrder(user.id, orderData);
+      // 🔍 DEBUG: Log payload trước khi gửi
+      console.log('📦 Checkout payload:', JSON.stringify(orderData, null, 2));
+      
+      // ✅ Forward orderData directly (đã format đúng ở CheckoutPage)
+      const result = await createOrderAPI(orderData);
+      
       if (result.success) {
-        // refresh order history
+        // ✅ Clear cart after successful order
+        await clearCart();
+        
+        // Refresh order history
         await fetchOrderHistory();
       }
+      
       return result;
     } catch (err) {
       return { success: false, error: err.message };
@@ -123,6 +155,18 @@ export const useProfile = () => {
     if (!user?.id) return { success: false, error: 'User not found' };
     try {
       const result = await userService.updateOrderStatus(user.id, orderId, status);
+      if (result.success) await fetchOrderHistory();
+      return result;
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  };
+
+  // ✅ Delete order
+  const deleteOrder = async (orderId) => {
+    if (!user?.id) return { success: false, error: 'User not found' };
+    try {
+      const result = await userService.deleteOrder(user.id, orderId);
       if (result.success) await fetchOrderHistory();
       return result;
     } catch (err) {
@@ -147,6 +191,7 @@ export const useProfile = () => {
     uploadAvatar,
     createOrder,
     updateOrderStatus,
+    deleteOrder,
     refetchProfile: fetchProfile,
     refetchOrderHistory: fetchOrderHistory
   };

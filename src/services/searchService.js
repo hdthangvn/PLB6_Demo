@@ -1,7 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-
-// Import mock data
-import { PRODUCT_LISTS } from '../constants/mockData.js';
+import { searchProductVariants } from './productService';
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -10,23 +7,19 @@ export const searchService = {
   async searchProducts(query, filters = {}) {
     await delay(300); // Simulate API delay
     
-    // TODO: Thay bằng real API call
-    // const response = await fetch(`${API_BASE_URL}/search?q=${query}&category=${filters.category}&minPrice=${filters.minPrice}&maxPrice=${filters.maxPrice}&sortBy=${filters.sortBy}`);
+    // ✅ Dùng API thay vì mock data
+    const result = await searchProductVariants(query, {
+      page: 0,
+      size: 100,
+      sortBy: filters.sortBy === 'price-asc' || filters.sortBy === 'price-desc' ? 'price' : 'createdAt',
+      sortDir: filters.sortBy === 'price-asc' ? 'asc' : 'desc'
+    });
     
-    // Mock implementation
-    const allProducts = [
-      ...PRODUCT_LISTS.featured,
-      ...PRODUCT_LISTS.laptops,
-      ...PRODUCT_LISTS.smartphones,
-      ...PRODUCT_LISTS.audio,
-      ...PRODUCT_LISTS.camera,
-      ...PRODUCT_LISTS.tv,
-      ...PRODUCT_LISTS.pc,
-      ...PRODUCT_LISTS.accessories,
-      ...PRODUCT_LISTS.home
-    ];
+    if (!result.success) {
+      return [];
+    }
 
-    let results = allProducts;
+    let results = result.data || [];
 
     // Filter by search query
     if (query) {
@@ -44,7 +37,9 @@ export const searchService = {
     // Filter by price range
     if (filters.minPrice) {
       results = results.filter(product => {
-        const price = parseInt(product.price.replace(/\./g, ''));
+        const price = typeof product.price === 'string' 
+          ? parseInt(product.price.replace(/\./g, ''))
+          : parseInt(product.price);
         const minPrice = parseInt(filters.minPrice);
         return price >= minPrice;
       });
@@ -52,7 +47,9 @@ export const searchService = {
 
     if (filters.maxPrice) {
       results = results.filter(product => {
-        const price = parseInt(product.price.replace(/\./g, ''));
+        const price = typeof product.price === 'string' 
+          ? parseInt(product.price.replace(/\./g, ''))
+          : parseInt(product.price);
         const maxPrice = parseInt(filters.maxPrice);
         return price <= maxPrice;
       });
@@ -74,9 +71,21 @@ export const searchService = {
       results.sort((a, b) => {
         switch (filters.sortBy) {
           case 'price-asc':
-            return parseInt(a.price.replace(/\./g, '')) - parseInt(b.price.replace(/\./g, ''));
+            const priceA = typeof a.price === 'string' 
+              ? parseInt(a.price.replace(/\./g, ''))
+              : parseInt(a.price);
+            const priceB = typeof b.price === 'string' 
+              ? parseInt(b.price.replace(/\./g, ''))
+              : parseInt(b.price);
+            return priceA - priceB;
           case 'price-desc':
-            return parseInt(b.price.replace(/\./g, '')) - parseInt(a.price.replace(/\./g, ''));
+            const priceA2 = typeof a.price === 'string' 
+              ? parseInt(a.price.replace(/\./g, ''))
+              : parseInt(a.price);
+            const priceB2 = typeof b.price === 'string' 
+              ? parseInt(b.price.replace(/\./g, ''))
+              : parseInt(b.price);
+            return priceB2 - priceA2;
           case 'name':
             return a.name.localeCompare(b.name);
           default:

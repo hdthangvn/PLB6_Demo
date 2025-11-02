@@ -5,12 +5,12 @@ import StoreStatusGuard from '../../components/store/StoreStatusGuard';
 import { useStoreContext } from '../../context/StoreContext';
 
 const StoreDashboard = () => {
-  const { currentStore } = useStoreContext();
+  const { currentStore, loading: storeLoading } = useStoreContext();
   
   // Mock data động theo chi nhánh
   const getStatsByBranch = (branchId) => {
     const branchStats = {
-      'branch-1': { // Hải Châu
+      'branch-1-1': { // Chi nhánh Hải Châu
         revenue: {
           today: 12500000,
           thisWeek: 85000000,
@@ -37,7 +37,7 @@ const StoreDashboard = () => {
           total: 179
         }
       },
-      'branch-2': { // Thanh Khê
+      'branch-1-2': { // Chi nhánh Thanh Khê
         revenue: {
           today: 8500000,
           thisWeek: 65000000,
@@ -64,7 +64,7 @@ const StoreDashboard = () => {
           total: 116
         }
       },
-      'branch-3': { // Sơn Trà
+      'branch-1-3': { // Chi nhánh Sơn Trà (PENDING)
         revenue: {
           today: 0,
           thisWeek: 0,
@@ -80,10 +80,64 @@ const StoreDashboard = () => {
           total: 0
         },
         products: {
-          active: 28,
+          active: 0,
           inactive: 0,
           outOfStock: 0,
-          total: 28
+          total: 0
+        },
+        customers: {
+          new: 0,
+          returning: 0,
+          total: 0
+        }
+      },
+      'branch-1-4': { // Chi nhánh Cẩm Lệ (PENDING)
+        revenue: {
+          today: 0,
+          thisWeek: 0,
+          thisMonth: 0,
+          growth: 0
+        },
+        orders: {
+          pending: 0,
+          confirmed: 0,
+          shipped: 0,
+          delivered: 0,
+          cancelled: 0,
+          total: 0
+        },
+        products: {
+          active: 0,
+          inactive: 0,
+          outOfStock: 0,
+          total: 0
+        },
+        customers: {
+          new: 0,
+          returning: 0,
+          total: 0
+        }
+      },
+      'branch-1-5': { // Chi nhánh Ngũ Hành Sơn (REJECTED)
+        revenue: {
+          today: 0,
+          thisWeek: 0,
+          thisMonth: 0,
+          growth: 0
+        },
+        orders: {
+          pending: 0,
+          confirmed: 0,
+          shipped: 0,
+          delivered: 0,
+          cancelled: 0,
+          total: 0
+        },
+        products: {
+          active: 0,
+          inactive: 0,
+          outOfStock: 0,
+          total: 0
         },
         customers: {
           new: 0,
@@ -93,14 +147,14 @@ const StoreDashboard = () => {
       }
     };
     
-    return branchStats[branchId] || branchStats['branch-1'];
+    return branchStats[branchId] || branchStats['branch-1-1'];
   };
   
-  const stats = currentStore ? getStatsByBranch(currentStore.id) : getStatsByBranch('branch-1');
+  const stats = currentStore ? getStatsByBranch(currentStore.id) : getStatsByBranch('branch-1-1');
 
   const getRecentOrdersByBranch = (branchId) => {
     const branchOrders = {
-      'branch-1': [ // Hải Châu
+      'branch-1-1': [ // Chi nhánh Hải Châu
         {
           id: 'ORD001',
           customer: 'Nguyễn Văn A',
@@ -155,10 +209,10 @@ const StoreDashboard = () => {
       'branch-3': [] // Sơn Trà - chưa có đơn hàng
     };
     
-    return branchOrders[branchId] || branchOrders['branch-1'];
+    return branchOrders[branchId] || branchOrders['branch-1-1'];
   };
   
-  const recentOrders = currentStore ? getRecentOrdersByBranch(currentStore.id) : getRecentOrdersByBranch('branch-1');
+  const recentOrders = currentStore ? getRecentOrdersByBranch(currentStore.id) : getRecentOrdersByBranch('branch-1-1');
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -190,7 +244,7 @@ const StoreDashboard = () => {
   };
 
   return (
-    <StoreStatusGuard currentStore={currentStore} pageName="bảng điều khiển">
+    <StoreStatusGuard currentStore={currentStore} pageName="bảng điều khiển" loading={storeLoading}>
       <StoreLayout>
         <div className="space-y-6">
         {/* Header */}
@@ -284,7 +338,7 @@ const StoreDashboard = () => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Thao tác nhanh</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link
-              to="/store/products"
+              to="/store-dashboard/products"
               className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
             >
               <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
@@ -297,7 +351,7 @@ const StoreDashboard = () => {
             </Link>
 
             <Link
-              to="/store/orders"
+              to="/store-dashboard/orders"
               className="flex items-center gap-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
             >
               <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
@@ -310,7 +364,7 @@ const StoreDashboard = () => {
             </Link>
 
             <Link
-              to="/store/promotions"
+              to="/store-dashboard/promotions"
               className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
             >
               <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
@@ -323,7 +377,7 @@ const StoreDashboard = () => {
             </Link>
 
             <Link
-              to="/store/analytics"
+              to="/store-dashboard/analytics"
               className="flex items-center gap-3 p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
             >
               <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
@@ -342,7 +396,7 @@ const StoreDashboard = () => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Đơn hàng gần đây</h3>
             <Link
-              to="/store/orders"
+              to="/store-dashboard/orders"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm"
             >
               Xem tất cả →

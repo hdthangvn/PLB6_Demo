@@ -1,7 +1,7 @@
-import { useCart } from '../../context/CartContext';
-import { useState } from 'react';
+import { useState, memo } from 'react';
+import ProductSkeleton from './ProductSkeleton';
 
-const ProductSection = ({ 
+const ProductSection = memo(({ 
   title = "Sản phẩm nổi bật",
   showViewAll = true,
   products = [],
@@ -9,53 +9,16 @@ const ProductSection = ({
   columns = "lg:grid-cols-5",
   onProductClick,
   onViewAllClick,
+  onHoverViewAll, // ✅ Thêm prop mới cho prefetch
   backgroundColor = "bg-gray-50",
   compact = false
 }) => {
-  const { addToCart } = useCart();
-  const [addingToCart, setAddingToCart] = useState(new Set()); // Track products being added to cart
+  const [addingToCart] = useState(new Set());
 
-  // ✅ SỬA: Luôn sử dụng cộng dồn số lượng cho ProductSection
-  const handleAddToCart = async (e, product) => {
-    e.stopPropagation(); // Ngăn event bubble lên parent
-    
-    if (addingToCart.has(product.id)) return; // Prevent double click
-    
-    setAddingToCart(prev => new Set(prev).add(product.id));
-    
-    try {
-      // Optimistic update - UI cập nhật ngay lập tức
-      const result = addToCart(product, 1, { color: 'default', storage: 'default' }, false);
-      
-      if (result.success) {
-        // Show success notification
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform transition-all duration-300';
-        notification.textContent = `✓ Đã thêm ${product.name} vào giỏ hàng`;
-        document.body.appendChild(notification);
-        
-        // Auto remove notification after 2 seconds
-        setTimeout(() => {
-          notification.classList.add('opacity-0', 'translate-x-full');
-          setTimeout(() => {
-            if (notification.parentNode) {
-              notification.parentNode.removeChild(notification);
-            }
-          }, 300);
-        }, 2000);
-      }
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 100));
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-    } finally {
-      setAddingToCart(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(product.id);
-        return newSet;
-      });
-    }
+  // Chỉ điều hướng tới trang chi tiết
+  const handleViewDetail = (e, product) => {
+    e.stopPropagation();
+    onProductClick?.(product);
   };
 
   const sectionPadding = compact ? 'py-2' : 'py-16';
@@ -73,6 +36,7 @@ const ProductSection = ({
           {showViewAll && (
             <button 
               onClick={onViewAllClick}
+              onMouseEnter={onHoverViewAll} // ✅ Prefetch khi hover!
               className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
             >
               Xem tất cả →
@@ -81,10 +45,8 @@ const ProductSection = ({
         </div>
         
         {loading ? (
-          <div className="flex justify-center items-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="ml-4 text-gray-600">Đang tải sản phẩm...</p>
-          </div>
+          /* ✅ SKELETON LOADING - Hiển thị placeholder mượt mà */
+          <ProductSkeleton count={5} />
         ) : (
           /* Grid sản phẩm */
           <div className={`grid grid-cols-2 sm:grid-cols-3 ${columns} gap-4`}>
@@ -97,14 +59,36 @@ const ProductSection = ({
                 {/* Ảnh sản phẩm */}
                 <div className="relative overflow-hidden">
                   <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gray-200 group-hover:to-gray-300 transition-colors">
-                    {product.image?.startsWith('http') ? (
+                    {/* ✅ Hỗ trợ Product Variants: ưu tiên primaryImage, sau đó images[0], cuối cùng image */}
+                    {product.image || product.primaryImage ? (
                       <img 
-                        src={product.image} 
+                        src={product.image || product.primaryImage} 
                         alt={product.name}
+                        loading="lazy"
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/200x200?text=No+Image';
+                        }}
+                      />
+                    ) : product.images && product.images.length > 0 ? (
+                      <img 
+                        src={product.images[0]} 
+                        alt={product.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/200x200?text=No+Image';
+                        }}
                       />
                     ) : (
-                      <span className="text-3xl group-hover:scale-110 transition-transform duration-500 ease-out">{product.image}</span>
+                      <div className="flex flex-col items-center justify-center text-gray-400">
+                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span className="text-xs mt-1">Chưa có ảnh</span>
+                      </div>
                     )}
                   </div>
                   {/* Badge (Hot, Giảm giá, v.v.) */}
@@ -123,30 +107,41 @@ const ProductSection = ({
                 
                 {/* Thông tin sản phẩm */}
                 <div className="p-3">
-                  <h3 className="font-semibold text-gray-900 mb-2 text-xs line-clamp-2 h-8 group-hover:text-blue-600 transition-colors">
+                  <h3 className="font-semibold text-gray-900 mb-1 text-xs line-clamp-2 h-8 group-hover:text-blue-600 transition-colors">
                     {product.name}
                   </h3>
                   
+                  {/* ✅ Tên cửa hàng */}
+                  {(product.store?.name || product.storeName || product.storeId) && (
+                    <div className="flex items-center space-x-1 mb-2">
+                      <span className="text-[10px] text-gray-500">🏪</span>
+                      <span className="text-[10px] text-gray-600 truncate">
+                        {product.store?.name || product.storeName || `Store #${product.storeId?.slice(-6)}`}
+                      </span>
+                    </div>
+                  )}
+                  
                   {/* Giá sản phẩm */}
                   <div className="flex flex-col space-y-1">
-                    <span className="text-sm font-bold text-red-600">
-                      {product.price}đ
-                    </span>
-                    {product.originalPrice && (
-                      <span className="text-xs text-gray-500 line-through">
-                        {product.originalPrice}đ
+                    {/* ✅ SỬA: Hiển thị giá hoặc "Liên hệ" nếu không có */}
+                    {product.price && product.price > 0 ? (
+                      <span className="text-sm font-bold text-red-600">
+                        {product.price.toLocaleString('vi-VN')}đ
+                      </span>
+                    ) : (
+                      <span className="text-sm font-medium text-gray-500">
+                        Liên hệ
                       </span>
                     )}
                   </div>
                   
-                  {/* Button thêm vào giỏ */}
+                  {/* Button xem chi tiết */}
                   <div className="mt-2">
                     <button 
-                      onClick={(e) => handleAddToCart(e, product)}
-                      disabled={addingToCart.has(product.id)}
-                      className="w-full bg-blue-600 text-white py-1.5 rounded-md hover:bg-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium"
+                      onClick={(e) => handleViewDetail(e, product)}
+                      className="w-full bg-blue-600 text-white py-1.5 rounded-md hover:bg-blue-700 transition-all duration-300 text-xs font-medium"
                     >
-                      {addingToCart.has(product.id) ? 'Đang thêm...' : 'Thêm vào giỏ'}
+                      Xem chi tiết
                     </button>
                   </div>
                 </div>
@@ -157,6 +152,8 @@ const ProductSection = ({
       </div>
     </section>
   );
-};
+});
+
+ProductSection.displayName = 'ProductSection';
 
 export default ProductSection;

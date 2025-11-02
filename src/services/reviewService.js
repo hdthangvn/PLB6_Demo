@@ -1,267 +1,245 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+import api from './api';
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+/**
+ * ================================================
+ * REVIEW SERVICE - API CALLS
+ * ================================================
+ * Handles all review-related API requests
+ */
 
-export const reviewService = {
-  // Get reviews for a product
-  async getProductReviews(productId, page = 1, limit = 5, filter = 'all', sortBy = 'newest') {
-    await delay(300);
-    
-    // Load persisted reviews from localStorage
-    const storeKey = 'reviews_by_product';
-    const byProduct = JSON.parse(localStorage.getItem(storeKey) || '{}');
-    const saved = Array.isArray(byProduct[productId]) ? byProduct[productId] : [];
+// =====================================
+// PUBLIC REVIEW APIs (Anyone can view)
+// =====================================
 
-    // Seed mock reviews (kept for demo so trang chi tiết có sẵn dữ liệu)
-    const mockReviews = [
-      {
-        id: 1,
-        productId: parseInt(productId),
-        userId: 'user_1',
-        user: {
-          id: 'user_1',
-          name: 'Nguyễn Văn A',
-          avatar: '👤',
-          verified: true
-        },
-        rating: 5,
-        title: 'Sản phẩm tuyệt vời!',
-        content: 'Camera chụp ảnh rất đẹp, pin trâu, thiết kế sang trọng. Đáng tiền bỏ ra.',
-        images: ['📷', '📷'],
-        verifiedPurchase: true,
-        helpful: 12,
-        notHelpful: 1,
-        createdAt: '2024-01-20T10:30:00Z',
-        updatedAt: '2024-01-20T10:30:00Z',
-        replies: [
-          {
-            id: 'reply_1',
-            userId: 'shop_official',
-            user: {
-              name: 'TechStore Official',
-              avatar: '🏪',
-              isShop: true
-            },
-            content: 'Cảm ơn bạn đã tin tưởng và sử dụng sản phẩm! 😊',
-            createdAt: '2024-01-20T14:00:00Z'
-          }
-        ]
+// ❌ REMOVED: getReviewById() - API không tồn tại trong Swagger
+// ❌ REMOVED: getProductReviews() - API không tồn tại, chỉ có product-variant reviews
+
+/**
+ * Get all reviews for a product variant
+ * @param {string} productVariantId - Product Variant ID
+ * @param {object} params - Query params (page, size, sortBy, rating, hasImages)
+ * @returns {Promise} List of reviews
+ */
+export const getProductVariantReviews = async (productVariantId, params = {}) => {
+  try {
+    const {
+      page = 0,
+      size = 10,
+      sortBy = 'createdAt',
+      sortDir = 'desc',
+      rating = null,
+      hasImages = null,
+    } = params;
+
+    const response = await api.get(`/api/v1/reviews/product-variant/${productVariantId}`, {
+      params: {
+        page,
+        size,
+        sortBy,
+        sortDir,
+        ...(rating && { rating }),
+        ...(hasImages !== null && { hasImages }),
       },
-      {
-        id: 2,
-        productId: parseInt(productId),
-        userId: 'user_2',
-        user: {
-          id: 'user_2',
-          name: 'Trần Thị B',
-          avatar: '👩',
-          verified: true
-        },
-        rating: 4,
-        title: 'Chất lượng tốt',
-        content: 'Chất lượng ok, ship nhanh, đóng gói cẩn thận. Chỉ có điều màn hình hơi nhỏ so với mong đợi.',
-        images: [],
-        verifiedPurchase: true,
-        helpful: 8,
-        notHelpful: 0,
-        createdAt: '2024-01-18T09:15:00Z',
-        updatedAt: '2024-01-18T09:15:00Z',
-        replies: []
-      }
-    ];
-
-    // Combine (ưu tiên review vừa lưu lên trước)
-    let combined = [...saved, ...mockReviews];
-
-    // Filter theo số sao nếu cần
-    if (['1','2','3','4','5'].includes(filter)) {
-      combined = combined.filter(r => String(r.rating) === filter);
-    }
-
-    // Sort
-    combined.sort((a,b)=>{
-      if (sortBy === 'oldest') return new Date(a.createdAt) - new Date(b.createdAt);
-      if (sortBy === 'highest') return b.rating - a.rating;
-      if (sortBy === 'lowest') return a.rating - b.rating;
-      return new Date(b.createdAt) - new Date(a.createdAt); // newest
     });
 
-    // Pagination
-    const totalReviews = combined.length;
-    const totalPages = Math.max(1, Math.ceil(totalReviews / limit));
-    const start = (page - 1) * limit;
-    const paged = combined.slice(start, start + limit);
-
-    // Summary
-    const sumRating = combined.reduce((s,r)=> s + (r.rating || 0), 0);
-    const ratingDistribution = {1:0,2:0,3:0,4:0,5:0};
-    combined.forEach(r => { const k = r.rating||0; if (ratingDistribution[k] != null) ratingDistribution[k]++; });
-
     return {
       success: true,
-      data: {
-        reviews: paged,
-        pagination: {
-          currentPage: page,
-          totalPages,
-          totalReviews,
-          hasNext: page < totalPages,
-          hasPrev: page > 1
-        },
-        summary: {
-          averageRating: totalReviews ? sumRating / totalReviews : 0,
-          totalReviews,
-          ratingDistribution
-        }
-      }
+      data: response.data.data,
     };
-  },
-
-  // Submit a new review
-  async submitReview(productId, reviewData) {
-    await delay(500);
-    
-    // TODO: Replace with real API call
-    // const response = await fetch(`${API_BASE_URL}/products/${productId}/reviews`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-    //   },
-    //   body: JSON.stringify(reviewData)
-    // });
-
-    // Mock validation
-    if (!reviewData.rating || !reviewData.content.trim()) {
-      return {
-        success: false,
-        error: 'Vui lòng điền đầy đủ thông tin đánh giá'
-      };
-    }
-
-    // Chuẩn hóa ảnh (biểu tượng) để hiển thị đơn giản
-    const images = (reviewData.images || []).map(() => '📷');
-
-    // Success + persist to localStorage
-    const newReview = {
-      id: Date.now(),
-      productId: parseInt(productId),
-      userId: 'current_user',
-      user: {
-        id: 'current_user',
-        name: reviewData.userName || 'Bạn',
-        avatar: '👤',
-        verified: true
-      },
-      rating: reviewData.rating,
-      title: reviewData.title || '',
-      content: reviewData.content,
-      images,
-      verifiedPurchase: reviewData.verifiedPurchase || false,
-      helpful: 0,
-      notHelpful: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      replies: []
-    };
-
-    const storeKey = 'reviews_by_product';
-    const byProduct = JSON.parse(localStorage.getItem(storeKey) || '{}');
-    const list = Array.isArray(byProduct[productId]) ? byProduct[productId] : [];
-    byProduct[productId] = [newReview, ...list];
-    localStorage.setItem(storeKey, JSON.stringify(byProduct));
-
+  } catch (error) {
+    console.error('Error fetching product variant reviews:', error);
     return {
-      success: true,
-      data: newReview,
-      message: 'Đánh giá của bạn đã được gửi thành công!'
-    };
-  },
-
-  // Reply to a review
-  async replyToReview(reviewId, replyData) {
-    await delay(300);
-    
-    // TODO: Replace with real API call
-    // const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/replies`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-    //   },
-    //   body: JSON.stringify(replyData)
-    // });
-
-    const newReply = {
-      id: `reply_${Date.now()}`,
-      userId: 'current_user',
-      user: {
-        name: replyData.userName || 'Bạn',
-        avatar: '👤',
-        isShop: false
-      },
-      content: replyData.content,
-      createdAt: new Date().toISOString()
-    };
-
-    return {
-      success: true,
-      data: newReply,
-      message: 'Phản hồi đã được gửi thành công!'
-    };
-  },
-
-  // Mark review as helpful/not helpful
-  async markReviewHelpful(reviewId, isHelpful) {
-    await delay(200);
-    
-    // TODO: Replace with real API call
-    // const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/helpful`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-    //   },
-    //   body: JSON.stringify({ isHelpful })
-    // });
-
-    return {
-      success: true,
-      data: {
-        reviewId,
-        isHelpful,
-        newHelpfulCount: isHelpful ? 13 : 12,
-        newNotHelpfulCount: isHelpful ? 1 : 2
-      }
-    };
-  },
-
-  // Upload review images
-  async uploadReviewImages(files) {
-    await delay(1000);
-    
-    // TODO: Replace with real API call
-    // const formData = new FormData();
-    // files.forEach(file => formData.append('images', file));
-    // const response = await fetch(`${API_BASE_URL}/reviews/upload-images`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-    //   },
-    //   body: formData
-    // });
-
-    // Mock uploaded images
-    const uploadedImages = files.map((file, index) => ({
-      id: `img_${Date.now()}_${index}`,
-      url: URL.createObjectURL(file),
-      filename: file.name,
-      size: file.size
-    }));
-
-    return {
-      success: true,
-      data: uploadedImages
+      success: false,
+      error: error.message,
     };
   }
+};
+
+/**
+ * Get review statistics for a product variant
+ * @param {string} productVariantId - Product Variant ID
+ * @returns {Promise} Review statistics (average rating, rating distribution)
+ */
+export const getProductVariantReviewStats = async (productVariantId) => {
+  try {
+    const response = await api.get(`/api/v1/reviews/product-variant/${productVariantId}/stats`);
+    return {
+      success: true,
+      data: response.data.data,
+    };
+  } catch (error) {
+    console.error('Error fetching review stats:', error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+/**
+ * Get all reviews written by current user
+ * @param {object} params - Query params (page, size)
+ * @returns {Promise} List of user's reviews
+ */
+// ❌ REMOVED: getMyReviews() - Wrong endpoint /api/v1/reviews/my-reviews
+// ✅ Use getBuyerReviews() below with correct endpoint /api/v1/buyer/reviews/my-reviews
+
+// =====================================
+// BUYER REVIEW APIs (Require authentication)
+// =====================================
+
+/**
+ * Create a new review
+ * @param {object} reviewData - Review data
+ * @param {string} reviewData.productVariantId - Product Variant ID
+ * @param {string} reviewData.orderId - Order ID
+ * @param {number} reviewData.rating - Rating (1-5)
+ * @param {string} reviewData.comment - Review comment (optional)
+ * @param {string[]} reviewData.images - Image URLs (optional)
+ * @returns {Promise} Created review
+ */
+export const createReview = async (reviewData) => {
+  try {
+    const response = await api.post('/api/v1/buyer/reviews', reviewData);
+    return {
+      success: true,
+      data: response.data.data,
+      message: 'Đánh giá của bạn đã được gửi thành công!',
+    };
+  } catch (error) {
+    console.error('Error creating review:', error);
+    // Extract error message from API response
+    const errorMessage = error?.response?.data?.error || 
+                         error?.response?.data?.message || 
+                         error?.message || 
+                         'Không thể gửi đánh giá. Vui lòng kiểm tra lại thông tin.';
+    return {
+      success: false,
+      error: errorMessage,
+    };
+  }
+};
+
+/**
+ * Update an existing review
+ * @param {string} reviewId - Review ID
+ * @param {object} reviewData - Updated review data
+ * @param {number} reviewData.rating - Rating (1-5)
+ * @param {string} reviewData.comment - Review comment
+ * @param {string[]} reviewData.images - Image URLs
+ * @returns {Promise} Updated review
+ */
+export const updateReview = async (reviewId, reviewData) => {
+  try {
+    const response = await api.put(`/api/v1/buyer/reviews/${reviewId}`, reviewData);
+    return {
+      success: true,
+      data: response.data.data,
+      message: 'Đánh giá đã được cập nhật!',
+    };
+  } catch (error) {
+    console.error('Error updating review:', error);
+    return {
+      success: false,
+      error: error.message || 'Không thể cập nhật đánh giá',
+    };
+  }
+};
+
+/**
+ * Delete a review
+ * @param {string} reviewId - Review ID
+ * @returns {Promise} Success status
+ */
+export const deleteReview = async (reviewId) => {
+  try {
+    await api.delete(`/api/v1/buyer/reviews/${reviewId}`);
+    return {
+      success: true,
+      message: 'Đánh giá đã được xóa!',
+    };
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    return {
+      success: false,
+      error: error.message || 'Không thể xóa đánh giá',
+    };
+  }
+};
+
+/**
+ * Get all reviews written by current user (buyer endpoint)
+ * @param {object} params - Query params (page, size)
+ * @returns {Promise} List of user's reviews
+ */
+export const getBuyerReviews = async (params = {}) => {
+  try {
+    const {
+      page = 0,
+      size = 20,
+      sortBy = 'createdAt',
+      sortDir = 'desc',
+    } = params;
+
+    const response = await api.get('/api/v1/buyer/reviews/my-reviews', {
+      params: {
+        page,
+        size,
+        sortBy,
+        sortDir,
+      },
+    });
+
+    return {
+      success: true,
+      data: response.data.data,
+    };
+  } catch (error) {
+    console.error('Error fetching buyer reviews:', error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+// =====================================
+// HELPER FUNCTIONS
+// =====================================
+
+/**
+ * Check if user can review a product (has purchased and order is delivered)
+ * @param {string} productVariantId - Product Variant ID
+ * @param {string} orderId - Order ID
+ * @returns {Promise} Can review status
+ */
+export const canReviewProduct = async (productVariantId, orderId) => {
+  try {
+    // This would typically be checked via order status
+    // For now, we'll assume if user has orderId, they can review
+    return {
+      success: true,
+      canReview: true,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      canReview: false,
+    };
+  }
+};
+
+export default {
+  // Public APIs (✅ Validated with Swagger)
+  getProductVariantReviews,
+  getProductVariantReviewStats,
+  
+  // Buyer APIs (✅ Validated with Swagger)
+  createReview,
+  updateReview,
+  deleteReview,
+  getBuyerReviews,
+  
+  // Helpers
+  canReviewProduct,
 };

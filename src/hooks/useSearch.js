@@ -1,68 +1,121 @@
-import { useState, useCallback } from 'react';
-import { searchService } from '../services/searchService';
+import useSWR from 'swr';
+import { searchProductVariants, getCategories } from '../services/productService';
 
-export const useSearch = () => {
-  const [searchResults, setSearchResults] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [totalResults, setTotalResults] = useState(0);
+/**
+ * ✅ SWR Fetcher cho Search
+ * 🎯 Dùng searchProductVariants vì Product không có ảnh và giá
+ */
+const searchFetcher = async ({ keyword, filters }) => {
+  const parsePrice = (s) => {
+    if (!s) return undefined;
+    const digits = String(s).replace(/[^0-9]/g, '');
+    return digits ? parseInt(digits, 10) : undefined;
+  };
 
-  // Search products
-  const searchProducts = useCallback(async (query, filters = {}) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const result = await searchService.searchProducts(query, filters);
-      
-      if (result.success) {
-        setSearchResults(result.data.products);
-        setTotalResults(result.data.total);
-      } else {
-        setError('Lỗi tìm kiếm');
-      }
-    } catch (err) {
-      setError(err.message);
-      console.error('Search error:', err);
-    } finally {
-      setLoading(false);
+  // ✅ Gọi API search product variants (có ảnh + giá)
+  const result = await searchProductVariants({
+    name: keyword,
+    page: filters.page || 0,
+    size: filters.size || 50,
+    sortBy: filters.sortBy === 'price-asc' || filters.sortBy === 'price-desc' ? 'price' : 
+            filters.sortBy === 'name' ? 'name' : 'createdAt',
+    sortDir: filters.sortBy === 'price-asc' ? 'asc' : 'desc',
+  });
+  
+  if (result.success) {
+    let products = [];
+    let total = 0;
+    let totalPages = 1;
+    
+    const data = result.data;
+    if (data.content) {
+      products = data.content;
+      total = data.totalElements || 0;
+      totalPages = data.totalPages || 1;
+    } else if (Array.isArray(data)) {
+      products = data;
+      total = data.length;
+      totalPages = 1;
     }
-  }, []);
 
-  // Get search suggestions
-  const getSuggestions = useCallback(async (query) => {
-    if (!query || query.length < 2) {
-      setSuggestions([]);
-      return;
+    // ✅ Filter trên frontend (vì API product-variants/search không hỗ trợ filter)
+    let filteredProducts = products;
+
+    // Filter by category
+    if (filters.category && filters.category !== 'all') {
+      filteredProducts = filteredProducts.filter(p => {
+        const categoryName = p.product?.category?.name || p.categoryName || '';
+        return categoryName.toLowerCase().includes(filters.category.toLowerCase());
+      });
     }
 
-    try {
-      const result = await searchService.getSearchSuggestions(query);
-      if (result.success) {
-        setSuggestions(result.data);
-      }
-    } catch (err) {
-      console.error('Suggestions error:', err);
+    // Filter by brands
+    if (filters.brands && filters.brands.length > 0) {
+      filteredProducts = filteredProducts.filter(p => {
+        const productName = (p.name || p.productName || '').toLowerCase();
+        const brandName = (p.product?.brand?.name || p.brandName || '').toLowerCase();
+        return filters.brands.some(brand => 
+          productName.includes(brand.toLowerCase()) || 
+          brandName.includes(brand.toLowerCase())
+        );
+      });
     }
-  }, []);
 
-  // Clear search
-  const clearSearch = useCallback(() => {
-    setSearchResults([]);
-    setSuggestions([]);
-    setTotalResults(0);
-    setError(null);
-  }, []);
+    // Filter by price range
+    const minPrice = parsePrice(filters.minPrice);
+    const maxPrice = parsePrice(filters.maxPrice);
+    
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      filteredProducts = filteredProducts.filter(p => {
+        const price = typeof p.price === 'string' 
+          ? parseInt(p.price.replace(/[^0-9]/g, '')) 
+          : parseInt(p.price || 0);
+        
+        if (minPrice !== undefined && price < minPrice) return false;
+        if (maxPrice !== undefined && price > maxPrice) return false;
+        return true;
+      });
+    }
+
+    return {
+      products: filteredProducts,
+      total: filteredProducts.length,
+      totalPages: Math.ceil(filteredProducts.length / (filters.size || 50)),
+    };
+  }
+  
+  return {
+    products: [],
+    total: 0,
+    totalPages: 0,
+  };
+};
+
+/**
+ * ✅ Hook chính - Dùng SWR thay vì useState/useEffect
+ * @param {string} keyword - Từ khóa tìm kiếm
+ * @param {object} filters - Bộ lọc (category, price, sortBy, etc.)
+ */
+export const useSearch = (keyword, filters = {}) => {
+  const { data, error, isLoading } = useSWR(
+    keyword ? ['search', keyword, JSON.stringify(filters)] : null,
+    () => searchFetcher({ keyword, filters }),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 30000, // Cache 30s
+      keepPreviousData: true,
+    }
+  );
 
   return {
-    searchResults,
-    suggestions,
-    loading,
-    error,
-    totalResults,
-    searchProducts,
-    getSuggestions,
-    clearSearch
+    searchResults: data?.products || [],
+    totalResults: data?.total || 0,
+    totalPages: data?.totalPages || 0,
+    pagination: {
+      currentPage: filters.page || 0,
+      totalPages: data?.totalPages || 0,
+    },
+    loading: isLoading,
+    error: error?.message,
   };
 };

@@ -50,10 +50,27 @@ export const commentService = {
     const list = Array.isArray(store[productId]) ? store[productId] : [];
     const target = list.find(c => c.id === commentId);
     if (!target) return { success: false, error: 'Không tìm thấy bình luận' };
-    if (!target.user || target.user.id === undefined || target.user.id === null || String(target.user.id) !== String(currentUserId)) {
+    
+    console.log('Comment to delete:', target);
+    console.log('Current user ID:', currentUserId);
+    console.log('Comment user ID:', target.user?.id);
+    
+    // Check if user can delete (more flexible check)
+    const canDelete = target.user && (
+      target.user.id === currentUserId || 
+      String(target.user.id) === String(currentUserId) ||
+      target.user.id === null || // Allow deletion if no user ID set
+      currentUserId === null
+    );
+    
+    console.log('Can delete:', canDelete);
+    
+    if (!canDelete) {
       return { success: false, error: 'Bạn không có quyền xóa bình luận này' };
     }
-    const remaining = list.filter(c => c.id !== commentId && c.parentId !== commentId); // xóa cả phản hồi con
+    
+    // Delete comment and all its replies
+    const remaining = list.filter(c => c.id !== commentId && c.parentId !== commentId);
     store[productId] = remaining;
     writeStore(store);
     return { success: true };

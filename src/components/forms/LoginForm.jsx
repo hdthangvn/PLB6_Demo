@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 
 const LoginForm = ({ onSwitchToSignUp, onSwitchToForgotPassword }) => {
+  const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -48,9 +50,15 @@ const LoginForm = ({ onSwitchToSignUp, onSwitchToForgotPassword }) => {
     }
     
     setLoading(true);
+    setErrors({}); // Clear previous errors
+    
     const result = await login(formData.email, formData.password);
     
-    if (!result.success) {
+    if (result.success) {
+      // ✅ Login thành công → Chuyển về trang Home
+      navigate('/');
+    } else {
+      // ❌ Login thất bại → Hiển thị lỗi
       setErrors({ general: result.error || 'Đăng nhập thất bại' });
     }
     

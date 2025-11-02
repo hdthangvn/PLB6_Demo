@@ -1005,7 +1005,7 @@ const StoreOrderDetail = () => {
             <h3 className="text-lg font-medium text-gray-900 mb-2">Không tìm thấy đơn hàng</h3>
             <p className="text-gray-500 mb-4">Đơn hàng với ID {orderId} không tồn tại hoặc đã bị xóa.</p>
             <Link
-              to="/store/orders"
+              to="/store-dashboard/orders"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
               Quay lại danh sách đơn hàng
@@ -1024,7 +1024,7 @@ const StoreOrderDetail = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => navigate('/store/orders')}
+                onClick={() => navigate('/store-dashboard/orders')}
                 className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

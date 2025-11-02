@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { useToast } from '../../context/ToastContext';
 import MainLayout from '../../layouts/MainLayout';
 import CartItem from '../../components/cart/CartItem';
 import CartSummary from '../../components/cart/CartSummary';
@@ -9,6 +10,10 @@ const CartPage = () => {
   const navigate = useNavigate();
   const { cartItems, clearCart, getTotalItems, selectAll, getSelectedItems } = useCart();
   const totalItems = getTotalItems();
+  const distinctItems = cartItems.length; // Số lượng items riêng biệt
+  
+  // ✅ Toast notification
+  const { warning, success } = useToast();
 
   const handleContinueShopping = () => {
     navigate('/');
@@ -18,15 +23,16 @@ const CartPage = () => {
     // TODO: Navigate to checkout page
     const selected = getSelectedItems();
     if (selected.length === 0) {
-      alert('Vui lòng chọn ít nhất 1 sản phẩm để thanh toán.');
+      warning('⚠️ Vui lòng chọn ít nhất 1 sản phẩm để thanh toán.');
       return;
     }
     navigate('/checkout');
   };
 
-  const handleClearCart = () => {
+  const handleClearCart = async () => {
     if (window.confirm('Bạn có chắc muốn xóa tất cả sản phẩm khỏi giỏ hàng?')) {
-      clearCart();
+      await clearCart();
+      success('🗑️ Đã xóa tất cả sản phẩm khỏi giỏ hàng');
     }
   };
 
@@ -89,7 +95,7 @@ const CartPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">
-            Giỏ hàng ({totalItems} sản phẩm)
+            Giỏ hàng ({distinctItems} sản phẩm)
           </h1>
           <div className="flex space-x-4 items-center">
             <label className="flex items-center space-x-2">

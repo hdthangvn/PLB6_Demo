@@ -16,6 +16,33 @@ export const userService = {
     
     // Mock implementation
     const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    // Nếu chưa có user, tạo user mặc định
+    if (!user.id) {
+      const defaultUser = {
+        id: 'user_001',
+        email: 'seller@techstore.com',
+        name: 'Quang Nguyễn',
+        avatar: null,
+        phone: '',
+        address: '',
+        dateOfBirth: '',
+        gender: '',
+        preferences: {
+          newsletter: true,
+          promotions: true,
+          notifications: true
+        },
+        stats: {
+          totalOrders: 12,
+          totalSpent: 45690000,
+          memberSince: '2024-01-15'
+        }
+      };
+      localStorage.setItem('user', JSON.stringify(defaultUser));
+      user = defaultUser;
+    }
+    
     const mockProfile = {
       id: user.id,
       email: user.email,
@@ -25,12 +52,12 @@ export const userService = {
       address: user.address || '',
       dateOfBirth: user.dateOfBirth || '',
       gender: user.gender || '',
-      preferences: {
+      preferences: user.preferences || {
         newsletter: true,
         promotions: true,
         notifications: true
       },
-      stats: {
+      stats: user.stats || {
         totalOrders: 12,
         totalSpent: 45690000,
         memberSince: '2024-01-15'
@@ -62,9 +89,13 @@ export const userService = {
     const updatedUser = { ...currentUser, ...profileData };
     localStorage.setItem('user', JSON.stringify(updatedUser));
     
+    // Dispatch custom event để AuthContext có thể listen và update state
+    window.dispatchEvent(new CustomEvent('userUpdated', { detail: updatedUser }));
+    
     return {
       success: true,
-      data: updatedUser
+      data: updatedUser,
+      message: 'Cập nhật thông tin thành công!'
     };
   },
 
@@ -134,7 +165,81 @@ export const userService = {
     
     const key = `orders_${userId}`;
     const saved = localStorage.getItem(key);
-    const orders = saved ? JSON.parse(saved) : [];
+    let orders = saved ? JSON.parse(saved) : [];
+    
+    // ✅ Nếu chưa có orders, tạo mock data với variant details
+    if (orders.length === 0) {
+      orders = [
+        {
+          id: 'ORD-2025-006',
+          date: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
+          status: 'processing',
+          customer: { name: 'Quang Nguyễn', phone: '0367238563', address: '97 Nguyen Luong Bang' },
+          items: [
+            {
+              productId: 1,
+              name: 'ASUS ROG RTX 4080',
+              quantity: 1,
+              price: 24990000,
+              options: {
+                memoryType: 'GDDR6X',
+                memorySize: '16GB',
+                clockSpeed: '2230 MHz'
+              },
+              shop: { id: 'shop-1', name: 'Shop chính hãng' }
+            },
+            {
+              productId: 2,
+              name: 'MacBook Air M2',
+              quantity: 1,
+              price: 28990000,
+              options: {
+                ram: '8GB',
+                storage: '256GB SSD',
+                color: 'Bạc'
+              },
+              shop: { id: 'shop-1', name: 'Shop chính hãng' }
+            }
+          ],
+          total: 53980000,
+          shippingFee: 0,
+          paymentMethod: 'cod',
+          shippingMethod: 'express',
+          note: '',
+          promoCode: '',
+          discount: 0,
+          finalTotal: 53980000
+        },
+        {
+          id: 'ORD-2025-004',
+          date: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
+          status: 'processing',
+          customer: { name: 'Quang Nguyễn', phone: '0367238563', address: '97 Nguyen Luong Bang' },
+          items: [
+            {
+              productId: 2,
+              name: 'Sony WH-1000XM5',
+              quantity: 2,
+              price: 6990000,
+              options: {
+                color: 'Đen',
+                connectivity: 'Bluetooth 5.2'
+              }
+            }
+          ],
+          total: 13980000,
+          shippingFee: 0,
+          paymentMethod: 'cod',
+          shippingMethod: 'express',
+          note: '',
+          promoCode: '',
+          discount: 0,
+          finalTotal: 13980000
+        }
+      ];
+      localStorage.setItem(key, JSON.stringify(orders));
+    }
+    
     return { success: true, data: orders };
   },
 
@@ -166,5 +271,19 @@ export const userService = {
     orders[idx].status = status;
     localStorage.setItem(key, JSON.stringify(orders));
     return { success: true, data: orders[idx] };
+  },
+
+  // ✅ Delete order
+  async deleteOrder(userId, orderId) {
+    await delay(200);
+    const key = `orders_${userId}`;
+    const saved = localStorage.getItem(key);
+    const orders = saved ? JSON.parse(saved) : [];
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx === -1) return { success: false, error: 'Order not found' };
+    
+    const deletedOrder = orders.splice(idx, 1)[0];
+    localStorage.setItem(key, JSON.stringify(orders));
+    return { success: true, data: deletedOrder };
   }
 };

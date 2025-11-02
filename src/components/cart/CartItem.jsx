@@ -1,6 +1,7 @@
 import { useCart } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { getAttributeLabel } from '../../utils/attributeLabels';
 
 const CartItem = ({ item }) => {
   const { updateQuantity, removeFromCart, formatPrice, toggleItemSelected } = useCart();
@@ -34,10 +35,8 @@ const CartItem = ({ item }) => {
     if (!isRemoving) {
       setIsRemoving(true);
       try {
-        // Optimistic update - UI cập nhật ngay lập tức
-        removeFromCart(item.id);
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // ✅ Gọi API xóa (đã tích hợp backend trong CartContext)
+        await removeFromCart(item.id);
       } catch (error) {
         console.error('Error removing item:', error);
       } finally {
@@ -46,7 +45,7 @@ const CartItem = ({ item }) => {
     }
   };
 
-  const itemPrice = parseInt(item.product.price.replace(/\./g, '')) || 0;
+  const itemPrice = typeof item.product.price === 'number' ? item.product.price : parseInt(item.product.price.replace(/\./g, '')) || 0;
   const totalPrice = itemPrice * item.quantity;
 
   return (
@@ -65,15 +64,27 @@ const CartItem = ({ item }) => {
         className="w-20 h-20 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 hover:ring-2 hover:ring-blue-200 transition"
         aria-label="Xem chi tiết sản phẩm"
       >
-        {item.product.image?.startsWith('http') ? (
-          <img
-            src={item.product.image}
-            alt={item.product.name}
-            className="w-full h-full object-cover rounded-md"
-          />
-        ) : (
-          <span className="text-2xl">{item.product.image || '📦'}</span>
-        )}
+        {(() => {
+          // ✅ Ưu tiên: image > primaryImage > images[0]
+          const imageUrl = item.product.image || item.product.primaryImage || (item.product.images && item.product.images[0]);
+          
+          if (imageUrl && (imageUrl.startsWith('http') || imageUrl.startsWith('/'))) {
+            return (
+              <img
+                src={imageUrl}
+                alt={item.product.name}
+                className="w-full h-full object-cover rounded-md"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.style.display = 'none';
+                  e.target.parentElement.innerHTML = '<span class="text-2xl">📦</span>';
+                }}
+              />
+            );
+          } else {
+            return <span className="text-2xl">{imageUrl || '📦'}</span>;
+          }
+        })()}
       </button>
 
       {/* Product Info */}
@@ -87,18 +98,18 @@ const CartItem = ({ item }) => {
           {item.product.name}
         </button>
         
-        {/* Options */}
-        {(item.options?.color !== 'default' || item.options?.storage !== 'default') && (
+        {/* ✅ DYNAMIC OPTIONS - Tự động hiển thị tất cả attributes */}
+        {item.options && Object.keys(item.options).length > 0 && (
           <div className="text-sm text-gray-500 mt-1">
-            {item.options?.color !== 'default' && (
-              <span>Màu: {item.options.color}</span>
-            )}
-            {item.options?.color !== 'default' && item.options?.storage !== 'default' && (
-              <span> • </span>
-            )}
-            {item.options?.storage !== 'default' && (
-              <span>Dung lượng: {item.options.storage}</span>
-            )}
+            {Object.entries(item.options)
+              .filter(([key, value]) => value && value !== 'default')
+              .map(([key, value], index, array) => (
+                <span key={key}>
+                  {getAttributeLabel(key)}: {value}
+                  {index < array.length - 1 && <span> • </span>}
+                </span>
+              ))
+            }
           </div>
         )}
 
@@ -106,13 +117,8 @@ const CartItem = ({ item }) => {
           {/* Price */}
           <div className="flex items-center space-x-2">
             <span className="font-bold text-red-600">
-              {formatPrice(itemPrice)}đ
+              {itemPrice?.toLocaleString('vi-VN')}đ
             </span>
-            {item.product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through">
-                {formatPrice(parseInt(item.product.originalPrice.replace(/\./g, '')))}đ
-              </span>
-            )}
           </div>
         </div>
       </div>
@@ -141,7 +147,7 @@ const CartItem = ({ item }) => {
       {/* Total Price */}
       <div className="text-right flex-shrink-0 min-w-[100px]">
         <div className="font-bold text-lg text-red-600">
-          {formatPrice(totalPrice)}đ
+          {totalPrice?.toLocaleString('vi-VN')}đ
         </div>
         <button
           onClick={handleRemove}

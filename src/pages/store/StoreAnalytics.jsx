@@ -4,7 +4,7 @@ import StoreStatusGuard from '../../components/store/StoreStatusGuard';
 import { useStoreContext } from '../../context/StoreContext';
 
 const StoreAnalytics = () => {
-  const { currentStore } = useStoreContext();
+  const { currentStore, loading: storeLoading } = useStoreContext();
   const [timeRange, setTimeRange] = useState('30days');
 
   // Mock data động theo chi nhánh
@@ -44,11 +44,11 @@ const StoreAnalytics = () => {
           active: 22,
           inactive: 3,
           topSelling: [
-            { name: 'iPhone 15 Pro Max', sales: 45, revenue: 135000000 },
-            { name: 'MacBook Air M2', sales: 38, revenue: 106400000 },
-            { name: 'Samsung Galaxy S24 Ultra', sales: 32, revenue: 102400000 },
-            { name: 'Dell XPS 13', sales: 28, revenue: 42000000 },
-            { name: 'iPad Pro 12.9', sales: 25, revenue: 70000000 }
+            { name: 'iPhone 15 Pro Max 256GB', sales: 45, revenue: 1575000000 },
+            { name: 'Samsung Galaxy S24 Ultra 512GB', sales: 38, revenue: 1216000000 },
+            { name: 'MacBook Air M2 256GB', sales: 32, revenue: 896000000 },
+            { name: 'Dell XPS 13 512GB', sales: 28, revenue: 700000000 },
+            { name: 'AirPods Pro 2', sales: 25, revenue: 162500000 }
           ]
         },
         customers: {
@@ -101,11 +101,11 @@ const StoreAnalytics = () => {
           active: 16,
           inactive: 2,
           topSelling: [
-            { name: 'Dell XPS 13', sales: 28, revenue: 42000000 },
-            { name: 'MacBook Air M2', sales: 25, revenue: 70000000 },
-            { name: 'Surface Laptop 5', sales: 22, revenue: 44000000 },
-            { name: 'Lenovo ThinkPad', sales: 18, revenue: 36000000 },
-            { name: 'HP Spectre x360', sales: 15, revenue: 30000000 }
+            { name: 'Dell XPS 13 512GB', sales: 28, revenue: 700000000 },
+            { name: 'MacBook Air M2 256GB', sales: 25, revenue: 700000000 },
+            { name: 'ASUS ROG Strix G15', sales: 22, revenue: 484000000 },
+            { name: 'Sony WH-1000XM5', sales: 18, revenue: 153000000 },
+            { name: 'AirPods Pro 2', sales: 15, revenue: 97500000 }
           ]
         },
         customers: {
@@ -196,7 +196,7 @@ const StoreAnalytics = () => {
   };
 
   return (
-    <StoreStatusGuard currentStore={currentStore} pageName="phân tích dữ liệu">
+    <StoreStatusGuard currentStore={currentStore} pageName="phân tích dữ liệu" loading={storeLoading}>
       <StoreLayout>
         <div className="space-y-6">
           {/* Header */}

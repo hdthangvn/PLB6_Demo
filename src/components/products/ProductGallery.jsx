@@ -4,21 +4,36 @@ import { getProductGallery } from '../../utils/imageUtils';
 const ProductGallery = ({ product, images = [] }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // ✅ SỬ DỤNG IMAGES TỪ PRODUCT HOẶC TỰ ĐỘNG TẠO
+  // ✅ LẤY IMAGES TỪ API
   let galleryImages = images;
   
-  if (images.length === 0 && product) {
-    // Tự động tạo gallery từ product info
-    galleryImages = getProductGallery(product.id, product.category);
+  // Nếu không có images prop, lấy từ product
+  if (galleryImages.length === 0 && product) {
+    // Ưu tiên imageUrls từ ProductVariant API
+    if (product.imageUrls && Array.isArray(product.imageUrls) && product.imageUrls.length > 0) {
+      galleryImages = product.imageUrls;
+    }
+    // Fallback: primaryImageUrl
+    else if (product.primaryImageUrl) {
+      galleryImages = [product.primaryImageUrl];
+    }
+    // Fallback: image field
+    else if (product.image) {
+      galleryImages = [product.image];
+    }
+    // Fallback: images array
+    else if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+      galleryImages = product.images;
+    }
+    // Last resort: getProductGallery util
+    else {
+      galleryImages = getProductGallery(product.id, product.category);
+    }
   }
   
-  // Fallback nếu vẫn không có images
+  // Final fallback: placeholder image
   if (galleryImages.length === 0) {
-    galleryImages = [
-      'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&h=600&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=600&h=600&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=600&fit=crop&q=80'
-    ];
+    galleryImages = ['https://via.placeholder.com/600x600?text=No+Image'];
   }
 
   return (

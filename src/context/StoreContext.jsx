@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { getStoresByOwnerId } from '../services/storeService';
+import { useAuth } from './AuthContext';
 
 const StoreContext = createContext();
 
@@ -11,140 +13,60 @@ export const useStoreContext = () => {
 };
 
 export const StoreProvider = ({ children }) => {
+  const { user } = useAuth();
   const [userStores, setUserStores] = useState([]);
   const [currentStore, setCurrentStore] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Mock data - sẽ thay thế bằng API call
-  const mockStores = [
-    {
-      id: 'branch-1',
-      name: 'TechPro Store',
-      branchName: 'Chi nhánh Hải Châu',
-      description: 'Cửa hàng chính tại Hải Châu, Đà Nẵng - Chuyên bán điện thoại cao cấp',
-      address: '123 Lê Duẩn, Hải Châu, Đà Nẵng',
-      status: 'APPROVED',
-      logoUrl: null,
-      bannerUrl: null,
-      createdAt: '2024-01-15T10:30:00Z',
-      stats: {
-        products: 45,
-        orders: 156,
-        revenue: 2500000000,
-        rating: 4.9,
-        customers: 89
-      }
-    },
-    {
-      id: 'branch-2',
-      name: 'TechPro Store',
-      branchName: 'Chi nhánh Thanh Khê',
-      description: 'Cửa hàng tại Thanh Khê, Đà Nẵng - Chuyên bán laptop và phụ kiện',
-      address: '456 Nguyễn Văn Linh, Thanh Khê, Đà Nẵng',
-      status: 'APPROVED',
-      logoUrl: null,
-      bannerUrl: null,
-      createdAt: '2024-01-20T14:20:00Z',
-      stats: {
-        products: 32,
-        orders: 89,
-        revenue: 1800000000,
-        rating: 4.8,
-        customers: 67
-      }
-    },
-    {
-      id: 'branch-3',
-      name: 'TechPro Store',
-      branchName: 'Chi nhánh Sơn Trà',
-      description: 'Cửa hàng tại Sơn Trà, Đà Nẵng - Chuyên bán đồ gaming và thiết bị âm thanh',
-      address: '789 Võ Nguyên Giáp, Sơn Trà, Đà Nẵng',
-      status: 'PENDING',
-      logoUrl: null,
-      bannerUrl: null,
-      createdAt: '2024-01-25T09:15:00Z',
-      stats: {
-        products: 28,
-        orders: 0,
-        revenue: 0,
-        rating: 0,
-        customers: 0
-      }
-    },
-    {
-      id: 'branch-4',
-      name: 'TechPro Store',
-      branchName: 'Chi nhánh Cẩm Lệ',
-      description: 'Cửa hàng tại Cẩm Lệ, Đà Nẵng - Chuyên bán phụ kiện điện tử',
-      address: '321 Nguyễn Văn Thoại, Cẩm Lệ, Đà Nẵng',
-      status: 'REJECTED',
-      logoUrl: null,
-      bannerUrl: null,
-      createdAt: '2024-01-30T14:30:00Z',
-      stats: {
-        products: 0,
-        orders: 0,
-        revenue: 0,
-        rating: 0,
-        customers: 0
-      }
-    },
-    {
-      id: 'branch-5',
-      name: 'TechPro Store',
-      branchName: 'Chi nhánh Liên Chiểu',
-      description: 'Cửa hàng tại Liên Chiểu, Đà Nẵng - Chuyên bán máy tính và linh kiện',
-      address: '654 Điện Biên Phủ, Liên Chiểu, Đà Nẵng',
-      status: 'REJECTED',
-      logoUrl: null,
-      bannerUrl: null,
-      createdAt: '2024-02-05T11:45:00Z',
-      stats: {
-        products: 0,
-        orders: 0,
-        revenue: 0,
-        rating: 0,
-        customers: 0
-      }
-    }
-  ];
-
   useEffect(() => {
-    fetchUserStores();
-  }, []);
+    if (user?.id) {
+      fetchUserStores();
+    } else {
+      setLoading(false);
+    }
+  }, [user?.id]);
 
   const fetchUserStores = async () => {
     try {
       setLoading(true);
-      // TODO: Call API GET /b2c/stores/my-stores
-      // const response = await fetch('/api/b2c/stores/my-stores');
-      // const data = await response.json();
-      // setUserStores(data);
       
-      // Mock data for now
-      setTimeout(() => {
-        setUserStores(mockStores);
+      // ✅ Gọi API lấy stores của user hiện tại
+      const result = await getStoresByOwnerId(user.id, {
+        page: 0,
+        size: 50,
+        sortBy: 'createdAt',
+        sortDir: 'desc',
+      });
+      
+      if (result.success) {
+        const data = result.data;
+        const storeList = Array.isArray(data) ? data : data.content || [];
+        setUserStores(storeList);
         
         // Load selected store from localStorage
         const savedStoreId = localStorage.getItem('selectedStoreId');
         let selectedStore = null;
         
         if (savedStoreId) {
-          selectedStore = mockStores.find(store => store.id === savedStoreId);
+          selectedStore = storeList.find(store => store.id === savedStoreId);
         }
         
         // If no saved store or saved store not found, use first approved store
         if (!selectedStore) {
-          selectedStore = mockStores.find(store => store.status === 'APPROVED');
+          selectedStore = storeList.find(store => store.status === 'APPROVED');
         }
         
         if (selectedStore) {
           setCurrentStore(selectedStore);
         }
-        setLoading(false);
-      }, 1000);
+      } else {
+        console.error('Failed to fetch user stores:', result.error);
+        setUserStores([]);
+      }
     } catch (error) {
       console.error('Error fetching user stores:', error);
+      setUserStores([]);
+    } finally {
       setLoading(false);
     }
   };

@@ -4,6 +4,7 @@ import MainLayout from '../../layouts/MainLayout';
 import ProfileHeader from './ProfileHeader';
 import PersonalInfoForm from './PersonalInfoForm';
 import PasswordChangeForm from '../../components/profile/PasswordChangeForm';
+import AddressSelector from '../../components/checkout/AddressSelector';
 // ❌ COMMENT OUT CÁC IMPORT CHƯA TỒN TẠI
 // import OrderHistoryTab from '../../components/profile/OrderHistoryTab';
 // import PreferencesTab from '../../components/profile/PreferencesTab';
@@ -34,6 +35,7 @@ const ProfilePage = () => {
     { id: 'personal', name: 'Thông tin cá nhân', icon: '👤' },
     { id: 'password', name: 'Đổi mật khẩu', icon: '🔒' },
     { id: 'orders', name: 'Lịch sử đơn hàng', icon: '📦' },
+    { id: 'addresses', name: 'Địa chỉ giao hàng', icon: '📍' },
     { id: 'preferences', name: 'Tùy chỉnh', icon: '⚙️' }
   ];
 
@@ -137,6 +139,20 @@ const ProfilePage = () => {
                 </button>
               </div>
             )}
+          </div>
+        );
+      case 'addresses':
+        return (
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Quản lý địa chỉ giao hàng</h2>
+            <p className="text-gray-600 mb-6">
+              Quản lý địa chỉ giao hàng của bạn. Địa chỉ này sẽ được sử dụng khi bạn đặt hàng.
+            </p>
+            <AddressSelector 
+              onAddressSelect={(address, id) => {
+                console.log('Selected address:', address, id);
+              }}
+            />
           </div>
         );
       case 'preferences':

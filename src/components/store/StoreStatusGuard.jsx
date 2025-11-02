@@ -2,7 +2,19 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import StoreLayout from '../../layouts/StoreLayout';
 
-const StoreStatusGuard = ({ children, currentStore, pageName = 'chức năng này', noSidebar = false }) => {
+const StoreStatusGuard = ({ children, currentStore, pageName = 'chức năng này', noSidebar = false, loading = false }) => {
+  // Hiển thị loading nếu đang tải
+  if (loading) {
+    return (
+      <StoreLayout>
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải...</p>
+        </div>
+      </StoreLayout>
+    );
+  }
+
   // Hiển thị thông báo nếu không có chi nhánh được chọn
   if (!currentStore) {
     return (

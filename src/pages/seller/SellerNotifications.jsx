@@ -14,65 +14,73 @@ const SellerNotifications = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      // Mock data dựa trên BE logic - C2C seller notifications
+      // Mock data dựa trên BE logic - C2C seller notifications (chỉ có tin nhắn)
       const mockNotifications = [
         {
           id: 1,
-          type: 'ORDER',
-          title: 'Đơn hàng mới',
-          message: 'Bạn có đơn hàng mới từ Nguyễn Văn A',
+          type: 'MESSAGE',
+          title: 'Tin nhắn mới',
+          message: 'Nguyễn Văn A đã nhắn tin về sản phẩm iPhone 13 Pro Max',
           priority: 'HIGH',
           isRead: false,
           createdAt: '2024-01-16T10:30:00Z',
-          orderId: 'ORD-001'
+          chatId: 1,
+          customerName: 'Nguyễn Văn A'
         },
         {
           id: 2,
           type: 'MESSAGE',
           title: 'Tin nhắn mới',
-          message: 'Khách hàng Trần Thị B đã gửi tin nhắn',
-          priority: 'MEDIUM',
+          message: 'Trần Thị B đã nhắn tin về sản phẩm MacBook Air M2',
+          priority: 'HIGH',
           isRead: false,
           createdAt: '2024-01-16T09:15:00Z',
-          chatId: 1
+          chatId: 2,
+          customerName: 'Trần Thị B'
         },
         {
           id: 3,
-          type: 'REVIEW',
-          title: 'Đánh giá mới',
-          message: 'Sản phẩm iPhone 14 Pro nhận được đánh giá 5 sao',
-          priority: 'LOW',
+          type: 'MESSAGE',
+          title: 'Tin nhắn mới',
+          message: 'Lê Văn C đã nhắn tin về sản phẩm Dell XPS 15',
+          priority: 'MEDIUM',
           isRead: true,
           createdAt: '2024-01-15T16:45:00Z',
-          productId: 1
+          chatId: 3,
+          customerName: 'Lê Văn C'
         },
         {
           id: 4,
-          type: 'QUESTION',
-          title: 'Câu hỏi sản phẩm',
-          message: 'Khách hàng Lê Văn C hỏi về sản phẩm MacBook Air M2',
+          type: 'MESSAGE',
+          title: 'Tin nhắn mới',
+          message: 'Phạm Thị D đã nhắn tin về sản phẩm AirPods Pro 2',
           priority: 'MEDIUM',
-          isRead: false,
+          isRead: true,
           createdAt: '2024-01-15T14:20:00Z',
-          productId: 2
+          chatId: 4,
+          customerName: 'Phạm Thị D'
         },
         {
           id: 5,
-          type: 'SYSTEM',
-          title: 'Cập nhật hệ thống',
-          message: 'Hệ thống đã được cập nhật với các tính năng mới',
+          type: 'MESSAGE',
+          title: 'Tin nhắn mới',
+          message: 'Hoàng Văn E đã nhắn tin về sản phẩm Sony WH-1000XM4',
           priority: 'LOW',
           isRead: true,
-          createdAt: '2024-01-15T08:00:00Z'
+          createdAt: '2024-01-15T08:00:00Z',
+          chatId: 5,
+          customerName: 'Hoàng Văn E'
         },
         {
           id: 6,
-          type: 'ANALYTICS',
-          title: 'Báo cáo tuần',
-          message: 'Doanh thu tuần này tăng 15% so với tuần trước',
+          type: 'MESSAGE',
+          title: 'Tin nhắn mới',
+          message: 'Võ Thị F đã nhắn tin về sản phẩm Apple Watch Series 8',
           priority: 'LOW',
           isRead: true,
-          createdAt: '2024-01-14T18:00:00Z'
+          createdAt: '2024-01-14T18:00:00Z',
+          chatId: 6,
+          customerName: 'Võ Thị F'
         }
       ];
       
@@ -274,9 +282,9 @@ const SellerNotifications = () => {
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Thông báo
+                    Tin nhắn
                   </h1>
-                  <p className="text-gray-600 mt-1">Quản lý thông báo và cập nhật hệ thống</p>
+                  <p className="text-gray-600 mt-1">Quản lý tin nhắn từ khách hàng</p>
                 </div>
               </div>
             </div>
@@ -299,14 +307,9 @@ const SellerNotifications = () => {
                   onChange={(e) => setFilter(e.target.value)}
                   className="pl-12 pr-10 py-3 bg-white border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all duration-200 text-gray-700 appearance-none cursor-pointer"
                 >
-                  <option value="ALL">Tất cả thông báo</option>
-                  <option value="UNREAD">Chưa đọc</option>
-                  <option value="ORDER">Đơn hàng</option>
+                  <option value="ALL">Tất cả tin nhắn</option>
+                  <option value="UNREAD">Tin nhắn chưa đọc</option>
                   <option value="MESSAGE">Tin nhắn</option>
-                  <option value="REVIEW">Đánh giá</option>
-                  <option value="QUESTION">Câu hỏi</option>
-                  <option value="SYSTEM">Hệ thống</option>
-                  <option value="ANALYTICS">Phân tích</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,11 +344,11 @@ const SellerNotifications = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Không có thông báo</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Không có tin nhắn</h3>
               <p className="text-gray-500">
                 {filter === 'UNREAD' 
-                  ? 'Tất cả thông báo đã được đọc'
-                  : 'Chưa có thông báo nào'
+                  ? 'Tất cả tin nhắn đã được đọc'
+                  : 'Chưa có tin nhắn nào từ khách hàng'
                 }
               </p>
             </div>

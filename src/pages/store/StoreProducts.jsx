@@ -6,345 +6,277 @@ import StoreStatusGuard from '../../components/store/StoreStatusGuard';
 
 const StoreProducts = () => {
   const navigate = useNavigate();
-  const { currentStore } = useStoreContext();
+  const { currentStore, loading: storeLoading } = useStoreContext();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [showStockModal, setShowStockModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [stockInput, setStockInput] = useState('');
 
   useEffect(() => {
     if (currentStore) {
-    fetchProducts();
+      fetchProducts();
     }
+    
+    // Lắng nghe thay đổi từ localStorage
+    const handleStorageChange = () => {
+      fetchProducts();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Kiểm tra localStorage mỗi 1 giây để đồng bộ
+    const interval = setInterval(() => {
+      fetchProducts();
+    }, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, [currentStore]);
 
   const getMockProductsByBranch = (branchId) => {
+    // Danh sách sản phẩm chung cho tất cả chi nhánh
     const baseProducts = [
         {
           id: 1,
-        name: 'iPhone 14 Pro',
-        description: 'Điện thoại iPhone 14 Pro 128GB màu tím',
-          price: 25000000,
-        stock: 5,
+        name: 'iPhone 15 Pro Max 256GB',
+        description: 'iPhone 15 Pro Max với chip A17 Pro mạnh mẽ, camera 48MP và pin lâu dài',
+        price: 35000000,
+        category: 'Điện thoại',
+        brand: 'Apple',
           status: 'ACTIVE',
-          category: 'Điện thoại',
-        images: [
-          'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&h=500&fit=crop&crop=center',
-          'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500&h=500&fit=crop&crop=center',
-          'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&h=500&fit=crop&crop=center'
-        ],
-          createdAt: '2024-01-10T10:00:00Z',
-          updatedAt: '2024-01-15T10:00:00Z'
+        images: ['https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&h=500&fit=crop&crop=center'],
+        createdAt: '2024-01-15T10:00:00Z',
+          updatedAt: '2024-01-15T10:00:00Z',
+          variants: [
+            { id: 'VAR-001', name: '128GB - Màu tím', price: 25000000, stock: 3, status: 'APPROVED' },
+            { id: 'VAR-002', name: '256GB - Màu tím', price: 28000000, stock: 2, status: 'PENDING' },
+            { id: 'VAR-003', name: '512GB - Màu tím', price: 35000000, stock: 1, status: 'APPROVED' }
+          ]
         },
         {
           id: 2,
-          name: 'MacBook Air M2',
-        description: 'Laptop MacBook Air M2 13 inch 256GB',
+        name: 'Samsung Galaxy S24 Ultra 512GB',
+        description: 'Galaxy S24 Ultra với S Pen, camera 200MP và AI tích hợp',
           price: 32000000,
-          stock: 0,
-          status: 'SOLD',
-          category: 'Laptop',
-        images: [
-          'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500&h=500&fit=crop&crop=center',
-          'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop&crop=center',
-          'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&h=500&fit=crop&crop=center'
-        ],
-          createdAt: '2024-01-08T10:00:00Z',
-          updatedAt: '2024-01-14T10:00:00Z'
+        category: 'Điện thoại',
+        brand: 'Samsung',
+        status: 'ACTIVE',
+        images: ['https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500&h=500&fit=crop&crop=center'],
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z',
+        variants: [
+          { id: 'VAR-004', name: '256GB - Màu đen', price: 28000000, stock: 2, status: 'APPROVED' },
+          { id: 'VAR-005', name: '512GB - Màu đen', price: 32000000, stock: 1, status: 'PENDING' },
+          { id: 'VAR-006', name: '1TB - Màu đen', price: 38000000, stock: 0, status: 'REJECTED' }
+        ]
         },
         {
           id: 3,
-        name: 'Samsung Galaxy S24',
-          description: 'Điện thoại Samsung Galaxy S24 Ultra 256GB',
+        name: 'MacBook Air M2 256GB',
+        description: 'MacBook Air M2 với hiệu năng mạnh mẽ và pin lâu dài',
           price: 28000000,
-        stock: 3,
-        status: 'HIDDEN',
-          category: 'Điện thoại',
-        images: [
-          'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&h=500&fit=crop&crop=center',
-          'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&h=500&fit=crop&crop=center',
-          'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500&h=500&fit=crop&crop=center'
-        ],
-          createdAt: '2024-01-05T10:00:00Z',
-          updatedAt: '2024-01-12T10:00:00Z'
+        category: 'Laptop',
+        brand: 'Apple',
+        status: 'ACTIVE',
+        images: ['https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500&h=500&fit=crop&crop=center'],
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z',
+        variants: [
+          { id: 'VAR-007', name: '13 inch 256GB', price: 28000000, stock: 0, status: 'REJECTED' },
+          { id: 'VAR-008', name: '13 inch 512GB', price: 32000000, stock: 2, status: 'APPROVED' }
+        ]
         },
         {
           id: 4,
-          name: 'Dell XPS 13',
-          description: 'Laptop Dell XPS 13 4K Touch 16GB RAM 512GB SSD',
-          price: 35000000,
-        stock: 2,
-          status: 'ACTIVE',
-          category: 'Laptop',
-        images: [
-          'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&h=500&fit=crop&crop=center',
-          'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500&h=500&fit=crop&crop=center',
-          'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=500&fit=crop&crop=center'
-        ],
-          createdAt: '2024-01-15T10:00:00Z',
-          updatedAt: '2024-01-15T10:00:00Z'
+        name: 'Dell XPS 13 512GB',
+        description: 'Dell XPS 13 với thiết kế cao cấp và hiệu năng vượt trội',
+        price: 25000000,
+        category: 'Laptop',
+        brand: 'Dell',
+        status: 'ACTIVE',
+        images: ['https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&h=500&fit=crop&crop=center'],
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z',
+        variants: [
+          { id: 'VAR-009', name: '16GB RAM 512GB SSD', price: 25000000, stock: 1, status: 'APPROVED' },
+          { id: 'VAR-010', name: '32GB RAM 1TB SSD', price: 32000000, stock: 1, status: 'PENDING' }
+        ]
         },
         {
           id: 5,
-          name: 'iPad Pro 12.9',
-          description: 'Máy tính bảng iPad Pro 12.9 inch 256GB WiFi',
-          price: 28000000,
-          stock: 0,
-          status: 'SOLD',
+        name: 'iPad Pro 12.9 inch 256GB',
+        description: 'iPad Pro 12.9 với chip M2 và màn hình Liquid Retina XDR',
+        price: 22000000,
           category: 'Máy tính bảng',
-          images: [],
-          createdAt: '2024-01-12T10:00:00Z',
-          updatedAt: '2024-01-12T10:00:00Z'
+        brand: 'Apple',
+        status: 'ACTIVE',
+        images: ['https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&h=500&fit=crop&crop=center'],
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z',
+        variants: [
+          { id: 'VAR-011', name: '13 inch 256GB', price: 22000000, stock: 8, status: 'APPROVED' },
+          { id: 'VAR-012', name: '13 inch 512GB', price: 25000000, stock: 2, status: 'APPROVED' }
+        ]
         },
         {
           id: 6,
           name: 'AirPods Pro 2',
-          description: 'Tai nghe AirPods Pro 2 với chống ồn chủ động',
-          price: 5500000,
-          stock: 0,
-          status: 'SOLD',
+        description: 'AirPods Pro 2 với chống ồn chủ động và không gian âm thanh',
+        price: 6500000,
           category: 'Phụ kiện',
-          images: [],
-          createdAt: '2024-01-01T10:00:00Z',
-          updatedAt: '2024-01-12T10:00:00Z'
+        brand: 'Apple',
+        status: 'ACTIVE',
+        images: ['https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=500&h=500&fit=crop&crop=center'],
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z',
+        variants: [
+          { id: 'VAR-013', name: 'Màu trắng', price: 6500000, stock: 20, status: 'APPROVED' },
+          { id: 'VAR-014', name: 'Màu đen', price: 6500000, stock: 15, status: 'PENDING' }
+        ]
         },
         {
           id: 7,
           name: 'Sony WH-1000XM5',
-          description: 'Tai nghe Sony WH-1000XM5 chống ồn cao cấp',
+        description: 'Tai nghe chống ồn Sony WH-1000XM5 với chất lượng âm thanh cao',
           price: 8500000,
-          stock: 2,
-          status: 'HIDDEN',
           category: 'Phụ kiện',
-          images: [],
-          createdAt: '2024-01-19T10:00:00Z',
-          updatedAt: '2024-01-19T10:00:00Z'
+        brand: 'Sony',
+        status: 'ACTIVE',
+        images: ['https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&h=500&fit=crop&crop=center'],
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z',
+        variants: [
+          { id: 'VAR-015', name: 'Màu đen', price: 8500000, stock: 12, status: 'APPROVED' },
+          { id: 'VAR-016', name: 'Màu bạc', price: 8500000, stock: 8, status: 'REJECTED' }
+        ]
         },
         {
-          id: 8,
-          name: 'iPad Air 5',
-          description: 'Máy tính bảng iPad Air 5 64GB WiFi',
-          price: 12000000,
-          stock: 0,
-          status: 'SOLD',
-          category: 'Máy tính bảng',
-          images: [],
-          createdAt: '2024-01-18T10:00:00Z',
-          updatedAt: '2024-01-18T10:00:00Z'
-        },
-        {
-          id: 9,
-          name: 'ASUS ROG Strix G15',
-          description: 'Laptop gaming ASUS ROG Strix G15 RTX 3060',
-          price: 28000000,
-          stock: 1,
-          status: 'HIDDEN',
-          category: 'Laptop',
-          images: [],
-          createdAt: '2024-01-17T10:00:00Z',
-          updatedAt: '2024-01-17T10:00:00Z'
-        },
-        {
-          id: 10,
-          name: 'Xiaomi 13 Pro',
-          description: 'Điện thoại Xiaomi 13 Pro 256GB Leica Camera',
-          price: 18000000,
-          stock: 0,
-          status: 'SOLD',
-          category: 'Điện thoại',
-          images: [],
-          createdAt: '2024-01-16T10:00:00Z',
-          updatedAt: '2024-01-16T10:00:00Z'
-        },
-        {
-          id: 11,
-          name: 'Logitech MX Master 3S',
-          description: 'Chuột không dây Logitech MX Master 3S',
-          price: 2500000,
-          stock: 3,
-          status: 'HIDDEN',
-          category: 'Phụ kiện',
-          images: [],
-          createdAt: '2024-01-15T10:00:00Z',
-          updatedAt: '2024-01-15T10:00:00Z'
-        },
-        {
-          id: 12,
-          name: 'Surface Pro 9',
-          description: 'Máy tính bảng Surface Pro 9 256GB',
-          price: 35000000,
-          stock: 0,
-          status: 'SOLD',
-          category: 'Máy tính bảng',
-          images: [],
-          createdAt: '2024-01-14T10:00:00Z',
-          updatedAt: '2024-01-14T10:00:00Z'
-        },
-        {
-          id: 13,
-          name: 'OnePlus 11',
-          description: 'Điện thoại OnePlus 11 256GB Snapdragon 8 Gen 2',
-          price: 16000000,
-          stock: 2,
-          status: 'HIDDEN',
-          category: 'Điện thoại',
-          images: [],
-          createdAt: '2024-01-13T10:00:00Z',
-          updatedAt: '2024-01-13T10:00:00Z'
-        },
-        {
-          id: 14,
-          name: 'Lenovo ThinkPad X1',
-          description: 'Laptop Lenovo ThinkPad X1 Carbon Gen 10',
-          price: 42000000,
-          stock: 0,
-          status: 'SOLD',
-          category: 'Laptop',
-          images: [],
-          createdAt: '2024-01-12T10:00:00Z',
-          updatedAt: '2024-01-12T10:00:00Z'
-        },
-        {
-          id: 15,
-          name: 'Samsung Galaxy Tab S9',
-          description: 'Máy tính bảng Samsung Galaxy Tab S9 128GB',
-          price: 15000000,
-          stock: 1,
-          status: 'HIDDEN',
-          category: 'Máy tính bảng',
-          images: [],
-          createdAt: '2024-01-11T10:00:00Z',
-          updatedAt: '2024-01-11T10:00:00Z'
-        },
-        {
-          id: 16,
-          name: 'Keychron K8 Pro',
-          description: 'Bàn phím cơ Keychron K8 Pro RGB',
-          price: 3200000,
-          stock: 0,
-          status: 'SOLD',
-          category: 'Phụ kiện',
-          images: [],
-          createdAt: '2024-01-10T10:00:00Z',
-          updatedAt: '2024-01-10T10:00:00Z'
-        },
-        {
-          id: 17,
-          name: 'Huawei MateBook X Pro',
-          description: 'Laptop Huawei MateBook X Pro 2023',
-          price: 38000000,
-          stock: 0,
-          status: 'SOLD',
-          category: 'Laptop',
-          images: [],
-          createdAt: '2024-01-09T10:00:00Z',
-          updatedAt: '2024-01-09T10:00:00Z'
-        },
-        {
-          id: 18,
-          name: 'Nothing Phone 2',
-          description: 'Điện thoại Nothing Phone 2 256GB',
-          price: 14000000,
-          stock: 2,
-          status: 'HIDDEN',
-          category: 'Điện thoại',
-          images: [],
-          createdAt: '2024-01-08T10:00:00Z',
-          updatedAt: '2024-01-08T10:00:00Z'
-        },
-        {
-          id: 19,
-          name: 'Apple Watch Series 9',
-          description: 'Đồng hồ thông minh Apple Watch Series 9 GPS',
-          price: 12000000,
-          stock: 0,
-          status: 'SOLD',
-          category: 'Phụ kiện',
-          images: [],
-          createdAt: '2024-01-07T10:00:00Z',
-          updatedAt: '2024-01-07T10:00:00Z'
-        },
-        {
-          id: 20,
-          name: 'MSI Gaming Laptop',
-          description: 'Laptop gaming MSI Katana GF66 RTX 4060',
-          price: 25000000,
-          stock: 1,
-          status: 'HIDDEN',
-          category: 'Laptop',
-          images: [],
-          createdAt: '2024-01-06T10:00:00Z',
-          updatedAt: '2024-01-06T10:00:00Z'
-        }
+        id: 8,
+        name: 'ASUS ROG Strix G15',
+        description: 'Laptop gaming ASUS ROG với RTX 4060 và AMD Ryzen 7',
+        price: 22000000,
+        category: 'Laptop Gaming',
+        brand: 'ASUS',
+        status: 'ACTIVE',
+        images: ['https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=500&h=500&fit=crop&crop=center'],
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z',
+        variants: [
+          { id: 'VAR-017', name: 'RTX 4060 16GB', price: 22000000, stock: 4, status: 'APPROVED' },
+          { id: 'VAR-018', name: 'RTX 4070 32GB', price: 28000000, stock: 2, status: 'PENDING' }
+        ]
+      }
     ];
 
-    // Số lượng tồn kho khác nhau theo chi nhánh (giữ nguyên status đã định)
+    // Số lượng tồn kho khác nhau theo chi nhánh
     const stockByBranch = {
-      'branch-1': { // Hải Châu - Đã duyệt
-        1: 5,   // iPhone 14 Pro (ACTIVE)
-        2: 0,   // MacBook Air M2 (SOLD)
-        3: 3,   // Samsung Galaxy S24 (HIDDEN)
-        4: 2,   // Dell XPS 13 (ACTIVE)
-        5: 0,   // iPad Pro 12.9 (SOLD)
-        6: 0,   // AirPods Pro 2 (SOLD)
-        7: 2,   // Sony WH-1000XM5 (HIDDEN)
-        8: 0,   // iPad Air 5 (SOLD)
-        9: 1,   // ASUS ROG Strix G15 (HIDDEN)
-        10: 0,  // Xiaomi 13 Pro (SOLD)
-        11: 3,  // Logitech MX Master 3S (HIDDEN)
-        12: 0,  // Surface Pro 9 (SOLD)
-        13: 2,  // OnePlus 11 (HIDDEN)
-        14: 0,  // Lenovo ThinkPad X1 (SOLD)
-        15: 1,  // Samsung Galaxy Tab S9 (HIDDEN)
-        16: 0,  // Keychron K8 Pro (SOLD)
-        17: 0,  // Huawei MateBook X Pro (SOLD)
-        18: 2,  // Nothing Phone 2 (HIDDEN)
-        19: 0,  // Apple Watch Series 9 (SOLD)
-        20: 1   // MSI Gaming Laptop (HIDDEN)
+      'branch-1-1': { // Chi nhánh Hải Châu - Trung tâm thành phố, tồn kho cao
+        1: 25,  // iPhone 15 Pro Max
+        2: 18,  // Samsung Galaxy S24 Ultra
+        3: 12,  // MacBook Air M2
+        4: 8,   // Dell XPS 13
+        5: 15,  // iPad Pro 12.9
+        6: 30,  // AirPods Pro 2
+        7: 20,  // Sony WH-1000XM5
+        8: 6    // ASUS ROG Strix G15
       },
-      'branch-2': { // Thanh Khê - Đã duyệt
-        1: 8,   // iPhone 14 Pro (ACTIVE)
-        2: 2,   // MacBook Air M2 (SOLD)
-        3: 1,   // Samsung Galaxy S24 (HIDDEN)
-        4: 5,   // Dell XPS 13 (ACTIVE)
-        5: 0,   // iPad Pro 12.9 (SOLD)
-        6: 0,   // AirPods Pro 2 (SOLD)
-        7: 2,   // Sony WH-1000XM5 (HIDDEN)
-        8: 0,   // iPad Air 5 (SOLD)
-        9: 1,   // ASUS ROG Strix G15 (HIDDEN)
-        10: 0,  // Xiaomi 13 Pro (SOLD)
-        11: 3,  // Logitech MX Master 3S (HIDDEN)
-        12: 0,  // Surface Pro 9 (SOLD)
-        13: 2,  // OnePlus 11 (HIDDEN)
-        14: 0,  // Lenovo ThinkPad X1 (SOLD)
-        15: 1,  // Samsung Galaxy Tab S9 (HIDDEN)
-        16: 0,  // Keychron K8 Pro (SOLD)
-        17: 0,  // Huawei MateBook X Pro (SOLD)
-        18: 2,  // Nothing Phone 2 (HIDDEN)
-        19: 0,  // Apple Watch Series 9 (SOLD)
-        20: 1   // MSI Gaming Laptop (HIDDEN)
+      'branch-1-2': { // Chi nhánh Thanh Khê - Khu dân cư, tồn kho trung bình
+        1: 15,  // iPhone 15 Pro Max
+        2: 12,  // Samsung Galaxy S24 Ultra
+        3: 8,   // MacBook Air M2
+        4: 5,   // Dell XPS 13
+        5: 10,  // iPad Pro 12.9
+        6: 20,  // AirPods Pro 2
+        7: 12,  // Sony WH-1000XM5
+        8: 4    // ASUS ROG Strix G15
       },
-      'branch-3': { // Sơn Trà (chờ duyệt) - Tất cả = 0
-        1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0,
-        11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0
+      'branch-1-3': { // Chi nhánh Sơn Trà (PENDING) - Chưa có hàng
+        1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0
+      },
+      'branch-1-4': { // Chi nhánh Cẩm Lệ (PENDING) - Chưa có hàng
+        1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0
+      },
+      'branch-1-5': { // Chi nhánh Ngũ Hành Sơn (REJECTED) - Chưa có hàng
+        1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0
       }
     };
 
-    // Cập nhật số lượng tồn kho theo chi nhánh (giữ nguyên status đã định)
-    return baseProducts.map(product => ({
-      ...product,
-      stock: stockByBranch[branchId]?.[product.id] !== undefined ? stockByBranch[branchId][product.id] : product.stock
-    }));
+    // Cập nhật số lượng tồn kho theo chi nhánh và tính từ variants đã duyệt
+    return baseProducts.map(product => {
+      // Tính tổng stock từ các variant đã duyệt
+      const approvedStock = product.variants 
+        ? product.variants.filter(v => v.status === 'APPROVED').reduce((sum, v) => sum + v.stock, 0)
+        : 0;
+      
+      // Đếm số variant theo trạng thái
+      const variantStats = product.variants ? {
+        approved: product.variants.filter(v => v.status === 'APPROVED').length,
+        pending: product.variants.filter(v => v.status === 'PENDING').length,
+        rejected: product.variants.filter(v => v.status === 'REJECTED').length
+      } : { approved: 0, pending: 0, rejected: 0 };
+
+      return {
+        ...product,
+        stock: approvedStock, // Sử dụng stock từ variants đã duyệt
+        variantStats // Thêm thống kê variant
+      };
+    });
   };
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
+      
+      // Đọc từ localStorage trước
+      const storedProducts = JSON.parse(localStorage.getItem('store_products') || '{}');
+      
+      // Lấy mock data làm base
       const mockProducts = getMockProductsByBranch(currentStore?.id);
-      setProducts(mockProducts);
+      
+      // Merge với dữ liệu từ localStorage
+      const mergedProducts = mockProducts.map(product => {
+        const storedProduct = storedProducts[product.id];
+        if (storedProduct) {
+          // Tính tổng stock từ các variant đã duyệt
+          const approvedStock = storedProduct.variants 
+            ? storedProduct.variants.filter(v => v.status === 'APPROVED').reduce((sum, v) => sum + v.stock, 0)
+            : 0;
+          
+          // Đếm số variant theo trạng thái
+          const variantStats = storedProduct.variants ? {
+            approved: storedProduct.variants.filter(v => v.status === 'APPROVED').length,
+            pending: storedProduct.variants.filter(v => v.status === 'PENDING').length,
+            rejected: storedProduct.variants.filter(v => v.status === 'REJECTED').length
+          } : { approved: 0, pending: 0, rejected: 0 };
+
+          return {
+            ...storedProduct,
+            stock: approvedStock, // Sử dụng stock từ variants đã duyệt
+            variantStats // Thêm thống kê variant
+          };
+        }
+        
+        // Nếu không có trong localStorage, tính từ mock data
+        const approvedStock = product.variants 
+          ? product.variants.filter(v => v.status === 'APPROVED').reduce((sum, v) => sum + v.stock, 0)
+          : 0;
+        
+        const variantStats = product.variants ? {
+          approved: product.variants.filter(v => v.status === 'APPROVED').length,
+          pending: product.variants.filter(v => v.status === 'PENDING').length,
+          rejected: product.variants.filter(v => v.status === 'REJECTED').length
+        } : { approved: 0, pending: 0, rejected: 0 };
+
+        return {
+          ...product,
+          stock: approvedStock,
+          variantStats
+        };
+      });
+      
+      setProducts(mergedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -391,55 +323,6 @@ const StoreProducts = () => {
         console.error('Error deleting product:', error);
       }
     }
-  };
-
-  const openStockModal = (product) => {
-    setSelectedProduct(product);
-    setStockInput(product.stock.toString());
-    setShowStockModal(true);
-  };
-
-  const closeStockModal = () => {
-    setShowStockModal(false);
-    setSelectedProduct(null);
-    setStockInput('');
-  };
-
-  const handleStockSubmit = () => {
-    if (!stockInput || stockInput < 0) return;
-
-    try {
-      const newStock = parseInt(stockInput);
-      const newStatus = newStock > 0 ? 'ACTIVE' : 'SOLD';
-      
-      setProducts(prevProducts => 
-        prevProducts.map(product => 
-          product.id === selectedProduct.id 
-            ? { 
-                ...product, 
-                stock: newStock, 
-                status: newStatus,
-                updatedAt: new Date().toISOString() 
-              }
-            : product
-        )
-      );
-      
-      console.log(`Product ${selectedProduct.id} stock updated to ${newStock}, status: ${newStatus}`);
-      closeStockModal();
-    } catch (error) {
-      console.error('Error updating stock:', error);
-    }
-  };
-
-  const getModalTitle = (status) => {
-    return status === 'SOLD' ? 'Nhập hàng mới' : 'Cập nhật số lượng';
-  };
-
-  const getModalDescription = (status) => {
-    return status === 'SOLD' 
-      ? 'Nhập số lượng hàng mới để chuyển sản phẩm về trạng thái đang bán'
-      : 'Cập nhật số lượng hàng hiện tại của sản phẩm';
   };
 
   const getStatusColor = (status) => {
@@ -498,6 +381,17 @@ const StoreProducts = () => {
           </span>
           <div className="text-right text-xs text-gray-500">
             <p>Số lượng: <span className="font-medium text-gray-700">{product.stock}</span></p>
+            <div className="mt-1 flex gap-1">
+              <span className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs">
+                ✓{product.variantStats?.approved || 0}
+              </span>
+              <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">
+                ⏳{product.variantStats?.pending || 0}
+              </span>
+              <span className="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-xs">
+                ✗{product.variantStats?.rejected || 0}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -515,9 +409,9 @@ const StoreProducts = () => {
                 </svg>
               </button>
               <button
-                onClick={() => openStockModal(product)}
+                onClick={() => navigate(`/store-dashboard/products/${product.id}`)}
                 className="w-7 h-7 bg-blue-500 hover:bg-blue-600 text-white rounded-md flex items-center justify-center transition-colors"
-                title="Kho hàng"
+                title="Quản lý kho hàng"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
@@ -539,9 +433,9 @@ const StoreProducts = () => {
                 </svg>
               </button>
               <button
-                onClick={() => openStockModal(product)}
+                onClick={() => navigate(`/store-dashboard/products/${product.id}`)}
                 className="w-7 h-7 bg-blue-500 hover:bg-blue-600 text-white rounded-md flex items-center justify-center transition-colors"
-                title="Kho hàng"
+                title="Quản lý kho hàng"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
@@ -552,18 +446,18 @@ const StoreProducts = () => {
           
           {product.status === 'SOLD' && (
             <button
-              onClick={() => openStockModal(product)}
+              onClick={() => navigate(`/store-dashboard/products/${product.id}`)}
               className="w-7 h-7 bg-orange-500 hover:bg-orange-600 text-white rounded-md flex items-center justify-center transition-colors"
-              title="Đã có hàng"
+              title="Nhập hàng"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
               </svg>
             </button>
           )}
           
           <button
-            onClick={() => navigate(`/store/products/${product.id}`)}
+            onClick={() => navigate(`/store-dashboard/products/${product.id}`)}
             className="w-7 h-7 bg-gray-500 hover:bg-gray-600 text-white rounded-md flex items-center justify-center transition-colors"
             title="Xem chi tiết sản phẩm"
           >
@@ -618,7 +512,7 @@ const StoreProducts = () => {
   }
 
   return (
-    <StoreStatusGuard currentStore={currentStore} pageName="quản lý sản phẩm">
+    <StoreStatusGuard currentStore={currentStore} pageName="quản lý sản phẩm" loading={storeLoading}>
     <StoreLayout>
         {/* Products Content */}
       <div className="space-y-6">
@@ -640,13 +534,6 @@ const StoreProducts = () => {
                     <p className="text-gray-600 mt-1">Quản lý danh sách sản phẩm của bạn</p>
                   </div>
                 </div>
-                
-                <button
-                  onClick={() => setShowCreateModal(true)}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  + Thêm sản phẩm mới
-                </button>
               </div>
               
               {/* Quick Stats */}
@@ -765,15 +652,15 @@ const StoreProducts = () => {
 
               {/* Add Product Button */}
               <div className="lg:w-auto">
-                <Link
-                  to="/store/products/add"
+                <button
+                  onClick={() => navigate('/store-dashboard/products/create')}
                   className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-colors shadow-lg hover:shadow-xl"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                   </svg>
                   Thêm sản phẩm
-                </Link>
+                </button>
             </div>
           </div>
         </div>
@@ -801,7 +688,10 @@ const StoreProducts = () => {
                   }
                 </p>
                 {!searchTerm && (
-                  <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                  <button 
+                    onClick={() => navigate('/store-dashboard/products/create')}
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                  >
                     Thêm sản phẩm đầu tiên
                   </button>
                 )}
@@ -809,58 +699,6 @@ const StoreProducts = () => {
             )}
               </div>
             </div>
-
-        {/* Stock Update Modal */}
-        {showStockModal && selectedProduct && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {getModalTitle(selectedProduct.status)}
-                </h3>
-                <p className="text-gray-600">
-                  {getModalDescription(selectedProduct.status)}
-                </p>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Số lượng hàng
-                </label>
-                <input
-                  type="number"
-                  value={stockInput}
-                  onChange={(e) => setStockInput(e.target.value)}
-                  placeholder={selectedProduct.status === 'SOLD' ? 'Nhập số lượng hàng mới' : 'Nhập số lượng hiện tại'}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-lg"
-                  min="0"
-                  autoFocus
-                />
-              </div>
-              
-              <div className="flex gap-3">
-                <button
-                  onClick={closeStockModal}
-                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                >
-                  Hủy
-                </button>
-                <button
-                  onClick={handleStockSubmit}
-                  disabled={!stockInput || stockInput < 0}
-                  className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white rounded-lg transition-colors font-medium disabled:cursor-not-allowed"
-                >
-                  {selectedProduct.status === 'SOLD' ? 'Nhập hàng' : 'Cập nhật'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
     </StoreLayout>
     </StoreStatusGuard>
   );

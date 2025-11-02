@@ -1,8 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { SWRConfig } from 'swr';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { StoreProvider } from './context/StoreContext';
+import { ToastProvider } from './context/ToastContext';
 import AuthPage from './pages/auth/AuthPage';
+import VerifyEmailPage from './pages/auth/VerifyEmailPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import HomePage from './pages/home/HomePage';
 import ProductDetail from './pages/products/ProductDetail';
 import ProductList from './pages/products/ProductList';
@@ -12,8 +16,13 @@ import CheckoutPage from './pages/checkout/CheckoutPage';
 import OrdersPage from './pages/orders/OrdersPage';
 import SearchResults from './pages/search/SearchResults';
 import ProfilePage from './pages/profile/ProfilePage';
+import StoresPage from './pages/stores/StoresPage';
+import StoreDetailPage from './pages/stores/StoreDetailPage';
+import SellersPage from './pages/sellers/SellersPage';
+import SellerDetailPage from './pages/sellers/SellerDetailPage';
 import SellerRoutes from './routes/SellerRoutes';
 import StoreRoutes from './routes/StoreRoutes';
+import AdminRoutes from './routes/AdminRoutes';
 
 const AppContent = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -33,20 +42,29 @@ const AppContent = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/product/:id" element={<ProductDetail />} />
       <Route path="/products/:category" element={<ProductList />} />
       <Route path="/search" element={<SearchResults />} />
       <Route path="/cart" element={<CartPage />} />
-      <Route path="/shop/:id" element={<ShopPage />} />
+      <Route path="/stores" element={<StoresPage />} />
+      <Route path="/store/:storeId" element={<StoreDetailPage />} />
+      <Route path="/sellers" element={<SellersPage />} />
+      <Route path="/seller/:sellerId" element={<SellerDetailPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/orders" element={<OrdersPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       
-      {/* Seller Routes */}
-      <Route path="/seller/*" element={<SellerRoutes />} />
+      {/* Seller Management Routes (C2C) */}
+      <Route path="/seller-dashboard/*" element={<SellerRoutes />} />
       
-      {/* Store Routes */}
-      <Route path="/store/*" element={<StoreRoutes />} />
+      {/* Store Management Routes (B2C) */}
+      <Route path="/store-dashboard/*" element={<StoreRoutes />} />
+      
+      {/* Admin Management Routes */}
+      <Route path="/admin-dashboard/*" element={<AdminRoutes />} />
       
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
@@ -55,14 +73,27 @@ const AppContent = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <StoreProvider>
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </StoreProvider>
-      </CartProvider>
-    </AuthProvider>
+    <SWRConfig
+      value={{
+        // ✅ CẤU HÌNH SWR CHO TOÀN APP
+        dedupingInterval: 60000, // Cache 60s
+        focusThrottleInterval: 60000,
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false,
+        shouldRetryOnError: false,
+      }}
+    >
+      <AuthProvider>
+        <CartProvider>
+          <StoreProvider>
+            <ToastProvider>
+              <BrowserRouter>
+                <AppContent />
+              </BrowserRouter>
+            </ToastProvider>
+          </StoreProvider>
+        </CartProvider>
+      </AuthProvider>
+    </SWRConfig>
   );
 }

@@ -51,7 +51,7 @@ const StoreLayout = ({ children }) => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-semibold text-white">
-                {currentStore ? `${currentStore.name} - ${currentStore.branchName}` : 'Store Management'}
+                {currentStore ? `${currentStore.storeName || currentStore.name} - ${currentStore.name}` : 'Store Management'}
               </h1>
               <p className="text-sm text-blue-100">
                 {currentStore ? 'Quản lý chi nhánh của bạn' : 'Chọn chi nhánh để tiếp tục'}
@@ -66,7 +66,7 @@ const StoreLayout = ({ children }) => {
                       className="flex items-center space-x-2 px-3 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg transition-colors"
                     >
                   <span className="text-sm font-medium text-white">
-                    {currentStore ? currentStore.branchName : 'Chọn chi nhánh'}
+                    {currentStore ? currentStore.name : 'Chọn chi nhánh'}
                   </span>
                   <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
@@ -79,26 +79,26 @@ const StoreLayout = ({ children }) => {
                       <h3 className="text-sm font-medium text-gray-900">Chọn chi nhánh</h3>
                     </div>
                     <div className="max-h-60 overflow-y-auto">
-                      {userStores.map((store) => (
+                      {userStores.map((branch) => (
                         <button
-                          key={store.id}
+                          key={branch.id}
                           onClick={() => {
-                            selectStore(store.id);
+                            selectStore(branch.id);
                             setShowStoreSwitcher(false);
                           }}
                           className={`w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors ${
-                            currentStore?.id === store.id ? 'bg-green-50 text-green-700' : 'text-gray-700'
+                            currentStore?.id === branch.id ? 'bg-green-50 text-green-700' : 'text-gray-700'
                           }`}
                         >
                           <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
                               <span className="text-white font-bold text-xs">
-                                {store.name.charAt(0).toUpperCase()}
+                                {branch.name.charAt(0).toUpperCase()}
                               </span>
                             </div>
                             <div>
-                              <p className="text-sm font-medium">{store.branchName}</p>
-                              <p className="text-xs text-gray-500">{store.address}</p>
+                              <p className="text-sm font-medium">{branch.name}</p>
+                              <p className="text-xs text-gray-500">{branch.address}</p>
                             </div>
                           </div>
                         </button>
@@ -106,7 +106,7 @@ const StoreLayout = ({ children }) => {
                     </div>
                     <div className="p-3 border-t border-gray-200">
                       <Link
-                        to="/store/management"
+                        to="/store-dashboard/management"
                         className="text-sm text-green-600 hover:text-green-700 font-medium"
                         onClick={() => setShowStoreSwitcher(false)}
                       >
@@ -154,7 +154,7 @@ const StoreLayout = ({ children }) => {
                     </div>
                     <div className="p-3 border-t border-gray-200">
                       <Link 
-                        to="/store/notifications"
+                        to="/store-dashboard/notifications"
                         className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                       >
                         Xem tất cả thông báo

@@ -15,6 +15,13 @@ const StoreProductDetail = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedStorage, setSelectedStorage] = useState(null);
+  const [showAddVariantModal, setShowAddVariantModal] = useState(false);
+  const [newVariant, setNewVariant] = useState({
+    name: '',
+    price: 0,
+    stock: 0,
+    attributes: {}
+  });
 
   useEffect(() => {
     fetchProductDetail();
@@ -23,6 +30,16 @@ const StoreProductDetail = () => {
   const fetchProductDetail = async () => {
     try {
       setLoading(true);
+      
+      // Kiểm tra localStorage trước
+      const products = JSON.parse(localStorage.getItem('store_products') || '{}');
+      if (products[productId]) {
+        setProduct(products[productId]);
+        setEditedProduct(products[productId]);
+        setLoading(false);
+        return;
+      }
+
       // Mock data cho chi tiết sản phẩm
       const mockProducts = {
         '1': {
@@ -51,6 +68,7 @@ const StoreProductDetail = () => {
               name: '128GB - Màu tím',
               price: 25000000,
               stock: 3,
+              status: 'APPROVED',
               attributes: {
                 storage: '128GB',
                 color: 'Màu tím'
@@ -61,6 +79,7 @@ const StoreProductDetail = () => {
               name: '256GB - Màu tím',
               price: 28000000,
               stock: 2,
+              status: 'PENDING',
               attributes: {
                 storage: '256GB',
                 color: 'Màu tím'
@@ -108,6 +127,7 @@ const StoreProductDetail = () => {
               name: '13 inch 256GB',
               price: 32000000,
               stock: 0,
+              status: 'REJECTED',
               attributes: {
                 size: '13 inch',
                 storage: '256GB'
@@ -156,6 +176,7 @@ const StoreProductDetail = () => {
               name: '256GB - Màu đen',
               price: 28000000,
               stock: 2,
+              status: 'APPROVED',
               attributes: {
                 storage: '256GB',
                 color: 'Màu đen'
@@ -166,6 +187,7 @@ const StoreProductDetail = () => {
               name: '512GB - Màu đen',
               price: 32000000,
               stock: 1,
+              status: 'PENDING',
               attributes: {
                 storage: '512GB',
                 color: 'Màu đen'
@@ -425,14 +447,22 @@ const StoreProductDetail = () => {
   };
 
   const handleVariantChange = (variantId, field, value) => {
-    setEditedProduct(prev => ({
-      ...prev,
-      variants: prev.variants.map(variant => 
+    const updatedProduct = {
+      ...editedProduct,
+      variants: editedProduct.variants.map(variant => 
         variant.id === variantId 
           ? { ...variant, [field]: value }
           : variant
       )
-    }));
+    };
+
+    setEditedProduct(updatedProduct);
+    setProduct(updatedProduct);
+
+    // Lưu vào localStorage
+    const products = JSON.parse(localStorage.getItem('store_products') || '{}');
+    products[productId] = updatedProduct;
+    localStorage.setItem('store_products', JSON.stringify(products));
   };
 
   const handleSpecificationChange = (key, value) => {
@@ -443,6 +473,62 @@ const StoreProductDetail = () => {
         [key]: value
       }
     }));
+  };
+
+  const handleAddVariant = () => {
+    if (!newVariant.name || !newVariant.price) {
+      alert('Vui lòng nhập đầy đủ thông tin variant');
+      return;
+    }
+
+    const variant = {
+      id: `VAR-${Date.now()}`,
+      name: newVariant.name,
+      price: newVariant.price,
+      stock: newVariant.stock,
+      attributes: newVariant.attributes,
+      status: 'PENDING', // Chờ admin duyệt
+      createdAt: new Date().toISOString()
+    };
+
+    const updatedProduct = {
+      ...editedProduct,
+      variants: [...(editedProduct.variants || []), variant]
+    };
+
+    setEditedProduct(updatedProduct);
+    setProduct(updatedProduct);
+
+    // Lưu vào localStorage
+    const products = JSON.parse(localStorage.getItem('store_products') || '{}');
+    products[productId] = updatedProduct;
+    localStorage.setItem('store_products', JSON.stringify(products));
+
+    setNewVariant({
+      name: '',
+      price: 0,
+      stock: 0,
+      attributes: {}
+    });
+    setShowAddVariantModal(false);
+    alert('Đã thêm variant thành công! Variant sẽ được gửi để admin duyệt.');
+  };
+
+  const handleDeleteVariant = (variantId) => {
+    if (window.confirm('Bạn có chắc muốn xóa variant này?')) {
+      const updatedProduct = {
+        ...editedProduct,
+        variants: editedProduct.variants.filter(v => v.id !== variantId)
+      };
+
+      setEditedProduct(updatedProduct);
+      setProduct(updatedProduct);
+
+      // Lưu vào localStorage
+      const products = JSON.parse(localStorage.getItem('store_products') || '{}');
+      products[productId] = updatedProduct;
+      localStorage.setItem('store_products', JSON.stringify(products));
+    }
   };
 
   const handleSave = async () => {
@@ -504,7 +590,8 @@ const StoreProductDetail = () => {
     }).format(price);
   };
 
-  const getStatusText = (status) => {
+  const getStatusText = (status, approvedStock) => {
+    if (approvedStock === 0) return 'Chờ duyệt variant';
     switch (status) {
       case 'ACTIVE': return 'Đang bán';
       case 'HIDDEN': return 'Ẩn';
@@ -514,7 +601,8 @@ const StoreProductDetail = () => {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status, approvedStock) => {
+    if (approvedStock === 0) return 'bg-yellow-100 text-yellow-800';
     switch (status) {
       case 'ACTIVE': return 'bg-green-100 text-green-800';
       case 'HIDDEN': return 'bg-yellow-100 text-yellow-800';
@@ -553,6 +641,11 @@ const StoreProductDetail = () => {
     );
   }
 
+  // Tính tổng stock từ các variant đã duyệt
+  const approvedStock = editedProduct.variants 
+    ? editedProduct.variants.filter(v => v.status === 'APPROVED').reduce((sum, v) => sum + v.stock, 0)
+    : 0;
+
   return (
     <StoreLayout>
       <StoreStatusGuard currentStore={currentStore} pageName="chi tiết sản phẩm">
@@ -561,7 +654,7 @@ const StoreProductDetail = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
-                to="/store/products"
+                to="/store-dashboard/products"
                 className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -692,22 +785,22 @@ const StoreProductDetail = () => {
 
               {/* Stock Status */}
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${editedProduct.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                <span className={`font-medium ${editedProduct.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {editedProduct.stock > 0 ? 'Còn hàng' : 'Hết hàng'}
+                <div className={`w-3 h-3 rounded-full ${approvedStock > 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={`font-medium ${approvedStock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {approvedStock > 0 ? 'Còn hàng' : 'Hết hàng'}
                 </span>
-                <span className="text-gray-500">({editedProduct.stock} sản phẩm)</span>
+                <span className="text-gray-500">({approvedStock} sản phẩm)</span>
               </div>
 
-              {/* Variants Selection */}
-              {editedProduct.variants && editedProduct.variants.length > 0 && (
+              {/* Variants Selection - Only show approved variants */}
+              {editedProduct.variants && editedProduct.variants.filter(v => v.status === 'APPROVED').length > 0 && (
                 <div className="space-y-4">
                   {/* Color Variants */}
-                  {editedProduct.variants.some(v => v.attributes?.color) && (
+                  {editedProduct.variants.some(v => v.attributes?.color && v.status === 'APPROVED') && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Màu sắc:</label>
                       <div className="flex gap-2 flex-wrap">
-                        {Array.from(new Set(editedProduct.variants.map(v => v.attributes?.color).filter(Boolean))).map((color) => (
+                        {Array.from(new Set(editedProduct.variants.filter(v => v.status === 'APPROVED').map(v => v.attributes?.color).filter(Boolean))).map((color) => (
                           <button
                             key={color}
                             onClick={() => handleColorSelect(color)}
@@ -725,11 +818,11 @@ const StoreProductDetail = () => {
                   )}
 
                   {/* Storage Variants */}
-                  {editedProduct.variants.some(v => v.attributes?.storage) && (
+                  {editedProduct.variants.some(v => v.attributes?.storage && v.status === 'APPROVED') && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Dung lượng:</label>
                       <div className="flex gap-2 flex-wrap">
-                        {Array.from(new Set(editedProduct.variants.map(v => v.attributes?.storage).filter(Boolean))).map((storage) => (
+                        {Array.from(new Set(editedProduct.variants.filter(v => v.status === 'APPROVED').map(v => v.attributes?.storage).filter(Boolean))).map((storage) => (
                           <button
                             key={storage}
                             onClick={() => handleStorageSelect(storage)}
@@ -748,23 +841,19 @@ const StoreProductDetail = () => {
                 </div>
               )}
 
-              {/* Quantity Selector */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Số lượng:</label>
-                <div className="flex items-center gap-3">
-                  <button className="w-10 h-10 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"/>
-                    </svg>
-                  </button>
-                  <span className="w-12 text-center font-medium">1</span>
-                  <button className="w-10 h-10 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                  </button>
+              {/* Show message when no approved variants */}
+              {editedProduct.variants && editedProduct.variants.filter(v => v.status === 'APPROVED').length === 0 && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <span className="text-yellow-600 mr-2">⚠️</span>
+                    <div className="text-sm text-yellow-800">
+                      <p className="font-medium">Chưa có biến thể nào được duyệt</p>
+                      <p>Vui lòng thêm biến thể và chờ admin duyệt để có thể bán sản phẩm.</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+
 
               {/* Management Actions */}
               <div className="space-y-4">
@@ -773,7 +862,7 @@ const StoreProductDetail = () => {
                   <h4 className="font-medium text-blue-900 mb-2">Quản lý tồn kho</h4>
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-blue-700">Tồn kho hiện tại:</span>
-                    <span className="font-semibold text-blue-900">{editedProduct.stock} sản phẩm</span>
+                    <span className="font-semibold text-blue-900">{approvedStock} sản phẩm</span>
                     {isEditing && (
                       <button className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors">
                         Cập nhật
@@ -786,8 +875,8 @@ const StoreProductDetail = () => {
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                   <h4 className="font-medium text-gray-900 mb-2">Trạng thái sản phẩm</h4>
                   <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(editedProduct.status)}`}>
-                      {getStatusText(editedProduct.status)}
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(editedProduct.status, approvedStock)}`}>
+                      {getStatusText(editedProduct.status, approvedStock)}
                     </span>
                     {isEditing && (
                       <button className="px-3 py-1 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors">
@@ -814,12 +903,22 @@ const StoreProductDetail = () => {
           </div>
 
           {/* Variants */}
-          {editedProduct.variants && editedProduct.variants.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Biến thể sản phẩm</h3>
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Biến thể sản phẩm</h3>
+              <button
+                onClick={() => setShowAddVariantModal(true)}
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+              >
+                <span>+</span>
+                Thêm biến thể
+              </button>
+            </div>
+            
+            {(editedProduct.variants && editedProduct.variants.length > 0) ? (
               <div className="space-y-4">
                 {editedProduct.variants.map((variant) => (
-                  <div key={variant.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div key={variant.id} className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Tên biến thể</label>
                       {isEditing ? (
@@ -849,14 +948,50 @@ const StoreProductDetail = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Tồn kho</label>
                       {isEditing ? (
-                        <input
-                          type="number"
-                          value={variant.stock}
-                          onChange={(e) => handleVariantChange(variant.id, 'stock', parseInt(e.target.value))}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                        />
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            value={variant.stock}
+                            onChange={(e) => handleVariantChange(variant.id, 'stock', parseInt(e.target.value))}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                          />
+                          <div className="flex flex-col gap-1">
+                            <button
+                              onClick={() => handleVariantChange(variant.id, 'stock', variant.stock + 1)}
+                              className="w-8 h-6 bg-green-500 hover:bg-green-600 text-white rounded text-xs font-bold transition-colors"
+                              title="Thêm 1"
+                            >
+                              +
+                            </button>
+                            <button
+                              onClick={() => handleVariantChange(variant.id, 'stock', Math.max(0, variant.stock - 1))}
+                              className="w-8 h-6 bg-red-500 hover:bg-red-600 text-white rounded text-xs font-bold transition-colors"
+                              title="Bớt 1"
+                            >
+                              -
+                            </button>
+                          </div>
+                        </div>
                       ) : (
-                        <span className="text-gray-900">{variant.stock}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-900 font-medium">{variant.stock}</span>
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => handleVariantChange(variant.id, 'stock', variant.stock + 1)}
+                              className="w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded text-xs font-bold transition-colors"
+                              title="Nhập hàng +1"
+                            >
+                              +
+                            </button>
+                            <button
+                              onClick={() => handleVariantChange(variant.id, 'stock', Math.max(0, variant.stock - 1))}
+                              className="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded text-xs font-bold transition-colors"
+                              title="Xuất hàng -1"
+                            >
+                              -
+                            </button>
+                          </div>
+                        </div>
                       )}
                     </div>
                     <div>
@@ -867,11 +1002,78 @@ const StoreProductDetail = () => {
                         ))}
                       </div>
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
+                      <div className="mb-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          variant.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                          variant.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                          variant.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {variant.status === 'APPROVED' ? '✓ Đã duyệt' :
+                           variant.status === 'PENDING' ? '⏳ Chờ duyệt' :
+                           variant.status === 'REJECTED' ? '✗ Từ chối' :
+                           'Không xác định'}
+                        </span>
+                      </div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Thao tác</label>
+                      <div className="flex gap-2 flex-wrap">
+                        <button
+                          onClick={() => handleVariantChange(variant.id, 'stock', variant.stock + 10)}
+                          className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded text-xs font-medium transition-colors"
+                          title="Nhập hàng +10"
+                        >
+                          +10
+                        </button>
+                        <button
+                          onClick={() => handleVariantChange(variant.id, 'stock', variant.stock + 5)}
+                          className="px-3 py-1.5 bg-green-400 hover:bg-green-500 text-white rounded text-xs font-medium transition-colors"
+                          title="Nhập hàng +5"
+                        >
+                          +5
+                        </button>
+                        <button
+                          onClick={() => handleVariantChange(variant.id, 'stock', Math.max(0, variant.stock - 5))}
+                          className="px-3 py-1.5 bg-red-400 hover:bg-red-500 text-white rounded text-xs font-medium transition-colors"
+                          title="Xuất hàng -5"
+                        >
+                          -5
+                        </button>
+                        <button
+                          onClick={() => handleVariantChange(variant.id, 'stock', Math.max(0, variant.stock - 10))}
+                          className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded text-xs font-medium transition-colors"
+                          title="Xuất hàng -10"
+                        >
+                          -10
+                        </button>
+                        {isEditing && (
+                          <button
+                            onClick={() => handleDeleteVariant(variant.id)}
+                            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-medium transition-colors"
+                            title="Xóa variant"
+                          >
+                            🗑️
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <div className="text-4xl mb-2">📦</div>
+                <p>Chưa có biến thể nào</p>
+                <button
+                  onClick={() => setShowAddVariantModal(true)}
+                  className="mt-4 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  Thêm biến thể đầu tiên
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Specifications */}
           <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -987,6 +1189,122 @@ const StoreProductDetail = () => {
             </div>
           </div>
         </div>
+
+        {/* Add Variant Modal */}
+        {showAddVariantModal && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Thêm variant mới</h2>
+                <button
+                  onClick={() => setShowAddVariantModal(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tên variant *</label>
+                  <input
+                    type="text"
+                    value={newVariant.name}
+                    onChange={(e) => setNewVariant(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="VD: iPhone 14 Pro 128GB Tím"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Giá *</label>
+                  <input
+                    type="number"
+                    value={newVariant.price}
+                    onChange={(e) => setNewVariant(prev => ({ ...prev, price: parseInt(e.target.value) || 0 }))}
+                    placeholder="25000000"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Số lượng tồn kho</label>
+                  <input
+                    type="number"
+                    value={newVariant.stock}
+                    onChange={(e) => setNewVariant(prev => ({ ...prev, stock: parseInt(e.target.value) || 0 }))}
+                    placeholder="10"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Thuộc tính (tùy chọn)</label>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Màu sắc"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        value={newVariant.attributes?.color || ''}
+                        onChange={(e) => setNewVariant(prev => ({
+                          ...prev,
+                          attributes: { ...prev.attributes, color: e.target.value }
+                        }))}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Dung lượng"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        value={newVariant.attributes?.storage || ''}
+                        onChange={(e) => setNewVariant(prev => ({
+                          ...prev,
+                          attributes: { ...prev.attributes, storage: e.target.value }
+                        }))}
+                      />
+                    </div>
+                  </div>
+                  {Object.keys(newVariant.attributes || {}).length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {Object.entries(newVariant.attributes || {}).map(([key, value]) => (
+                        <span key={key} className="px-2 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                          {key}: {value}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <div className="flex items-start">
+                    <span className="text-yellow-600 mr-2">⚠️</span>
+                    <div className="text-sm text-yellow-800">
+                      <p className="font-medium">Lưu ý:</p>
+                      <p>Variant mới sẽ được gửi để admin duyệt trước khi có thể bán.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setShowAddVariantModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleAddVariant}
+                  className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                >
+                  Thêm variant
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </StoreStatusGuard>
     </StoreLayout>
   );

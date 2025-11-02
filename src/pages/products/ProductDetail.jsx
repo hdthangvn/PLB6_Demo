@@ -4,55 +4,42 @@ import ProductGallery from '../../components/products/ProductGallery';
 import ProductInfo from '../../components/products/ProductInfo';
 import ProductSpecifications from '../../components/products/ProductSpecifications';
 import ShopInfo from '../../components/products/ShopInfo';
-import ProductReviews from '../../components/products/ProductReviews';
 import ProductComments from '../../components/products/ProductComments';
 import ProductSection from '../../components/common/ProductSection';
+import ReviewList from '../../components/reviews/ReviewList';
+import ReviewForm from '../../components/reviews/ReviewForm';
+import { useState } from 'react';
 import { useProductDetail } from '../../hooks/useProductDetail';
-import { useProducts } from '../../hooks/useProducts';
 import { useCategories } from '../../hooks/useCategories';
-import { useEffect, useState } from 'react';
+import { useStoreInfo } from '../../hooks/useStoreInfo';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { product, loading, error } = useProductDetail(id);
+  const { product, relatedProducts, loading, relatedLoading, error } = useProductDetail(id); // ✅ DÙNG SWR
   const { categories } = useCategories();
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [editingReview, setEditingReview] = useState(null);
   
-  // ✅ SỬA: Tạo state riêng cho related products
-  const [relatedProducts, setRelatedProducts] = useState([]);
-  const [relatedLoading, setRelatedLoading] = useState(false);
+  // ✅ Fetch store info từ product.storeId (thử nhiều field name)
+  const productStoreId = product?.storeId || product?.store_id || product?.store?.id;
+  const productStoreName = product?.storeName || product?.store_name || product?.store?.name;
+  const { store, loading: storeLoading, error: storeError } = useStoreInfo(productStoreId);
+
+  const handleWriteReview = (existingReview = null) => {
+    setEditingReview(existingReview);
+    setShowReviewForm(true);
+  };
+
+  const handleReviewSuccess = () => {
+    setShowReviewForm(false);
+    setEditingReview(null);
+  };
+  
 
   // ✅ TÌM TÊN DANH MỤC DỰA TRÊN categoryKey
   const currentCategory = categories.find(cat => cat.key === product?.categoryKey);
   const categoryName = currentCategory?.name || (product?.categoryKey === 'all' ? 'Tất cả sản phẩm' : product?.categoryKey || 'Sản phẩm');
-
-  // ✅ SỬA: Fetch related products sau khi có product
-  useEffect(() => {
-    const fetchRelatedProducts = async () => {
-      if (!product || !product.category) return;
-      
-      setRelatedLoading(true);
-      try {
-        // Import productService để gọi trực tiếp
-        const { productService } = await import('../../services/productService');
-        const result = await productService.getProductsByCategory(product.category, 8);
-        
-        if (result.success) {
-          // Lọc bỏ sản phẩm hiện tại và chỉ lấy 4 sản phẩm
-          const filtered = result.data
-            .filter(p => p.id !== parseInt(id))
-            .slice(0, 4);
-          setRelatedProducts(filtered);
-        }
-      } catch (err) {
-        console.error('Error fetching related products:', err);
-      } finally {
-        setRelatedLoading(false);
-      }
-    };
-
-    fetchRelatedProducts();
-  }, [product, id]);
 
   if (loading) {
     return (
@@ -156,13 +143,71 @@ const ProductDetail = () => {
 
           {/* Shop Info */}
           <div>
-            <ShopInfo shop={product?.shop} />
+            {storeLoading ? (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="animate-pulse">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : storeError ? (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="text-center py-4">
+                  <p className="text-red-600 text-sm">Không thể tải thông tin cửa hàng</p>
+                  <p className="text-gray-500 text-xs mt-1">{storeError}</p>
+                </div>
+              </div>
+            ) : (
+              <ShopInfo 
+                shop={store} 
+                storeName={productStoreName} 
+                storeId={productStoreId} 
+              />
+            )}
           </div>
         </div>
 
         {/* PHẦN 3: Reviews (100% width) */}
         <div className="mb-12">
-          <ProductReviews product={product} />
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Đánh giá sản phẩm</h2>
+          
+          {/* Review Form Modal */}
+          {showReviewForm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {editingReview ? 'Chỉnh sửa đánh giá' : 'Viết đánh giá'}
+                  </h3>
+                  <button
+                    onClick={() => setShowReviewForm(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <ReviewForm
+                  productVariantId={id}
+                  existingReview={editingReview}
+                  onSuccess={handleReviewSuccess}
+                  onCancel={() => setShowReviewForm(false)}
+                />
+              </div>
+            </div>
+          )}
+          
+          {/* Review List */}
+          <ReviewList
+            productVariantId={id}
+            onWriteReview={handleWriteReview}
+          />
         </div>
 
         {/* PHẦN 3.5: Comments (100% width) */}
@@ -170,7 +215,7 @@ const ProductDetail = () => {
           <ProductComments productId={product.id} />
         </div>
 
-        {/* ✅ PHẦN 4: Related Products (100% width) - LUÔN HIỂN THỊ */}
+        {/* ✅ PHẦN 4: Related Products (100% width) */}
         <div className="mb-12">
           {relatedLoading ? (
             <div className="text-center py-8">
@@ -186,36 +231,8 @@ const ProductDetail = () => {
               showViewAll={false}
             />
           ) : (
-            // ✅ FALLBACK: Hiển thị sản phẩm mặc định nếu không có related products
-            <div className="bg-gray-50 rounded-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Sản phẩm khác bạn có thể quan tâm</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {/* Mock related products */}
-                {[
-                  { id: 301, name: 'iPhone 15 Pro', price: '24.990.000', image: '📱' },
-                  { id: 201, name: 'MacBook Pro M4', price: '45.990.000', image: '💻' },
-                  { id: 401, name: 'Sony WH-1000XM5', price: '7.990.000', image: '🎧' },
-                  { id: 501, name: 'Canon EOS R5', price: '89.990.000', image: '📷' }
-                ].map((mockProduct) => (
-                  <div 
-                    key={mockProduct.id}
-                    onClick={() => navigate(`/product/${mockProduct.id}`)}
-                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                  >
-                    <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                      <span className="text-3xl">{mockProduct.image}</span>
-                    </div>
-                    <div className="p-3">
-                      <h3 className="font-medium text-gray-900 text-sm mb-2 line-clamp-2">
-                        {mockProduct.name}
-                      </h3>
-                      <span className="text-sm font-bold text-red-600">
-                        {mockProduct.price}đ
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="bg-gray-50 rounded-lg p-8 text-center">
+              <p className="text-gray-500">Không có sản phẩm liên quan</p>
             </div>
           )}
         </div>

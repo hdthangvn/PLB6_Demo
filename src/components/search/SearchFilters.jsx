@@ -1,38 +1,101 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useCategories } from '../../hooks/useCategories';
+import { getAllBrands } from '../../services/productService';
 
-const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
+const SearchFilters = ({ onFiltersChange, initialFilters = {}, currentProducts = [] }) => {
   const [filters, setFilters] = useState({
     category: 'all',
     minPrice: '',
     maxPrice: '',
     sortBy: 'relevance',
     brands: [],
-    cpu: [],
-    ram: [],
-    // TV
-    tvResolutions: [], // ['4K','8K']
-    tvPanels: [], // ['OLED','QLED','MiniLED']
-    tvSizes: [], // ['43"','55"','65"','75"']
-    // Camera
-    cameraSensors: [], // ['Full Frame','APS-C']
-    cameraTypes: [], // ['Mirrorless','Action Cam','DSLR']
-    cameraMp: [], // ['<=24MP','25-40MP','>40MP'] (dùng khi có data)
-    // Audio
-    audioTypes: [], // ['Tai nghe','Earbuds','Micro','Loa']
-    audioFeatures: [], // ['Chống ồn','Bluetooth','Có dây']
-    // Accessories
-    accessoriesTypes: [], // ['Sạc','Chuột','Bàn phím','Hub','Pin dự phòng','Tripod']
-    // Home
-    homeTypes: [], // ['Robot hút bụi','Nồi chiên','Lọc không khí','Máy giặt','Lò vi sóng']
     ...initialFilters
   });
 
   const [showFilters, setShowFilters] = useState(false);
-  const [isChangingCategory, setIsChangingCategory] = useState(false);
-  const navigate = useNavigate();
+  const [brandsLoading, setBrandsLoading] = useState(false);
+  const [allBrands, setAllBrands] = useState([]); // ✅ Tất cả brands từ API
 
-  // Debounce filter changes để tránh spam API
+  // ✅ Fetch categories from API
+  const { categories: apiCategories, loading: categoriesLoading } = useCategories();
+
+  // ✅ FETCH TẤT CẢ BRANDS TỪ API (1 LẦN + CACHE VÀO LOCALSTORAGE)
+  useEffect(() => {
+    const fetchAllBrands = async () => {
+      setBrandsLoading(true);
+      
+      try {
+        // ✅ Kiểm tra cache trong localStorage trước
+        const cached = localStorage.getItem('brands_cache');
+        const cacheTime = localStorage.getItem('brands_cache_time');
+        const CACHE_DURATION = 30 * 60 * 1000; // 30 phút
+        
+        if (cached && cacheTime) {
+          const age = Date.now() - parseInt(cacheTime);
+          if (age < CACHE_DURATION) {
+            const brandNames = JSON.parse(cached);
+            setAllBrands(brandNames);
+            console.log(`✅ Loaded ${brandNames.length} brands from CACHE`);
+            setBrandsLoading(false);
+            return;
+          }
+        }
+        
+        // ✅ Nếu không có cache hoặc hết hạn → Gọi API
+        const result = await getAllBrands();
+        if (result.success && Array.isArray(result.data)) {
+          const brandNames = result.data.map(b => b.name).filter(Boolean).sort();
+          setAllBrands(brandNames);
+          
+          // ✅ Lưu vào cache
+          localStorage.setItem('brands_cache', JSON.stringify(brandNames));
+          localStorage.setItem('brands_cache_time', Date.now().toString());
+          
+          console.log(`✅ Loaded ${brandNames.length} brands from API (cached for 30min)`);
+        } else {
+          console.warn('⚠️ Failed to load brands from API');
+          setAllBrands([]);
+        }
+      } catch (error) {
+        console.error('❌ Error loading brands:', error);
+        setAllBrands([]);
+      } finally {
+        setBrandsLoading(false);
+      }
+    };
+    
+    fetchAllBrands();
+  }, []); // Chỉ fetch 1 lần khi mount
+
+  // ✅ HIỂN THỊ TẤT CẢ BRANDS (Products không có brandName field nên không thể filter)
+  // Khi user chọn brand → ProductList sẽ gọi API /product-variants/category/{category}/brand/{brand}
+  const availableBrands = useMemo(() => {
+    console.log(`✅ Available brands: ${allBrands.length} brands (all categories)`);
+    return allBrands;
+  }, [allBrands]);
+
+  // ✅ XÓA BRANDS ĐÃ CHỌN nếu không còn tồn tại trong danh sách mới (khi đổi category)
+  useEffect(() => {
+    if (filters.brands.length > 0) {
+      const validBrands = filters.brands.filter(b => availableBrands.includes(b));
+      if (validBrands.length !== filters.brands.length) {
+        console.log(`🧹 Clearing invalid brands: ${filters.brands.length} → ${validBrands.length}`);
+        setFilters(prev => ({ ...prev, brands: validBrands }));
+      }
+    }
+  }, [availableBrands, filters.brands.length]); // ✅ Chỉ chạy khi availableBrands hoặc số lượng brands đã chọn thay đổi
+
+  // ✅ Đồng bộ filters state với initialFilters prop khi prop thay đổi
+  useEffect(() => {
+    if (initialFilters.category && initialFilters.category !== filters.category) {
+      setFilters(prev => ({
+        ...prev,
+        category: initialFilters.category
+      }));
+    }
+  }, [initialFilters.category]);
+
+  // ✅ Gọi onFiltersChange khi filters thay đổi (với debounce để tránh spam API)
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       onFiltersChange(filters);
@@ -41,17 +104,8 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
     return () => clearTimeout(timeoutId);
   }, [filters, onFiltersChange]);
 
-  const categories = [
-    { key: 'all', name: 'Tất cả' },
-    { key: 'smartphones', name: 'Điện thoại' },
-    { key: 'laptops', name: 'Laptop' },
-    { key: 'audio', name: 'Âm thanh' },
-    { key: 'camera', name: 'Camera' },
-    { key: 'tv', name: 'TV' },
-    { key: 'pc', name: 'PC' },
-    { key: 'accessories', name: 'Phụ kiện' },
-    { key: 'home', name: 'Gia dụng' }
-  ];
+  // ✅ Use categories from API
+  const categories = apiCategories;
 
   const sortOptions = [
     { key: 'relevance', name: 'Liên quan nhất' },
@@ -60,52 +114,7 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
     { key: 'name', name: 'Tên A-Z' }
   ];
 
-  // Dynamic brand options theo danh mục
-  const brandOptionsByCategory = {
-    all: ['Apple','Samsung','Dell','ASUS','Sony','MSI','LG','Xiaomi','OPPO','Google','Lenovo','Bose','Canon','Nikon','Fujifilm','GoPro','JBL','Marshall','Sennheiser','Acer','Realme','Vivo','OnePlus','Belkin','Anker','Logitech','Keychron','Peak Design','Sharp','Electrolux','Dyson'],
-    smartphones: ['Apple','Samsung','Google','Xiaomi','OPPO','Vivo','OnePlus','Nothing','Realme'],
-    laptops: ['Apple','Dell','ASUS','HP','Lenovo','MSI','Acer','LG'],
-    audio: ['Sony','Apple','Bose','Sennheiser','JBL','Marshall'],
-    camera: ['Canon','Sony','Nikon','Fujifilm','GoPro'],
-    tv: ['Samsung','LG','Sony','TCL','Xiaomi'],
-    pc: ['ASUS','MSI','HP','Dell','Lenovo','Apple'],
-    accessories: ['Anker','Belkin','Logitech','Keychron','Peak Design','Apple'],
-    home: ['Dyson','Xiaomi','Philips','Sharp','Electrolux','LG']
-  };
-  const availableBrands = brandOptionsByCategory[filters.category] || brandOptionsByCategory.all;
-  const supportsCpuRam = ['laptops','pc','smartphones'].includes(filters.category);
-  const cpuOptions = filters.category === 'smartphones'
-    ? ['Apple A','Snapdragon','Dimensity','Exynos']
-    : ['i3','i5','i7','Ryzen 5','Ryzen 7'];
-  const ramOptions = filters.category === 'smartphones'
-    ? ['6GB','8GB','12GB','16GB']
-    : ['8GB','16GB','32GB'];
-  const isTV = filters.category === 'tv';
-  const isCamera = filters.category === 'camera';
-  const isAudio = filters.category === 'audio';
-  const isAccessories = filters.category === 'accessories';
-  const isHome = filters.category === 'home';
-
   const handleFilterChange = (key, value) => {
-    // ✅ KHI CHỌN DANH MỤC KHÁC "Tất cả", TỰ ĐỘNG FILTER THEO DANH MỤC ĐÓ
-    if (key === 'category') {
-      setIsChangingCategory(true);
-      
-      // Thêm delay nhỏ để có hiệu ứng mượt mà
-      setTimeout(() => {
-        if (value === 'all') {
-          // Navigate to all products page - KHÔNG RELOAD TRANG
-          navigate('/products/all');
-        } else {
-          // Navigate to the specific category page - KHÔNG RELOAD TRANG
-          navigate(`/products/${value}`);
-        }
-        setIsChangingCategory(false);
-      }, 150); // Delay 150ms để có hiệu ứng
-      
-      return;
-    }
-    
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
     // onFiltersChange sẽ được gọi tự động qua useEffect debounce
@@ -117,9 +126,7 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
       minPrice: '',
       maxPrice: '',
       sortBy: 'relevance',
-      brands: [],
-      cpu: [],
-      ram: []
+      brands: []
     };
     setFilters(defaultFilters);
     onFiltersChange(defaultFilters);
@@ -161,15 +168,11 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Danh mục:
-            {isChangingCategory && (
-              <span className="ml-2 text-blue-600 text-xs">Đang chuyển...</span>
-            )}
           </label>
           <select
             value={filters.category}
             onChange={(e) => handleFilterChange('category', e.target.value)}
-            disabled={isChangingCategory}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
           >
             {categories.map(category => (
               <option key={category.key} value={category.key}>
@@ -211,225 +214,36 @@ const SearchFilters = ({ onFiltersChange, initialFilters = {} }) => {
           </div>
         </div>
 
-        {/* Advanced Filters */}
+        {/* Brand Filter */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Lọc nâng cao:
+            Thương hiệu:
           </label>
-          <div className="space-y-4">
-            {/* Brand - hiển thị theo danh mục */}
-            <div>
-              <div className="text-sm text-gray-600 mb-1">Brand</div>
-              <div className="grid grid-cols-2 gap-2">
-                {availableBrands.map(b => (
-                  <label key={b} className="flex items-center space-x-2 text-sm">
-                    <input type="checkbox" checked={filters.brands.includes(b)} onChange={(e)=>{
-                      const next = e.target.checked ? [...filters.brands,b] : filters.brands.filter(x=>x!==b);
+          {brandsLoading ? (
+            <div className="text-sm text-gray-500">Đang tải brands...</div>
+          ) : availableBrands.length === 0 ? (
+            <div className="text-sm text-gray-500">Không có brands</div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+              {availableBrands.map(brand => (
+                <label key={brand} className="flex items-center space-x-2 text-sm hover:bg-gray-50 p-1 rounded">
+                  <input 
+                    type="checkbox" 
+                    checked={filters.brands.includes(brand)} 
+                    onChange={(e) => {
+                      const next = e.target.checked 
+                        ? [...filters.brands, brand] 
+                        : filters.brands.filter(x => x !== brand);
                       handleFilterChange('brands', next);
-                    }} />
-                    <span>{b}</span>
-                  </label>
-                ))}
-              </div>
+                    }}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="truncate">{brand}</span>
+                </label>
+              ))}
             </div>
-
-
-            {supportsCpuRam && (
-              <>
-                {/* CPU */}
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">CPU</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {cpuOptions.map(c => (
-                      <label key={c} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.cpu.includes(c)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.cpu,c] : filters.cpu.filter(x=>x!==c);
-                          handleFilterChange('cpu', next);
-                        }} />
-                        <span>{c}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                {/* RAM */}
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">RAM</div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {ramOptions.map(r => (
-                      <label key={r} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.ram.includes(r)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.ram,r] : filters.ram.filter(x=>x!==r);
-                          handleFilterChange('ram', next);
-                        }} />
-                        <span>{r}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {isTV && (
-              <>
-                {/* TV Resolution */}
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Độ phân giải</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['4K','8K'].map(r => (
-                      <label key={r} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.tvResolutions.includes(r)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.tvResolutions,r] : filters.tvResolutions.filter(x=>x!==r);
-                          handleFilterChange('tvResolutions', next);
-                        }} />
-                        <span>{r}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                {/* TV Panel */}
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Tấm nền</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['OLED','QLED','MiniLED'].map(p => (
-                      <label key={p} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.tvPanels.includes(p)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.tvPanels,p] : filters.tvPanels.filter(x=>x!==p);
-                          handleFilterChange('tvPanels', next);
-                        }} />
-                        <span>{p}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                {/* TV Size */}
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Kích thước</div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {["43\"","55\"","65\"","75\""].map(s => (
-                      <label key={s} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.tvSizes.includes(s)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.tvSizes,s] : filters.tvSizes.filter(x=>x!==s);
-                          handleFilterChange('tvSizes', next);
-                        }} />
-                        <span>{s}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {isCamera && (
-              <>
-                {/* Camera Sensor */}
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Cảm biến</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['Full Frame','APS-C'].map(s => (
-                      <label key={s} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.cameraSensors.includes(s)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.cameraSensors,s] : filters.cameraSensors.filter(x=>x!==s);
-                          handleFilterChange('cameraSensors', next);
-                        }} />
-                        <span>{s}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                {/* Camera Type */}
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Loại máy</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['Mirrorless','DSLR','Action Cam'].map(t => (
-                      <label key={t} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.cameraTypes.includes(t)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.cameraTypes,t] : filters.cameraTypes.filter(x=>x!==t);
-                          handleFilterChange('cameraTypes', next);
-                        }} />
-                        <span>{t}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {isAudio && (
-              <>
-                {/* Audio Type */}
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Loại</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['Tai nghe','Earbuds','Micro','Loa'].map(t => (
-                      <label key={t} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.audioTypes.includes(t)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.audioTypes,t] : filters.audioTypes.filter(x=>x!==t);
-                          handleFilterChange('audioTypes', next);
-                        }} />
-                        <span>{t}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                {/* Audio Features */}
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Tính năng</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['Chống ồn','Bluetooth','Có dây'].map(f => (
-                      <label key={f} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.audioFeatures.includes(f)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.audioFeatures,f] : filters.audioFeatures.filter(x=>x!==f);
-                          handleFilterChange('audioFeatures', next);
-                        }} />
-                        <span>{f}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {isAccessories && (
-              <>
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Loại phụ kiện</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['Sạc','Chuột','Bàn phím','Hub','Pin dự phòng','Tripod'].map(t => (
-                      <label key={t} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.accessoriesTypes.includes(t)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.accessoriesTypes,t] : filters.accessoriesTypes.filter(x=>x!==t);
-                          handleFilterChange('accessoriesTypes', next);
-                        }} />
-                        <span>{t}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {isHome && (
-              <>
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Loại thiết bị</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['Robot hút bụi','Nồi chiên','Lọc không khí','Máy giặt','Lò vi sóng'].map(t => (
-                      <label key={t} className="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" checked={filters.homeTypes.includes(t)} onChange={(e)=>{
-                          const next = e.target.checked ? [...filters.homeTypes,t] : filters.homeTypes.filter(x=>x!==t);
-                          handleFilterChange('homeTypes', next);
-                        }} />
-                        <span>{t}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          )}
         </div>
-
-        {/* Clear Filters button removed as requested */}
       </div>
     </div>
   );

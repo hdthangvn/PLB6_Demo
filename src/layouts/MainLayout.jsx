@@ -94,9 +94,19 @@ const MainLayout = ({ children }) => {
                   </div>
                 ) : (
                   <div className="flex items-center space-x-4 flex-nowrap">
-                    <button className="hover:text-blue-200 whitespace-nowrap">Đăng Ký</button>
+                    <button 
+                      onClick={() => navigate('/auth?tab=register')}
+                      className="hover:text-blue-200 whitespace-nowrap"
+                    >
+                      Đăng Ký
+                    </button>
                     <span className="text-blue-200">|</span>
-                    <button className="hover:text-blue-200 whitespace-nowrap">Đăng Nhập</button>
+                    <button 
+                      onClick={() => navigate('/auth?tab=login')}
+                      className="hover:text-blue-200 whitespace-nowrap"
+                    >
+                      Đăng Nhập
+                    </button>
                   </div>
                 )}
               </div>
@@ -108,8 +118,8 @@ const MainLayout = ({ children }) => {
         <div className="bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-20">
-              {/* Logo */}
-              <div className="flex items-center">
+              {/* Logo & Navigation */}
+              <div className="flex items-center space-x-8">
                 <div 
                   className="flex items-center cursor-pointer"
                   onClick={() => navigate('/')}
@@ -124,6 +134,22 @@ const MainLayout = ({ children }) => {
                     <span className="text-purple-600">Store</span>
                   </h1>
                 </div>
+                
+                {/* Navigation Links */}
+                <nav className="hidden md:flex items-center space-x-6">
+                  <button
+                    onClick={() => navigate('/stores')}
+                    className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+                  >
+                    Cửa hàng B2C
+                  </button>
+                  <button
+                    onClick={() => navigate('/sellers')}
+                    className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+                  >
+                    Người bán C2C
+                  </button>
+                </nav>
               </div>
 
               {/* Search Bar - PHẢI CÓ PHẦN NÀY */}

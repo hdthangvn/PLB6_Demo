@@ -17,8 +17,124 @@ const StoreNotifications = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      // Mock data cho thông báo của user Store Manager (theo logic BE: user_id)
-      const mockNotifications = [
+      // Mock data cho thông báo - phân biệt theo chi nhánh
+      const getMockNotificationsByBranch = (branchId) => {
+        if (branchId === 'branch-1') {
+          // Chi nhánh Hải Châu - Chuyên điện thoại cao cấp
+          return [
+            {
+              id: 1,
+              type: 'ORDER',
+              title: 'Đơn hàng iPhone mới',
+              message: 'Đơn hàng iPhone 15 Pro Max từ Nguyễn Minh Tuấn',
+              priority: 'HIGH',
+              isRead: false,
+              createdAt: '2024-01-20T10:30:00Z',
+              orderId: 'ORD-001'
+            },
+            {
+              id: 2,
+              type: 'MESSAGE',
+              title: 'Tin nhắn về AirPods',
+              message: 'Khách hàng Trần Thị Lan hỏi về AirPods Pro 2',
+              priority: 'MEDIUM',
+              isRead: false,
+              createdAt: '2024-01-20T09:15:00Z',
+              chatId: 1
+            },
+            {
+              id: 3,
+              type: 'REVIEW',
+              title: 'Đánh giá Samsung',
+              message: 'Samsung Galaxy S24 Ultra nhận được đánh giá 5 sao',
+              priority: 'LOW',
+              isRead: true,
+              createdAt: '2024-01-19T16:45:00Z',
+              productId: 1
+            },
+            {
+              id: 4,
+              type: 'STOCK',
+              title: 'Cảnh báo tồn kho',
+              message: 'iPhone 14 Pro sắp hết hàng (còn 2 sản phẩm)',
+              priority: 'HIGH',
+              isRead: false,
+              createdAt: '2024-01-19T14:20:00Z',
+              productId: 2
+            },
+            {
+              id: 5,
+              type: 'PROMOTION',
+              title: 'Khuyến mãi AirPods',
+              message: 'Chương trình giảm giá AirPods Pro 2 đã kết thúc',
+              priority: 'MEDIUM',
+              isRead: true,
+              createdAt: '2024-01-18T11:30:00Z',
+              promotionId: 1
+            }
+          ];
+        }
+        
+        if (branchId === 'branch-1-2') {
+          // Chi nhánh Thanh Khê - Chuyên laptop gaming và văn phòng
+          return [
+            {
+              id: 1,
+              type: 'ORDER',
+              title: 'Đơn hàng MacBook mới',
+              message: 'Đơn hàng MacBook Pro M3 từ Phạm Văn Hùng',
+              priority: 'HIGH',
+              isRead: false,
+              createdAt: '2024-01-20T10:30:00Z',
+              orderId: 'ORD-001'
+            },
+            {
+              id: 2,
+              type: 'MESSAGE',
+              title: 'Tin nhắn về laptop gaming',
+              message: 'Khách hàng Nguyễn Thị Mai hỏi về ASUS ROG Strix G15',
+              priority: 'MEDIUM',
+              isRead: false,
+              createdAt: '2024-01-20T09:15:00Z',
+              chatId: 1
+            },
+            {
+              id: 3,
+              type: 'REVIEW',
+              title: 'Đánh giá Dell XPS',
+              message: 'Dell XPS 13 nhận được đánh giá 5 sao',
+              priority: 'LOW',
+              isRead: true,
+              createdAt: '2024-01-19T16:45:00Z',
+              productId: 1
+            },
+            {
+              id: 4,
+              type: 'STOCK',
+              title: 'Cảnh báo tồn kho',
+              message: 'MacBook Air M2 sắp hết hàng (còn 1 sản phẩm)',
+              priority: 'HIGH',
+              isRead: false,
+              createdAt: '2024-01-19T14:20:00Z',
+              productId: 2
+            },
+            {
+              id: 5,
+              type: 'PROMOTION',
+              title: 'Khuyến mãi chuột',
+              message: 'Chương trình giảm giá Logitech MX Master 3S đã kết thúc',
+              priority: 'MEDIUM',
+              isRead: true,
+              createdAt: '2024-01-18T11:30:00Z',
+              promotionId: 1
+            }
+          ];
+        }
+        
+        return [];
+      };
+      
+      const mockNotifications = getMockNotificationsByBranch(currentStore?.id) || [
         {
           id: 1,
           type: 'ORDER',
@@ -259,7 +375,7 @@ const StoreNotifications = () => {
               )}
               {notification.orderId && (
                 <Link
-                  to={`/store/orders/${notification.orderId}`}
+                  to={`/store-dashboard/orders/${notification.orderId}`}
                   className="text-xs text-green-600 hover:text-green-800 font-medium"
                 >
                   Xem đơn hàng

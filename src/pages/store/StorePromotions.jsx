@@ -14,7 +14,7 @@ const StorePromotions = () => {
   // Mock data for promotions theo chi nhánh
   const getMockPromotionsByBranch = (branchId) => {
     const branchPromotions = {
-      'branch-1': [ // Hải Châu - Đã duyệt - Nhiều khuyến mãi
+      'branch-1-1': [ // Hải Châu - Đã duyệt - Nhiều khuyến mãi điện thoại
     {
       id: 1,
       name: 'Giảm giá iPhone 15',
@@ -32,11 +32,11 @@ const StorePromotions = () => {
     },
     {
       id: 2,
-      name: 'Freeship toàn quốc',
-      description: 'Miễn phí vận chuyển cho đơn hàng từ 500k',
+      name: 'Freeship điện thoại',
+      description: 'Miễn phí vận chuyển cho điện thoại từ 1 triệu',
       type: 'FREESHIP',
       value: 0,
-      minOrderAmount: 500000,
+      minOrderAmount: 1000000,
       maxDiscount: 50000,
       startDate: '2024-01-15',
       endDate: '2024-02-15',
@@ -47,11 +47,11 @@ const StorePromotions = () => {
     },
     {
       id: 3,
-      name: 'Giảm giá MacBook',
-      description: 'Giảm giá 2 triệu cho MacBook Pro',
+      name: 'Giảm giá Samsung Galaxy',
+      description: 'Giảm giá 2 triệu cho Galaxy S24 Ultra',
       type: 'FIXED_AMOUNT',
       value: 2000000,
-      minOrderAmount: 30000000,
+      minOrderAmount: 25000000,
       maxDiscount: 2000000,
       startDate: '2024-01-20',
       endDate: '2024-02-20',
@@ -62,11 +62,11 @@ const StorePromotions = () => {
     },
     {
       id: 4,
-      name: 'Flash Sale Tết',
-      description: 'Giảm giá 20% trong ngày Tết',
+      name: 'Flash Sale iPhone',
+      description: 'Giảm giá 20% iPhone trong ngày cuối tuần',
       type: 'PERCENTAGE',
       value: 20,
-      minOrderAmount: 1000000,
+      minOrderAmount: 15000000,
       maxDiscount: 10000000,
       startDate: '2024-02-10',
       endDate: '2024-02-12',
@@ -77,12 +77,12 @@ const StorePromotions = () => {
     },
     {
       id: 5,
-      name: 'Khuyến mãi Black Friday',
-      description: 'Giảm giá 30% cho tất cả sản phẩm',
+      name: 'Khuyến mãi AirPods',
+      description: 'Giảm giá 30% cho AirPods Pro 2',
       type: 'PERCENTAGE',
       value: 30,
-      minOrderAmount: 500000,
-      maxDiscount: 15000000,
+      minOrderAmount: 5000000,
+      maxDiscount: 1500000,
       startDate: '2023-11-24',
       endDate: '2023-11-26',
       usageLimit: 500,
@@ -91,11 +91,11 @@ const StorePromotions = () => {
       createdAt: '2023-11-20'
     }
       ],
-      'branch-2': [ // Thanh Khê - Đã duyệt - Khuyến mãi trung bình
+      'branch-1-2': [ // Thanh Khê - Đã duyệt - Khuyến mãi laptop
         {
           id: 21,
-          name: 'Giảm giá Laptop',
-          description: 'Giảm giá 15% cho tất cả laptop',
+          name: 'Giảm giá Laptop Gaming',
+          description: 'Giảm giá 15% cho tất cả laptop gaming',
           type: 'PERCENTAGE',
           value: 15,
           minOrderAmount: 15000000,

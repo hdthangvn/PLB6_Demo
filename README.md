@@ -26,5 +26,11 @@ Những cái đã sửa:
 
 
 BỔ SUNG TRANG CHO SELLER VÀ CHỦ STORE CÓ NHIỀU CHI NHÁNH
-http://localhost:5173/seller/dashboard
-http://localhost:5173/store/dashboard
+http://localhost:5173/seller-dashboard
+http://localhost:5173/store-dashboard
+
+
+
+CÁC  API CHƯA HOÀN THÀNH
+1. Reset password : có gửi tin nhắn về mail nhưng bấm vào Đổi mật khẩu nó không hoạt động
+2.Google login
